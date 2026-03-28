@@ -28,6 +28,7 @@ func main() {
 	if err != nil {
 		panic("failed to connect database: " + err.Error())
 	}
+	_ = db // supaya variabel db dianggap terpakai
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
