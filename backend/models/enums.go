@@ -26,11 +26,11 @@ const (
 type PermintaanStatusEnum string
 
 const (
-	StatusDiterima     PermintaanStatusEnum = "diterima"
-	StatusDiproses     PermintaanStatusEnum = "diproses"
-	StatusBisaDiambil  PermintaanStatusEnum = "bisa_diambil"
-	StatusSelesai      PermintaanStatusEnum = "selesai"
-	StatusDibatalkan   PermintaanStatusEnum = "dibatalkan"
+	StatusDiterima    PermintaanStatusEnum = "diterima"
+	StatusDiproses    PermintaanStatusEnum = "diproses"
+	StatusBisaDiambil PermintaanStatusEnum = "bisa_diambil"
+	StatusSelesai     PermintaanStatusEnum = "selesai"
+	StatusDibatalkan  PermintaanStatusEnum = "dibatalkan"
 )
 
 type AdminRoleEnum string
