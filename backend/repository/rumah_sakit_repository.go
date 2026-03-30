@@ -1,0 +1,62 @@
+package repository
+
+import (
+	"backend/models"
+
+	"gorm.io/gorm"
+)
+
+type RumahSakitRepository interface {
+	Create(data *models.RumahSakit) error
+	GetByID(rsID string) (*models.RumahSakit, error)
+	GetAll(limit, offset int) ([]models.RumahSakit, error)
+	Update(data *models.RumahSakit) error
+	Delete(data *models.RumahSakit) error
+}
+
+type rumahSakitRepository struct {
+	db *gorm.DB
+}
+
+func NewRumahSakitRepository(db *gorm.DB) RumahSakitRepository {
+	return &rumahSakitRepository{db: db}
+}
+
+func (r *rumahSakitRepository) Create(data *models.RumahSakit) error {
+	return r.db.Create(data).Error
+}
+
+func (r *rumahSakitRepository) GetByID(rsID string) (*models.RumahSakit, error) {
+	var data models.RumahSakit
+	err := r.db.First(&data, "rs_id = ?", rsID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}
+
+func (r *rumahSakitRepository) GetAll(limit, offset int) ([]models.RumahSakit, error) {
+	if limit <= 0 {
+		limit = 20
+	}
+	if offset < 0 {
+		offset = 0
+	}
+
+	var list []models.RumahSakit
+	err := r.db.Limit(limit).Offset(offset).Find(&list).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+func (r *rumahSakitRepository) Update(data *models.RumahSakit) error {
+	return r.db.Save(data).Error
+}
+
+func (r *rumahSakitRepository) Delete(data *models.RumahSakit) error {
+	return r.db.Delete(data).Error
+}
