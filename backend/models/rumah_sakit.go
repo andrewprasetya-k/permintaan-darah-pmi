@@ -13,3 +13,7 @@ type RumahSakit struct {
 	UpdatedAt  time.Time  `gorm:"column:updated_at" json:"updatedAt"`
 	DeletedAt  *time.Time `gorm:"column:deleted_at" json:"deletedAt,omitempty"`
 }
+
+func (RumahSakit) TableName() string {
+	return "rumah_sakit"
+}
