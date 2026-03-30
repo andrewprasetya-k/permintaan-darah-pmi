@@ -1,13 +1,12 @@
 package main
 
 import (
+	"backend/config"
+	"backend/repository"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func main() {
@@ -15,20 +14,15 @@ func main() {
 	
 	//load env variables
 	godotenv.Load()
-	dsn := os.Getenv("DB_DSN")
-	if dsn == "" {
-		panic("DB_DSN is not set")
-	}
 
 	// db connection
-	db, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  dsn,
-		PreferSimpleProtocol: true,
-	}), &gorm.Config{})
+	db, err := config.ConnectDB()
 	if err != nil {
 		panic("failed to connect database: " + err.Error())
 	}
-	_ = db // supaya variabel db dianggap terpakai
+
+	// repository initialization
+	_ = repository.NewPermintaanDarahRepository(db)
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

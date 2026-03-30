@@ -1,5 +1,4 @@
 package config
-package config
 
 import (
 	"errors"
@@ -9,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func ConnectDBFromEnv() (*gorm.DB, error) {
+func ConnectDB() (*gorm.DB, error) {
 	dsn := os.Getenv("DB_DSN")
 	if dsn == "" {
 		return nil, errors.New("DB_DSN is not set")
