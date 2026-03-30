@@ -13,3 +13,7 @@ type PermintaanDarah struct {
 	UpdatedAt       time.Time            `gorm:"column:updated_at" json:"updatedAt"`
 	DeletedAt       *time.Time           `gorm:"column:deleted_at" json:"deletedAt,omitempty"`
 }
+
+func (PermintaanDarah) TableName() string {
+	return "permintaan_darah"
+}
