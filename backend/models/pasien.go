@@ -8,8 +8,8 @@ type Pasien struct {
 	PsnTempatLahir      string         `gorm:"column:psn_tempat_lahir" json:"tempatLahir"`
 	PsnTglLahir         time.Time      `gorm:"column:psn_tgl_lahir;type:date" json:"tanggalLahir"`
 	PsnGender           GenderEnum     `gorm:"column:psn_gender" json:"jenisKelamin"`
-	PsnGolDarah         *BloodTypeEnum `gorm:"column:psn_gol_darah" json:"golonganDarahPasien,omitempty"`
-	PsnRhesus           *RhesusEnum    `gorm:"column:psn_rhesus" json:"rhesusDarahPasien,omitempty"`
+	PsnGolDarah         *BloodTypeEnum `gorm:"column:psn_gol_darah" json:"golonganDarah,omitempty"`
+	PsnRhesus           *RhesusEnum    `gorm:"column:psn_rhesus" json:"rhesusDarah,omitempty"`
 	PsnPernahTransfusi  bool           `gorm:"column:psn_pernah_transfusi" json:"pernahTransfusi"`
 	PsnIndikasiTransfusi string        `gorm:"column:psn_indikasi_transfusi" json:"indikasiTransfusi"`
 	PsnNoRM             string         `gorm:"column:psn_no_rm" json:"noRM"`
