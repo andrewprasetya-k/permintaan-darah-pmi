@@ -1,0 +1,32 @@
+package dto
+
+import "time"
+
+type CreateRumahSakitRequest struct {
+	RSID       string  `json:"rumahSakitId" binding:"required"`
+	RSNama     string  `json:"nama" binding:"required"`
+	RSNoTelp   string  `json:"nomorTelepon" binding:"required"`
+	RSAlamat   string  `json:"alamat" binding:"required"`
+	RSEmail    *string `json:"email,omitempty" binding:"omitempty,email"`
+	RSPassword *string `json:"password,omitempty"`
+}
+
+type UpdateRumahSakitRequest struct {
+	RSNama     string  `json:"nama" binding:"required"`
+	RSNoTelp   string  `json:"nomorTelepon" binding:"required"`
+	RSAlamat   string  `json:"alamat" binding:"required"`
+	RSEmail    *string `json:"email,omitempty" binding:"omitempty,email"`
+	RSPassword *string `json:"password,omitempty"`
+}
+
+type RumahSakitResponse struct {
+	RSID       string     `json:"rumahSakitId"`
+	RSNama     string     `json:"nama"`
+	RSNoTelp   string     `json:"nomorTelepon"`
+	RSAlamat   string     `json:"alamat"`
+	RSEmail    *string    `json:"email,omitempty"`
+	RSPassword *string    `json:"password,omitempty"`
+	CreatedAt  time.Time  `json:"createdAt"`
+	UpdatedAt  time.Time  `json:"updatedAt"`
+	DeletedAt  *time.Time `json:"deletedAt,omitempty"`
+}
