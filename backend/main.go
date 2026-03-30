@@ -2,7 +2,10 @@ package main
 
 import (
 	"backend/config"
+	"backend/controllers"
 	"backend/repository"
+	"backend/routes"
+	"backend/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +14,7 @@ import (
 
 func main() {
 	r := gin.Default()
-	
+
 	//load env variables
 	godotenv.Load()
 
@@ -22,11 +25,46 @@ func main() {
 	}
 
 	// repository initialization
-	_ = repository.NewPermintaanDarahRepository(db)
+	adminRepo := repository.NewAdminRepository(db)
+	rumahSakitRepo := repository.NewRumahSakitRepository(db)
+	pasienRepo := repository.NewPasienRepository(db)
+	komponenRepo := repository.NewKomponenDarahRepository(db)
+	permintaanRepo := repository.NewPermintaanDarahRepository(db)
+	detailRepo := repository.NewDetailPermintaanDarahRepository(db)
+	statusLogRepo := repository.NewStatusLogRepository(db)
+
+	// service initialization
+	adminSvc := services.NewAdminService(adminRepo)
+	rumahSakitSvc := services.NewRumahSakitService(rumahSakitRepo)
+	pasienSvc := services.NewPasienService(pasienRepo)
+	komponenSvc := services.NewKomponenDarahService(komponenRepo)
+	permintaanSvc := services.NewPermintaanDarahService(permintaanRepo)
+	detailSvc := services.NewDetailPermintaanDarahService(detailRepo)
+	statusLogSvc := services.NewStatusLogService(statusLogRepo)
+
+	// controller initialization
+	adminCtl := controllers.NewAdminController(adminSvc)
+	rumahSakitCtl := controllers.NewRumahSakitController(rumahSakitSvc)
+	pasienCtl := controllers.NewPasienController(pasienSvc)
+	komponenCtl := controllers.NewKomponenDarahController(komponenSvc)
+	permintaanCtl := controllers.NewPermintaanDarahController(permintaanSvc)
+	detailCtl := controllers.NewDetailPermintaanDarahController(detailSvc)
+	statusLogCtl := controllers.NewStatusLogController(statusLogSvc)
+
+	routes.RegisterAPIRoutes(
+		r,
+		adminCtl,
+		rumahSakitCtl,
+		pasienCtl,
+		komponenCtl,
+		permintaanCtl,
+		detailCtl,
+		statusLogCtl,
+	)
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
+			"status": "ok",
 		})
 	})
 
