@@ -10,3 +10,7 @@ type StatusLog struct {
 	LogNotes    *string              `gorm:"column:log_notes" json:"notes,omitempty"`
 	CreatedAt   time.Time            `gorm:"column:created_at" json:"createdAt"`
 }
+
+func (StatusLog) TableName() string {
+	return "status_logs"
+}
