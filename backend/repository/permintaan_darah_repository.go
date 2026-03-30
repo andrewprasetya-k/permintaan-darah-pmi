@@ -9,7 +9,7 @@ import (
 type PermintaanDarahRepository interface {
 	Create(data *models.PermintaanDarah) error
 	GetByID(pdID string) (*models.PermintaanDarah, error)
-	List(limit, offset int) ([]models.PermintaanDarah, error)
+	GetAll(limit, offset int) ([]models.PermintaanDarah, error)
 	Update(data *models.PermintaanDarah) error
 	Delete(data *models.PermintaanDarah) error
 }
@@ -38,7 +38,7 @@ func (r *permintaanDarahRepository) GetByID(pdID string) (*models.PermintaanDara
 	return &data, nil
 }
 
-func (r *permintaanDarahRepository) List(limit, offset int) ([]models.PermintaanDarah, error) {
+func (r *permintaanDarahRepository) GetAll(limit, offset int) ([]models.PermintaanDarah, error) {
 	if limit <= 0 {
 		limit = 20
 	}
