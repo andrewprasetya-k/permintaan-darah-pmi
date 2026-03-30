@@ -12,3 +12,7 @@ type DetailPermintaanDarah struct {
 	DPDTglDiperlukan time.Time     `gorm:"column:dpd_tgl_diperlukan" json:"tanggalDiperlukan"`
 	CreatedAt        time.Time     `gorm:"column:created_at" json:"createdAt"`
 }
+
+func (DetailPermintaanDarah) TableName() string {
+	return "detail_permintaan_darah"
+}

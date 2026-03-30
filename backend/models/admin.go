@@ -13,3 +13,7 @@ type Admin struct {
 	AdminEmail    string        `gorm:"column:admin_email;unique" json:"adminEmail"`
 	AdminNama     string        `gorm:"column:admin_nama" json:"adminName"`
 }
+
+func (Admin) TableName() string {
+	return "admins"
+}
