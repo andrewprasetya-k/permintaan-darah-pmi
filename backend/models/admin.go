@@ -11,12 +11,4 @@ type Admin struct {
 	AdminRole     AdminRoleEnum `gorm:"column:admin_role;default:admin" json:"adminRole"`	
 	AdminEmail    string        `gorm:"column:admin_email;unique" json:"adminEmail"`	
 	AdminNama     string        `gorm:"column:admin_nama" json:"adminName"`
-
-
-
-
-
-
-
-
 }	
