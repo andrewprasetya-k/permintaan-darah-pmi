@@ -6,3 +6,7 @@ type KomponenDarah struct {
 	KomKode  string `gorm:"column:kom_kode;unique" json:"komponenKode"`
 	IsActive bool   `gorm:"column:is_active;default:true" json:"isActive"`
 }
+
+func (KomponenDarah) TableName() string {
+	return "komponen_darah"
+}
