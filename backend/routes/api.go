@@ -8,62 +8,62 @@ import (
 
 func RegisterAPIRoutes(
 	r *gin.Engine,
-	adminCtl *controllers.AdminController,
-	rumahSakitCtl *controllers.RumahSakitController,
-	pasienCtl *controllers.PasienController,
-	komponenCtl *controllers.KomponenDarahController,
-	permintaanCtl *controllers.PermintaanDarahController,
-	detailCtl *controllers.DetailPermintaanDarahController,
-	statusLogCtl *controllers.StatusLogController,
+	adminController *controllers.AdminController,
+	rumahSakitController *controllers.RumahSakitController,
+	pasienController *controllers.PasienController,
+	komponenController *controllers.KomponenDarahController,
+	permintaanController *controllers.PermintaanDarahController,
+	detailController *controllers.DetailPermintaanDarahController,
+	statusLogController *controllers.StatusLogController,
 ) {
 	api := r.Group("/api")
 
 	admins := api.Group("/admins")
-	admins.POST("", adminCtl.Create)
-	admins.GET("", adminCtl.GetAll)
-	admins.GET("/:id", adminCtl.GetByID)
-	admins.PUT("/:id", adminCtl.Update)
-	admins.DELETE("/:id", adminCtl.Delete)
+	admins.POST("", adminController.Create)
+	admins.GET("", adminController.GetAll)
+	admins.GET("/:id", adminController.GetByID)
+	admins.PUT("/:id", adminController.Update)
+	admins.DELETE("/:id", adminController.Delete)
 
 	rumahSakit := api.Group("/rumah-sakit")
-	rumahSakit.POST("", rumahSakitCtl.Create)
-	rumahSakit.GET("", rumahSakitCtl.GetAll)
-	rumahSakit.GET("/:id", rumahSakitCtl.GetByID)
-	rumahSakit.PUT("/:id", rumahSakitCtl.Update)
-	rumahSakit.DELETE("/:id", rumahSakitCtl.Delete)
+	rumahSakit.POST("", rumahSakitController.Create)
+	rumahSakit.GET("", rumahSakitController.GetAll)
+	rumahSakit.GET("/:id", rumahSakitController.GetByID)
+	rumahSakit.PUT("/:id", rumahSakitController.Update)
+	rumahSakit.DELETE("/:id", rumahSakitController.Delete)
 
 	pasien := api.Group("/pasien")
-	pasien.POST("", pasienCtl.Create)
-	pasien.GET("", pasienCtl.GetAll)
-	pasien.GET("/:id", pasienCtl.GetByID)
-	pasien.PUT("/:id", pasienCtl.Update)
-	pasien.DELETE("/:id", pasienCtl.Delete)
+	pasien.POST("", pasienController.Create)
+	pasien.GET("", pasienController.GetAll)
+	pasien.GET("/:id", pasienController.GetByID)
+	pasien.PUT("/:id", pasienController.Update)
+	pasien.DELETE("/:id", pasienController.Delete)
 
 	komponen := api.Group("/komponen-darah")
-	komponen.POST("", komponenCtl.Create)
-	komponen.GET("", komponenCtl.GetAll)
-	komponen.GET("/:id", komponenCtl.GetByID)
-	komponen.PUT("/:id", komponenCtl.Update)
-	komponen.DELETE("/:id", komponenCtl.Delete)
+	komponen.POST("", komponenController.Create)
+	komponen.GET("", komponenController.GetAll)
+	komponen.GET("/:id", komponenController.GetByID)
+	komponen.PUT("/:id", komponenController.Update)
+	komponen.DELETE("/:id", komponenController.Delete)
 
 	permintaan := api.Group("/permintaan-darah")
-	permintaan.POST("", permintaanCtl.Create)
-	permintaan.GET("", permintaanCtl.GetAll)
-	permintaan.GET("/:id", permintaanCtl.GetByID)
-	permintaan.PUT("/:id", permintaanCtl.Update)
-	permintaan.DELETE("/:id", permintaanCtl.Delete)
+	permintaan.POST("", permintaanController.Create)
+	permintaan.GET("", permintaanController.GetAll)
+	permintaan.GET("/:id", permintaanController.GetByID)
+	permintaan.PUT("/:id", permintaanController.Update)
+	permintaan.DELETE("/:id", permintaanController.Delete)
 
 	detail := api.Group("/detail-permintaan-darah")
-	detail.POST("", detailCtl.Create)
-	detail.GET("", detailCtl.GetAll)
-	detail.GET("/:id", detailCtl.GetByID)
-	detail.PUT("/:id", detailCtl.Update)
-	detail.DELETE("/:id", detailCtl.Delete)
+	detail.POST("", detailController.Create)
+	detail.GET("", detailController.GetAll)
+	detail.GET("/:id", detailController.GetByID)
+	detail.PUT("/:id", detailController.Update)
+	detail.DELETE("/:id", detailController.Delete)
 
 	statusLogs := api.Group("/status-logs")
-	statusLogs.POST("", statusLogCtl.Create)
-	statusLogs.GET("", statusLogCtl.GetAll)
-	statusLogs.GET("/:id", statusLogCtl.GetByID)
-	statusLogs.PUT("/:id", statusLogCtl.Update)
-	statusLogs.DELETE("/:id", statusLogCtl.Delete)
+	statusLogs.POST("", statusLogController.Create)
+	statusLogs.GET("", statusLogController.GetAll)
+	statusLogs.GET("/:id", statusLogController.GetByID)
+	statusLogs.PUT("/:id", statusLogController.Update)
+	statusLogs.DELETE("/:id", statusLogController.Delete)
 }
