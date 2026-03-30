@@ -41,3 +41,4 @@ backend/schema.md
 backend/query.sql
 backend/app
 tmp/
+backend/tmp/main

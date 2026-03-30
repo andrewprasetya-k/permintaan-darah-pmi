@@ -18,7 +18,7 @@ func RegisterAPIRoutes(
 ) {
 	api := r.Group("/api")
 
-	admins := api.Group("/admins")
+	admins := api.Group("/admin")
 	admins.POST("", adminController.Create)
 	admins.GET("", adminController.GetAll)
 	admins.GET("/:id", adminController.GetByID)
