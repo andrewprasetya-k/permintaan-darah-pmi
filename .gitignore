@@ -38,3 +38,4 @@ Thumbs.db
 # Node modules (if any frontend in monorepo)
 node_modules/
 backend/schema.md
+backend/query.sql
