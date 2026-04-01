@@ -47,11 +47,10 @@ func (r *komponenDarahRepository) GetAll(limit, offset int) ([]models.KomponenDa
 	}
 
 	var list []models.KomponenDarah
-	err := r.db.Limit(limit).Offset(offset).Find(&list).Error
+	err := r.db.Order("kom_id asc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
-
 	return list, nil
 }
 

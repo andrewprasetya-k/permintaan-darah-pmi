@@ -45,7 +45,7 @@ func (r *adminRepository) GetAll(limit, offset int) ([]models.Admin, error) {
 	}
 
 	var list []models.Admin
-	err := r.db.Limit(limit).Offset(offset).Find(&list).Error
+	err := r.db.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}

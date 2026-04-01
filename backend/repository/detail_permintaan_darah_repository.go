@@ -45,7 +45,7 @@ func (r *detailPermintaanDarahRepository) GetAll(limit, offset int) ([]models.De
 	}
 
 	var list []models.DetailPermintaanDarah
-	err := r.db.Limit(limit).Offset(offset).Find(&list).Error
+	err := r.db.Order("updated_at asc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}

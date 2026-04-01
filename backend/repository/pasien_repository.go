@@ -45,7 +45,7 @@ func (r *pasienRepository) GetAll(limit, offset int) ([]models.Pasien, error) {
 	}
 
 	var list []models.Pasien
-	err := r.db.Limit(limit).Offset(offset).Find(&list).Error
+	err := r.db.Order("updated_at asc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
