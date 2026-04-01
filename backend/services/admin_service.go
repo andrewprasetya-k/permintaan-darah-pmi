@@ -4,6 +4,7 @@ import (
 	"backend/dto"
 	"backend/models"
 	"backend/repository"
+	"backend/utils"
 )
 
 type AdminService interface {
@@ -23,9 +24,13 @@ func NewAdminService(repo repository.AdminRepository) AdminService {
 }
 
 func (s *adminService) Create(req dto.CreateAdminRequest) (*dto.AdminResponse, error) {
+	hashedPassword, err := utils.HashPassword(req.AdminPassword)
+	if err != nil {
+		return nil, err
+	}
 	data := models.Admin{
 		AdminUsername: req.AdminUsername,
-		AdminPassword: req.AdminPassword,
+		AdminPassword: hashedPassword,
 		AdminNama:     req.AdminNama,
 		AdminEmail:    req.AdminEmail,
 		AdminRole:     req.AdminRole,

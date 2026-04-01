@@ -4,6 +4,7 @@ import (
 	"backend/dto"
 	"backend/models"
 	"backend/repository"
+	"backend/utils"
 )
 
 type RumahSakitService interface {
@@ -23,12 +24,16 @@ func NewRumahSakitService(repo repository.RumahSakitRepository) RumahSakitServic
 }
 
 func (s *rumahSakitService) Create(req dto.CreateRumahSakitRequest) (*dto.RumahSakitResponse, error) {
+	hashedPassword, err := utils.HashPassword(*req.RSPassword)
+	if err != nil {
+		return nil, err
+	}
 	data := models.RumahSakit{
 		RSNama:     req.RSNama,
 		RSNoTelp:   req.RSNoTelp,
 		RSAlamat:   req.RSAlamat,
 		RSEmail:    req.RSEmail,
-		RSPassword: *req.RSPassword,
+		RSPassword: hashedPassword,
 	}
 	if err := s.repo.Create(&data); err != nil {
 		return nil, err
