@@ -14,8 +14,12 @@ func RegisterAPIRoutes(
 	permintaanController *controllers.PermintaanDarahController,
 	detailController *controllers.DetailPermintaanDarahController,
 	statusLogController *controllers.StatusLogController,
+	dashboardController *controllers.DashboardController,
 ) {
 	api := r.Group("/api")
+
+	dashboard := api.Group("/dashboard")
+	dashboard.GET("/status-summary/:rumahSakitID", dashboardController.StatusSummary)
 
 	admins := api.Group("/admin")
 	admins.POST("", adminController.Create)
