@@ -6,7 +6,6 @@ import (
 )
 
 type CreateAdminRequest struct {
-	AdminID       string               `json:"adminId" binding:"required"`
 	AdminUsername string               `json:"adminUsername" binding:"required"`
 	AdminPassword string               `json:"adminPassword" binding:"required"`
 	AdminNama     string               `json:"adminName" binding:"required"`

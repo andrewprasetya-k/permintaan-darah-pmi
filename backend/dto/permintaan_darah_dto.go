@@ -6,7 +6,6 @@ import (
 )
 
 type CreatePermintaanDarahRequest struct {
-	PDID                 string                      `json:"permintaanDarahId" binding:"required"`
 	PDRsID               string                      `json:"rumahSakitId" binding:"required"`
 	
 	// Data Pasien

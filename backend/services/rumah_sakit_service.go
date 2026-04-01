@@ -24,7 +24,6 @@ func NewRumahSakitService(repo repository.RumahSakitRepository) RumahSakitServic
 
 func (s *rumahSakitService) Create(req dto.CreateRumahSakitRequest) (*dto.RumahSakitResponse, error) {
 	data := models.RumahSakit{
-		RSID:       req.RSID,
 		RSNama:     req.RSNama,
 		RSNoTelp:   req.RSNoTelp,
 		RSAlamat:   req.RSAlamat,

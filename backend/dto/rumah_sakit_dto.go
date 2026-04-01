@@ -3,7 +3,6 @@ package dto
 import "time"
 
 type CreateRumahSakitRequest struct {
-	RSID       string  `json:"rumahSakitId" binding:"required"`
 	RSNama     string  `json:"nama" binding:"required"`
 	RSNoTelp   string  `json:"nomorTelepon" binding:"required"`
 	RSAlamat   string  `json:"alamat" binding:"required"`

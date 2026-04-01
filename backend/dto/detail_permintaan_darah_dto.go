@@ -6,7 +6,6 @@ import (
 )
 
 type CreateDetailPermintaanDarahRequest struct {
-	DPDID            string               `json:"detailId" binding:"required"`
 	DPDPDID          string               `json:"permintaanDarahId" binding:"required"`
 	DPDKomID         int                  `json:"komponenDarahId" binding:"required"`
 	DPDGolonganDarah models.BloodTypeEnum `json:"golonganDarah" binding:"required,oneof=A B AB O"`

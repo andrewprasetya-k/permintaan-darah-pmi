@@ -24,7 +24,6 @@ func NewPermintaanDarahService(repo repository.PermintaanDarahRepository) Permin
 
 func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error) {
 	data := models.PermintaanDarah{
-		PDID:                req.PDID,
 		PDRsID:              req.PDRsID,
 		PDNamaPasien:        req.PDNamaPasien,
 		PDNoRM:              req.PDNoRM,

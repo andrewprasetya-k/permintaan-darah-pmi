@@ -24,7 +24,6 @@ func NewDetailPermintaanDarahService(repo repository.DetailPermintaanDarahReposi
 
 func (s *detailPermintaanDarahService) Create(req dto.CreateDetailPermintaanDarahRequest) (*dto.DetailPermintaanDarahResponse, error) {
 	data := models.DetailPermintaanDarah{
-		DPDID:            req.DPDID,
 		DPDPDID:          req.DPDPDID,
 		DPDKomID:         req.DPDKomID,
 		DPDGolonganDarah: req.DPDGolonganDarah,

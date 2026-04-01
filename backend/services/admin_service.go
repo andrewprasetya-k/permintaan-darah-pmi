@@ -24,7 +24,6 @@ func NewAdminService(repo repository.AdminRepository) AdminService {
 
 func (s *adminService) Create(req dto.CreateAdminRequest) (*dto.AdminResponse, error) {
 	data := models.Admin{
-		AdminID:       req.AdminID,
 		AdminUsername: req.AdminUsername,
 		AdminPassword: req.AdminPassword,
 		AdminNama:     req.AdminNama,

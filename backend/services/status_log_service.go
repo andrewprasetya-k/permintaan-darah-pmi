@@ -24,7 +24,6 @@ func NewStatusLogService(repo repository.StatusLogRepository) StatusLogService {
 
 func (s *statusLogService) Create(req dto.CreateStatusLogRequest) (*dto.StatusLogResponse, error) {
 	data := models.StatusLog{
-		LogID:       req.LogID,
 		LogPdID:     req.LogPdID,
 		LogAdminID:  req.LogAdminID,
 		LogStatusTo: req.LogStatusTo,

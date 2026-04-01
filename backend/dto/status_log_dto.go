@@ -6,7 +6,6 @@ import (
 )
 
 type CreateStatusLogRequest struct {
-	LogID       string                      `json:"logId" binding:"required"`
 	LogPdID     string                      `json:"permintaanDarahId" binding:"required"`
 	LogAdminID  string                      `json:"adminId" binding:"required"`
 	LogStatusTo models.PermintaanStatusEnum `json:"statusTo" binding:"required,oneof=diterima diproses bisa_diambil selesai dibatalkan"`
