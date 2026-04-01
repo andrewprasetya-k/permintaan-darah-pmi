@@ -31,6 +31,7 @@ func main() {
 	permintaanRepo := repository.NewPermintaanDarahRepository(db)
 	detailRepo := repository.NewDetailPermintaanDarahRepository(db)
 	statusLogRepo := repository.NewStatusLogRepository(db)
+	dashboardRepo := repository.NewDashboardRepository(db)
 
 	// service initialization
 	adminSvc := services.NewAdminService(adminRepo)
@@ -39,6 +40,7 @@ func main() {
 	permintaanSvc := services.NewPermintaanDarahService(permintaanRepo)
 	detailSvc := services.NewDetailPermintaanDarahService(detailRepo)
 	statusLogSvc := services.NewStatusLogService(statusLogRepo)
+	dashboardSvc := services.NewDashboardService(dashboardRepo)
 
 	// controller initialization
 	adminCtl := controllers.NewAdminController(adminSvc)
@@ -47,6 +49,7 @@ func main() {
 	permintaanCtl := controllers.NewPermintaanDarahController(permintaanSvc)
 	detailCtl := controllers.NewDetailPermintaanDarahController(detailSvc)
 	statusLogCtl := controllers.NewStatusLogController(statusLogSvc)
+	dashboardCtl := controllers.NewDashboardController(dashboardSvc)
 
 	routes.RegisterAPIRoutes(
 		r,
@@ -56,6 +59,7 @@ func main() {
 		permintaanCtl,
 		detailCtl,
 		statusLogCtl,
+		dashboardCtl,
 	)
 
 	r.GET("/health", func(c *gin.Context) {

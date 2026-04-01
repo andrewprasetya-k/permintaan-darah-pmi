@@ -10,13 +10,13 @@ type dashboardService struct {
 	repo repository.DashboardRepository
 }
 
-func NewDashboardService() DashboardService {
-	return &dashboardService{}
+func NewDashboardService(repo repository.DashboardRepository) DashboardService {
+	return &dashboardService{repo: repo}
 }
 
 func (s *dashboardService) StatusSummary(rumahSakitID string) ([]int, error) {
 	status := []int{0, 0, 0, 0, 0}
-	sum,err := s.repo.StatusSummary(rumahSakitID)
+	sum, err := s.repo.StatusSummary(rumahSakitID)
 	if err != nil {
 		status = []int{0, 0, 0, 0, 0}
 		return status, err
