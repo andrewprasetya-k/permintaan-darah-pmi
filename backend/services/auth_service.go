@@ -3,6 +3,7 @@ package services
 import (
 	"backend/dto"
 	"backend/repository"
+	"backend/utils"
 	"errors"
 )
 
@@ -25,7 +26,7 @@ func (s *authService) AdminLogin(req dto.LoginRequest) (*dto.LoginResponse, erro
 	if err != nil {
 		return nil, err
 	}
-	if admin.AdminPassword != req.Password {
+	if !utils.ValidatePassword(admin.AdminPassword, req.Password) {
 		return nil, errors.New("invalid credentials")
 	}
 	resp := dto.LoginResponse{
@@ -39,7 +40,7 @@ func (s *authService) RumahSakitLogin(req dto.LoginRequest) (*dto.LoginResponse,
 	if err != nil {
 		return nil, err
 	}
-	if rs.RSPassword != req.Password {
+	if !utils.ValidatePassword(rs.RSPassword, req.Password) {
 		return nil, errors.New("invalid credentials")
 	}
 	resp := dto.LoginResponse{
