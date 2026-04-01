@@ -10,6 +10,7 @@ type RumahSakitRepository interface {
 	Create(data *models.RumahSakit) error
 	GetByID(rsID string) (*models.RumahSakit, error)
 	GetAll(limit, offset int) ([]models.RumahSakit, error)
+	GetByUsername(username string) (*models.RumahSakit, error)
 	Update(data *models.RumahSakit) error
 	Delete(data *models.RumahSakit) error
 }
@@ -51,6 +52,15 @@ func (r *rumahSakitRepository) GetAll(limit, offset int) ([]models.RumahSakit, e
 	}
 
 	return list, nil
+}
+
+func (r *rumahSakitRepository) GetByUsername(username string) (*models.RumahSakit, error) {
+	var data models.RumahSakit
+	err := r.db.First(&data, "rs_username = ?", username).Error
+	if err != nil {
+		return nil, err
+	}
+	return &data, nil
 }
 
 func (r *rumahSakitRepository) Update(data *models.RumahSakit) error {

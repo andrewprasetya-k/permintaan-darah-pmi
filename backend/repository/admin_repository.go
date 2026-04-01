@@ -10,9 +10,11 @@ type AdminRepository interface {
 	Create(data *models.Admin) error
 	GetByID(adminID string) (*models.Admin, error)
 	GetAll(limit, offset int) ([]models.Admin, error)
+	GetByUsername(username string) (*models.Admin, error)
 	Update(data *models.Admin) error
 	Delete(data *models.Admin) error
 }
+
 
 type adminRepository struct {
 	db *gorm.DB
@@ -32,7 +34,7 @@ func (r *adminRepository) GetByID(adminID string) (*models.Admin, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	
 	return &data, nil
 }
 
@@ -43,14 +45,24 @@ func (r *adminRepository) GetAll(limit, offset int) ([]models.Admin, error) {
 	if offset < 0 {
 		offset = 0
 	}
-
+	
 	var list []models.Admin
 	err := r.db.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
-
+	
 	return list, nil
+}
+
+func (a *adminRepository) GetByUsername(username string) (*models.Admin, error) {
+	var data models.Admin
+	err := a.db.First(&data, "admin_username = ?", username).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
 }
 
 func (r *adminRepository) Update(data *models.Admin) error {
