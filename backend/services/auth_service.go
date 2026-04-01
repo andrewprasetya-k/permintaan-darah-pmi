@@ -29,8 +29,12 @@ func (s *authService) AdminLogin(req dto.LoginRequest) (*dto.LoginResponse, erro
 	if !utils.ValidatePassword(admin.AdminPassword, req.Password) {
 		return nil, errors.New("invalid credentials")
 	}
+	token, err := utils.GenerateJWT(admin.AdminID, admin.AdminUsername, string(admin.AdminRole))
+	if err != nil {
+		return nil, err
+	}
 	resp := dto.LoginResponse{
-		Token: "dummy-token",
+		Token: token,
 	}
 	return &resp, nil
 }
@@ -43,8 +47,12 @@ func (s *authService) RumahSakitLogin(req dto.LoginRequest) (*dto.LoginResponse,
 	if !utils.ValidatePassword(rs.RSPassword, req.Password) {
 		return nil, errors.New("invalid credentials")
 	}
+	token, err := utils.GenerateJWT(rs.RSID, rs.RSUsername, "rumah_sakit")
+	if err != nil {
+		return nil, err
+	}
 	resp := dto.LoginResponse{
-		Token: "dummy-token",
+		Token: token,
 	}
 	return &resp, nil
 }
