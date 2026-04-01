@@ -27,7 +27,6 @@ func main() {
 	// repository initialization
 	adminRepo := repository.NewAdminRepository(db)
 	rumahSakitRepo := repository.NewRumahSakitRepository(db)
-	pasienRepo := repository.NewPasienRepository(db)
 	komponenRepo := repository.NewKomponenDarahRepository(db)
 	permintaanRepo := repository.NewPermintaanDarahRepository(db)
 	detailRepo := repository.NewDetailPermintaanDarahRepository(db)
@@ -36,7 +35,6 @@ func main() {
 	// service initialization
 	adminSvc := services.NewAdminService(adminRepo)
 	rumahSakitSvc := services.NewRumahSakitService(rumahSakitRepo)
-	pasienSvc := services.NewPasienService(pasienRepo)
 	komponenSvc := services.NewKomponenDarahService(komponenRepo)
 	permintaanSvc := services.NewPermintaanDarahService(permintaanRepo)
 	detailSvc := services.NewDetailPermintaanDarahService(detailRepo)
@@ -45,7 +43,6 @@ func main() {
 	// controller initialization
 	adminCtl := controllers.NewAdminController(adminSvc)
 	rumahSakitCtl := controllers.NewRumahSakitController(rumahSakitSvc)
-	pasienCtl := controllers.NewPasienController(pasienSvc)
 	komponenCtl := controllers.NewKomponenDarahController(komponenSvc)
 	permintaanCtl := controllers.NewPermintaanDarahController(permintaanSvc)
 	detailCtl := controllers.NewDetailPermintaanDarahController(detailSvc)
@@ -55,7 +52,6 @@ func main() {
 		r,
 		adminCtl,
 		rumahSakitCtl,
-		pasienCtl,
 		komponenCtl,
 		permintaanCtl,
 		detailCtl,

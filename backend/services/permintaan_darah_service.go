@@ -24,12 +24,23 @@ func NewPermintaanDarahService(repo repository.PermintaanDarahRepository) Permin
 
 func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error) {
 	data := models.PermintaanDarah{
-		PDID:            req.PDID,
-		PDRsID:          req.PDRsID,
-		PDPsnID:         req.PDPsnID,
-		PDStatus:        req.PDStatus,
-		PDCancelReason:  req.PDCancelReason,
-		PDTglPermintaan: req.PDTglPermintaan,
+		PDID:                req.PDID,
+		PDRsID:              req.PDRsID,
+		PDNamaPasien:        req.PDNamaPasien,
+		PDNoRM:              req.PDNoRM,
+		PDTempatLahir:       req.PDTempatLahir,
+		PDTglLahir:          req.PDTglLahir,
+		PDGender:            req.PDGender,
+		PDGolDarah:          req.PDGolDarah,
+		PDRhesus:            req.PDRhesus,
+		PDHemoglobin:        req.PDHemoglobin,
+		PDRuangBagianKelas:  req.PDRuangBagianKelas,
+		PDPernahTransfusi:   req.PDPernahTransfusi,
+		PDIndikasiTransfusi: req.PDIndikasiTransfusi,
+		PDPernahHamil:       req.PDPernahHamil,
+		PDStatus:            req.PDStatus,
+		PDCancelReason:      req.PDCancelReason,
+		PDTglPermintaan:     req.PDTglPermintaan,
 	}
 	if err := s.repo.Create(&data); err != nil {
 		return nil, err
@@ -65,7 +76,18 @@ func (s *permintaanDarahService) Update(id string, req dto.UpdatePermintaanDarah
 		return nil, err
 	}
 	data.PDRsID = req.PDRsID
-	data.PDPsnID = req.PDPsnID
+	data.PDNamaPasien = req.PDNamaPasien
+	data.PDNoRM = req.PDNoRM
+	data.PDTempatLahir = req.PDTempatLahir
+	data.PDTglLahir = req.PDTglLahir
+	data.PDGender = req.PDGender
+	data.PDGolDarah = req.PDGolDarah
+	data.PDRhesus = req.PDRhesus
+	data.PDHemoglobin = req.PDHemoglobin
+	data.PDRuangBagianKelas = req.PDRuangBagianKelas
+	data.PDPernahTransfusi = req.PDPernahTransfusi
+	data.PDIndikasiTransfusi = req.PDIndikasiTransfusi
+	data.PDPernahHamil = req.PDPernahHamil
 	data.PDStatus = req.PDStatus
 	data.PDCancelReason = req.PDCancelReason
 	data.PDTglPermintaan = req.PDTglPermintaan
@@ -87,14 +109,25 @@ func (s *permintaanDarahService) Delete(id string) error {
 
 func mapPermintaanToResponse(data models.PermintaanDarah) dto.PermintaanDarahResponse {
 	return dto.PermintaanDarahResponse{
-		PDID:            data.PDID,
-		PDRsID:          data.PDRsID,
-		PDPsnID:         data.PDPsnID,
-		PDStatus:        data.PDStatus,
-		PDCancelReason:  data.PDCancelReason,
-		PDTglPermintaan: data.PDTglPermintaan,
-		CreatedAt:       data.CreatedAt,
-		UpdatedAt:       data.UpdatedAt,
-		DeletedAt:       data.DeletedAt,
+		PDID:                data.PDID,
+		PDRsID:              data.PDRsID,
+		PDNamaPasien:        data.PDNamaPasien,
+		PDNoRM:              data.PDNoRM,
+		PDTempatLahir:       data.PDTempatLahir,
+		PDTglLahir:          data.PDTglLahir,
+		PDGender:            data.PDGender,
+		PDGolDarah:          data.PDGolDarah,
+		PDRhesus:            data.PDRhesus,
+		PDHemoglobin:        data.PDHemoglobin,
+		PDRuangBagianKelas:  data.PDRuangBagianKelas,
+		PDPernahTransfusi:   data.PDPernahTransfusi,
+		PDIndikasiTransfusi: data.PDIndikasiTransfusi,
+		PDPernahHamil:       data.PDPernahHamil,
+		PDStatus:            data.PDStatus,
+		PDCancelReason:      data.PDCancelReason,
+		PDTglPermintaan:     data.PDTglPermintaan,
+		CreatedAt:           data.CreatedAt,
+		UpdatedAt:           data.UpdatedAt,
+		DeletedAt:           data.DeletedAt,
 	}
 }

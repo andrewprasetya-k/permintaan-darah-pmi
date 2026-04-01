@@ -10,7 +10,6 @@ func RegisterAPIRoutes(
 	r *gin.Engine,
 	adminController *controllers.AdminController,
 	rumahSakitController *controllers.RumahSakitController,
-	pasienController *controllers.PasienController,
 	komponenController *controllers.KomponenDarahController,
 	permintaanController *controllers.PermintaanDarahController,
 	detailController *controllers.DetailPermintaanDarahController,
@@ -31,13 +30,6 @@ func RegisterAPIRoutes(
 	rumahSakit.GET("/:id", rumahSakitController.GetByID)
 	rumahSakit.PUT("/:id", rumahSakitController.Update)
 	rumahSakit.DELETE("/:id", rumahSakitController.Delete)
-
-	pasien := api.Group("/pasien")
-	pasien.POST("", pasienController.Create)
-	pasien.GET("", pasienController.GetAll)
-	pasien.GET("/:id", pasienController.GetByID)
-	pasien.PUT("/:id", pasienController.Update)
-	pasien.DELETE("/:id", pasienController.Delete)
 
 	komponen := api.Group("/komponen-darah")
 	komponen.POST("", komponenController.Create)
