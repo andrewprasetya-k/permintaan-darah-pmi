@@ -29,7 +29,7 @@ func (s *rumahSakitService) Create(req dto.CreateRumahSakitRequest) (*dto.RumahS
 		RSNoTelp:   req.RSNoTelp,
 		RSAlamat:   req.RSAlamat,
 		RSEmail:    req.RSEmail,
-		RSPassword: req.RSPassword,
+		RSPassword: *req.RSPassword,
 	}
 	if err := s.repo.Create(&data); err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (s *rumahSakitService) Update(id string, req dto.UpdateRumahSakitRequest) (
 	data.RSNoTelp = req.RSNoTelp
 	data.RSAlamat = req.RSAlamat
 	data.RSEmail = req.RSEmail
-	data.RSPassword = req.RSPassword
+	data.RSPassword = *req.RSPassword
 
 	if err := s.repo.Update(data); err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func mapRumahSakitToResponse(data models.RumahSakit) dto.RumahSakitResponse {
 		RSNoTelp:   data.RSNoTelp,
 		RSAlamat:   data.RSAlamat,
 		RSEmail:    data.RSEmail,
-		RSPassword: data.RSPassword,
+		RSPassword: &data.RSPassword,
 		CreatedAt:  data.CreatedAt,
 		UpdatedAt:  data.UpdatedAt,
 		DeletedAt:  data.DeletedAt,
