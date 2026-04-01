@@ -1,17 +1,89 @@
 package utils
 
-import "backend/dto"
+import (
+	"backend/dto"
+	"errors"
+	"net/http"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
+)
+
 
 func GenerateJWT(userID, username, role string) (string, error) {
-	// Implement JWT generation logic here
-	// You can use a library like github.com/dgrijalva/jwt-go to create the token
-	// Make sure to include the userID, username, and role in the token claims
-	return "", nil
+	payload := jwt.MapClaims{
+		"user_id": userID,
+		"username": username,
+		"role":     role,
+		"exp":     time.Now().Add(24 * time.Hour).Unix(),
+	}
+
+	secretKey := os.Getenv("JWT_SECRET")
+	if secretKey == "" {
+		return "", errors.New("server configuration error")
+	}
+
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
+	tokenString, err := jwtToken.SignedString([]byte(secretKey))
+	if err != nil {
+		return "",err
+	}
+	return tokenString, nil
 }
 
-func ValidateJWT(tokenString string) (dto.TokenPayload, error) {
-	// Implement JWT validation logic here
-	// You can use a library like github.com/dgrijalva/jwt-go to parse and validate the token
-	// Return the TokenPayload if the token is valid, or an error if it's not
-	return dto.TokenPayload{}, nil
+func ValidateJWT(tokenString string) (*dto.TokenPayload, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+
+	if err != nil || !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, errors.New("invalid token claims")
+	}
+
+	payload := &dto.TokenPayload{
+		UserID:   claims["user_id"].(string),
+		Username: claims["username"].(string),
+		Role:     claims["role"].(string),
+	}
+
+	return payload, nil
+}
+
+func JWTMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.Abort()
+			return
+		}
+
+		parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
+			c.Abort()
+			return
+		}
+
+		payload, err := ValidateJWT(parts[1])
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.Abort()
+			return
+		}
+
+		c.Set("user", payload)
+		c.Next()
+	}
 }
