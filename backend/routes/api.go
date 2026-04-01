@@ -45,6 +45,8 @@ func RegisterAPIRoutes(
 	komponen.GET("/:id", komponenController.GetByID)
 	komponen.PUT("/:id", komponenController.Update)
 	komponen.DELETE("/:id", komponenController.Delete)
+	komponen.PUT("/activate/:id", komponenController.Activate)
+	komponen.PUT("/deactivate/:id", komponenController.Deactivate)
 
 	permintaan := api.Group("/permintaan-darah")
 	permintaan.POST("", permintaanController.Create)

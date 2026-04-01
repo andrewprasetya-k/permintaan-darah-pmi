@@ -12,6 +12,8 @@ type KomponenDarahRepository interface {
 	GetAll(limit, offset int) ([]models.KomponenDarah, error)
 	Update(data *models.KomponenDarah) error
 	Delete(data *models.KomponenDarah) error
+	ActivateKomponenDarah(komID int) (*models.KomponenDarah, error)
+	DeactivateKomponenDarah(komID int) (*models.KomponenDarah, error)
 }
 
 type komponenDarahRepository struct {
@@ -59,4 +61,34 @@ func (r *komponenDarahRepository) Update(data *models.KomponenDarah) error {
 
 func (r *komponenDarahRepository) Delete(data *models.KomponenDarah) error {
 	return r.db.Delete(data).Error
+}
+
+func (r *komponenDarahRepository) ActivateKomponenDarah(komID int) (*models.KomponenDarah, error) {
+	var data models.KomponenDarah
+	err := r.db.Model(&data).Where("kom_id = ?", komID).Update("is_active", true).Error
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.db.First(&data, "kom_id = ?", komID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}
+
+func (r *komponenDarahRepository) DeactivateKomponenDarah(komID int) (*models.KomponenDarah, error) {
+	var data models.KomponenDarah
+	err := r.db.Model(&data).Where("kom_id = ?", komID).Update("is_active", false).Error
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.db.First(&data, "kom_id = ?", komID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
 }

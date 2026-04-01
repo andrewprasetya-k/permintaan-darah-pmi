@@ -12,6 +12,8 @@ type KomponenDarahService interface {
 	GetAll(limit, offset int) ([]dto.KomponenDarahResponse, error)
 	Update(id int, req dto.UpdateKomponenDarahRequest) (*dto.KomponenDarahResponse, error)
 	Delete(id int) error
+	ActivateKomponenDarah(id int)(*dto.KomponenDarahResponse, error)
+	DeactivateKomponenDarah(id int)(*dto.KomponenDarahResponse, error)
 }
 
 type komponenDarahService struct {
@@ -78,6 +80,24 @@ func (s *komponenDarahService) Delete(id int) error {
 		return err
 	}
 	return s.repo.Delete(data)
+}
+
+func (s *komponenDarahService) ActivateKomponenDarah(id int) (*dto.KomponenDarahResponse, error) {
+	data, err := s.repo.ActivateKomponenDarah(id)
+	if err != nil {
+		return nil, err
+	}
+	resp := mapKomponenToResponse(*data)
+	return &resp, nil
+}
+
+func (s *komponenDarahService) DeactivateKomponenDarah(id int) (*dto.KomponenDarahResponse, error) {
+	data, err := s.repo.DeactivateKomponenDarah(id)
+	if err != nil {
+		return nil, err
+	}
+	resp := mapKomponenToResponse(*data)
+	return &resp, nil
 }
 
 func mapKomponenToResponse(data models.KomponenDarah) dto.KomponenDarahResponse {
