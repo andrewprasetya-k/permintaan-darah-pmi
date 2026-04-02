@@ -83,3 +83,10 @@ type PermintaanDarahResponse struct {
 	UpdatedAt            time.Time                   `json:"updatedAt"`
 	DeletedAt            *time.Time                  `json:"deletedAt,omitempty"`
 }
+
+type PermintaanDarahFilters struct {
+	Status   *string
+	RsID     *string
+	Gender   *string
+	GolDarah *string
+}

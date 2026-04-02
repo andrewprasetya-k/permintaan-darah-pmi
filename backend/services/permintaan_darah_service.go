@@ -9,7 +9,7 @@ import (
 type PermintaanDarahService interface {
 	Create(req dto.CreatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error)
 	GetByID(id string) (*dto.PermintaanDarahResponse, error)
-	GetAll(limit, offset int) ([]dto.PermintaanDarahResponse, error)
+	GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]dto.PermintaanDarahResponse, error)
 	GetByRsID(rsID string, limit, offset int) ([]dto.PermintaanDarahResponse, error)
 	Update(id string, req dto.UpdatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error)
 	Delete(id string) error
@@ -58,8 +58,8 @@ func (s *permintaanDarahService) GetByID(id string) (*dto.PermintaanDarahRespons
 	return &resp, nil
 }
 
-func (s *permintaanDarahService) GetAll(limit, offset int) ([]dto.PermintaanDarahResponse, error) {
-	list, err := s.repo.GetAll(limit, offset)
+func (s *permintaanDarahService) GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]dto.PermintaanDarahResponse, error) {
+	list, err := s.repo.GetAll(filters, limit, offset)
 	if err != nil {
 		return nil, err
 	}

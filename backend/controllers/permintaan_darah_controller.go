@@ -41,7 +41,22 @@ func (ctl *PermintaanDarahController) GetByID(c *gin.Context) {
 
 func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 	limit, offset := parsePagination(c)
-	resp, err := ctl.service.GetAll(limit, offset)
+	
+	filters := &dto.PermintaanDarahFilters{}
+	if status := c.Query("status"); status != "" {
+		filters.Status = &status
+	}
+	if rsID := c.Query("rs_id"); rsID != "" {
+		filters.RsID = &rsID
+	}
+	if gender := c.Query("gender"); gender != "" {
+		filters.Gender = &gender
+	}
+	if golDarah := c.Query("gol_darah"); golDarah != "" {
+		filters.GolDarah = &golDarah
+	}
+	
+	resp, err := ctl.service.GetAll(filters, limit, offset)
 	if err != nil {
 		handleError(c, err)
 		return

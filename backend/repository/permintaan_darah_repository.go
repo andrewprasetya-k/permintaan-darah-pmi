@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"backend/dto"
 	"backend/models"
 
 	"gorm.io/gorm"
@@ -9,7 +10,7 @@ import (
 type PermintaanDarahRepository interface {
 	Create(data *models.PermintaanDarah) error
 	GetByID(pdID string) (*models.PermintaanDarah, error)
-	GetAll(limit, offset int) ([]models.PermintaanDarah, error)
+	GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]models.PermintaanDarah, error)
 	GetByRsID(rsID string, limit, offset int) ([]models.PermintaanDarah, error)
 	Update(data *models.PermintaanDarah) error
 	Delete(data *models.PermintaanDarah) error
@@ -39,7 +40,7 @@ func (r *permintaanDarahRepository) GetByID(pdID string) (*models.PermintaanDara
 	return &data, nil
 }
 
-func (r *permintaanDarahRepository) GetAll(limit, offset int) ([]models.PermintaanDarah, error) {
+func (r *permintaanDarahRepository) GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]models.PermintaanDarah, error) {
 	if limit <= 0 {
 		limit = 20
 	}
@@ -47,8 +48,24 @@ func (r *permintaanDarahRepository) GetAll(limit, offset int) ([]models.Perminta
 		offset = 0
 	}
 
+	query := r.db
+	if filters != nil {
+		if filters.Status != nil {
+			query = query.Where("pd_status = ?", *filters.Status)
+		}
+		if filters.RsID != nil {
+			query = query.Where("pd_rs_id = ?", *filters.RsID)
+		}
+		if filters.Gender != nil {
+			query = query.Where("pd_gender = ?", *filters.Gender)
+		}
+		if filters.GolDarah != nil {
+			query = query.Where("pd_gol_darah = ?", *filters.GolDarah)
+		}
+	}
+
 	var list []models.PermintaanDarah
-	err := r.db.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
+	err := query.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
