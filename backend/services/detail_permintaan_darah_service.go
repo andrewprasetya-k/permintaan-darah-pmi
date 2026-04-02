@@ -34,7 +34,14 @@ func (s *detailPermintaanDarahService) Create(req dto.CreateDetailPermintaanDara
 	if err := s.repo.Create(&data); err != nil {
 		return nil, err
 	}
-	resp := mapDetailPermintaanToResponse(data)
+	
+	// Fetch ulang untuk load KomponenDarah
+	fetchedData, err := s.repo.GetByID(data.DPDID)
+	if err != nil {
+		return nil, err
+	}
+	
+	resp := mapDetailPermintaanToResponse(*fetchedData)
 	return &resp, nil
 }
 
@@ -87,10 +94,7 @@ func (s *detailPermintaanDarahService) Delete(id int) error {
 }
 
 func mapDetailPermintaanToResponse(data models.DetailPermintaanDarah) dto.DetailPermintaanDarahResponse {
-	komponenNama := ""
-	if data.KomponenDarah.KomID != 0 {
-		komponenNama = data.KomponenDarah.KomNama
-	}
+	komponenNama := data.KomponenDarah.KomNama
 
 	return dto.DetailPermintaanDarahResponse{
 		DPDID:            data.DPDID,
