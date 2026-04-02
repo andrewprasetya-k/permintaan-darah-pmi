@@ -4,6 +4,7 @@ import (
 	"backend/dto"
 	"backend/models"
 	"backend/repository"
+	"errors"
 )
 
 type PermintaanDarahService interface {
@@ -13,6 +14,7 @@ type PermintaanDarahService interface {
 	GetByRsID(rsID string, limit, offset int) ([]dto.PermintaanDarahResponse, error)
 	Update(id string, req dto.UpdatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error)
 	Delete(id string) error
+
 	UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string) (*dto.PermintaanDarahResponse, error)
 }
 
@@ -127,10 +129,12 @@ func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.Perm
 	}
 
 	data.PDStatus = newStatus
-	if newStatus == "dibatalkan" && reason != nil {
+	if newStatus == "dibatalkan" && reason == nil {
+		return nil, errors.New("reason is required")
+	} else if newStatus == "dibatalkan" && reason != nil {
 		data.PDCancelReason = reason
 	}
-
+	
 	if err := s.repo.Update(data); err != nil {
 		return nil, err
 	}

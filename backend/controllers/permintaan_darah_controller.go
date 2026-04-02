@@ -109,17 +109,3 @@ func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true})
 }
-
-func (ctl *PermintaanDarahController) CancelPermintaan(c *gin.Context) {
-	var req dto.UpdatePermintaanStatusRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
-	}
-	_, err := ctl.service.UpdateStatus(c.Param("id"), "dibatalkan", req.Reason)
-	if err != nil {
-		handleError(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"success": true})
-}
