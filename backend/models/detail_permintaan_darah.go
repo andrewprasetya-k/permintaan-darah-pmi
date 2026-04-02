@@ -3,7 +3,7 @@ package models
 import "time"
 
 type DetailPermintaanDarah struct {
-	DPDID            string        `gorm:"column:dpd_id;primaryKey" json:"detailId"`
+	DPDID            int           `gorm:"column:dpd_id;primaryKey;autoIncrement" json:"detailId"`
 	DPDPDID          string        `gorm:"column:dpd_pd_id" json:"permintaanDarahId"`
 	DPDKomID         int           `gorm:"column:dpd_kom_id" json:"komponenDarahId"`
 	DPDGolonganDarah BloodTypeEnum `gorm:"column:dpd_golongan_darah" json:"golonganDarah"`

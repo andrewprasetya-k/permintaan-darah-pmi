@@ -8,10 +8,10 @@ import (
 
 type DetailPermintaanDarahService interface {
 	Create(req dto.CreateDetailPermintaanDarahRequest) (*dto.DetailPermintaanDarahResponse, error)
-	GetByID(id string) (*dto.DetailPermintaanDarahResponse, error)
+	GetByID(id int) (*dto.DetailPermintaanDarahResponse, error)
 	GetAll(limit, offset int) ([]dto.DetailPermintaanDarahResponse, error)
-	Update(id string, req dto.UpdateDetailPermintaanDarahRequest) (*dto.DetailPermintaanDarahResponse, error)
-	Delete(id string) error
+	Update(id int, req dto.UpdateDetailPermintaanDarahRequest) (*dto.DetailPermintaanDarahResponse, error)
+	Delete(id int) error
 }
 
 type detailPermintaanDarahService struct {
@@ -38,7 +38,7 @@ func (s *detailPermintaanDarahService) Create(req dto.CreateDetailPermintaanDara
 	return &resp, nil
 }
 
-func (s *detailPermintaanDarahService) GetByID(id string) (*dto.DetailPermintaanDarahResponse, error) {
+func (s *detailPermintaanDarahService) GetByID(id int) (*dto.DetailPermintaanDarahResponse, error) {
 	data, err := s.repo.GetByID(id)
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (s *detailPermintaanDarahService) GetAll(limit, offset int) ([]dto.DetailPe
 	return result, nil
 }
 
-func (s *detailPermintaanDarahService) Update(id string, req dto.UpdateDetailPermintaanDarahRequest) (*dto.DetailPermintaanDarahResponse, error) {
+func (s *detailPermintaanDarahService) Update(id int, req dto.UpdateDetailPermintaanDarahRequest) (*dto.DetailPermintaanDarahResponse, error) {
 	data, err := s.repo.GetByID(id)
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (s *detailPermintaanDarahService) Update(id string, req dto.UpdateDetailPer
 	return &resp, nil
 }
 
-func (s *detailPermintaanDarahService) Delete(id string) error {
+func (s *detailPermintaanDarahService) Delete(id int) error {
 	data, err := s.repo.GetByID(id)
 	if err != nil {
 		return err

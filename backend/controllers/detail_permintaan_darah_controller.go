@@ -4,6 +4,7 @@ import (
 	"backend/dto"
 	"backend/services"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,7 +32,12 @@ func (ctl *DetailPermintaanDarahController) Create(c *gin.Context) {
 }
 
 func (ctl *DetailPermintaanDarahController) GetByID(c *gin.Context) {
-	resp, err := ctl.service.GetByID(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid id"})
+		return
+	}
+	resp, err := ctl.service.GetByID(id)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -50,12 +56,17 @@ func (ctl *DetailPermintaanDarahController) GetAll(c *gin.Context) {
 }
 
 func (ctl *DetailPermintaanDarahController) Update(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid id"})
+		return
+	}
 	var req dto.UpdateDetailPermintaanDarahRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	resp, err := ctl.service.Update(c.Param("id"), req)
+	resp, err := ctl.service.Update(id, req)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -64,7 +75,12 @@ func (ctl *DetailPermintaanDarahController) Update(c *gin.Context) {
 }
 
 func (ctl *DetailPermintaanDarahController) Delete(c *gin.Context) {
-	if err := ctl.service.Delete(c.Param("id")); err != nil {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid id"})
+		return
+	}
+	if err := ctl.service.Delete(id); err != nil {
 		handleError(c, err)
 		return
 	}

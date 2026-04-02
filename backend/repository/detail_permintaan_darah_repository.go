@@ -8,7 +8,7 @@ import (
 
 type DetailPermintaanDarahRepository interface {
 	Create(data *models.DetailPermintaanDarah) error
-	GetByID(dpdID string) (*models.DetailPermintaanDarah, error)
+	GetByID(dpdID int) (*models.DetailPermintaanDarah, error)
 	GetAll(limit, offset int) ([]models.DetailPermintaanDarah, error)
 	Update(data *models.DetailPermintaanDarah) error
 	Delete(data *models.DetailPermintaanDarah) error
@@ -26,7 +26,7 @@ func (r *detailPermintaanDarahRepository) Create(data *models.DetailPermintaanDa
 	return r.db.Create(data).Error
 }
 
-func (r *detailPermintaanDarahRepository) GetByID(dpdID string) (*models.DetailPermintaanDarah, error) {
+func (r *detailPermintaanDarahRepository) GetByID(dpdID int) (*models.DetailPermintaanDarah, error) {
 	var data models.DetailPermintaanDarah
 	err := r.db.First(&data, "dpd_id = ?", dpdID).Error
 	if err != nil {
@@ -45,7 +45,7 @@ func (r *detailPermintaanDarahRepository) GetAll(limit, offset int) ([]models.De
 	}
 
 	var list []models.DetailPermintaanDarah
-	err := r.db.Order("updated_at asc").Limit(limit).Offset(offset).Find(&list).Error
+	err := r.db.Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}

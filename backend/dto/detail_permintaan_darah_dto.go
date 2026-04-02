@@ -24,7 +24,7 @@ type UpdateDetailPermintaanDarahRequest struct {
 }
 
 type DetailPermintaanDarahResponse struct {
-	DPDID            string               `json:"detailId"`
+	DPDID            int                  `json:"detailId"`
 	DPDPDID          string               `json:"permintaanDarahId"`
 	DPDKomID         int                  `json:"komponenDarahId"`
 	DPDGolonganDarah models.BloodTypeEnum `json:"golonganDarah"`
