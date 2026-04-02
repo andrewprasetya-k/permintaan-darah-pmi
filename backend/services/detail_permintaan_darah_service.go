@@ -87,10 +87,15 @@ func (s *detailPermintaanDarahService) Delete(id int) error {
 }
 
 func mapDetailPermintaanToResponse(data models.DetailPermintaanDarah) dto.DetailPermintaanDarahResponse {
+	komponenNama := ""
+	if data.KomponenDarah.KomID != 0 {
+		komponenNama = data.KomponenDarah.KomNama
+	}
+
 	return dto.DetailPermintaanDarahResponse{
 		DPDID:            data.DPDID,
 		DPDPDID:          data.DPDPDID,
-		DPDKomID:         data.DPDKomID,
+		KomponenNama:     komponenNama,
 		DPDGolonganDarah: data.DPDGolonganDarah,
 		DPDRhesus:        data.DPDRhesus,
 		DPDJmlKantong:    data.DPDJmlKantong,

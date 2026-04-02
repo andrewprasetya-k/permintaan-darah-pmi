@@ -28,7 +28,7 @@ func (r *detailPermintaanDarahRepository) Create(data *models.DetailPermintaanDa
 
 func (r *detailPermintaanDarahRepository) GetByID(dpdID int) (*models.DetailPermintaanDarah, error) {
 	var data models.DetailPermintaanDarah
-	err := r.db.First(&data, "dpd_id = ?", dpdID).Error
+	err := r.db.Preload("KomponenDarah").First(&data, "dpd_id = ?", dpdID).Error
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (r *detailPermintaanDarahRepository) GetAll(limit, offset int) ([]models.De
 	}
 
 	var list []models.DetailPermintaanDarah
-	err := r.db.Limit(limit).Offset(offset).Find(&list).Error
+	err := r.db.Preload("KomponenDarah").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}

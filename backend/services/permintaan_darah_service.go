@@ -153,7 +153,7 @@ func mapPermintaanToResponse(data models.PermintaanDarah) dto.PermintaanDarahRes
 		details = append(details, dto.DetailPermintaanDarahResponse{
 			DPDID:            d.DPDID,
 			DPDPDID:          d.DPDPDID,
-			DPDKomID:         d.DPDKomID,
+			KomponenNama:    d.KomponenDarah.KomNama,
 			DPDGolonganDarah: d.DPDGolonganDarah,
 			DPDRhesus:        d.DPDRhesus,
 			DPDJmlKantong:    d.DPDJmlKantong,

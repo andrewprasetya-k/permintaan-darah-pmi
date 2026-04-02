@@ -32,7 +32,7 @@ func (r *permintaanDarahRepository) Create(data *models.PermintaanDarah) error {
 
 func (r *permintaanDarahRepository) GetByID(pdID string) (*models.PermintaanDarah, error) {
 	var data models.PermintaanDarah
-	err := r.db.Preload("Details").First(&data, "pd_id = ?", pdID).Error
+	err := r.db.Preload("Details.KomponenDarah").First(&data, "pd_id = ?", pdID).Error
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (r *permintaanDarahRepository) GetAll(filters *dto.PermintaanDarahFilters, 
 	}
 
 	var list []models.PermintaanDarah
-	err := query.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
+	err := query.Preload("Details.KomponenDarah").Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
