@@ -10,6 +10,7 @@ type PermintaanDarahService interface {
 	Create(req dto.CreatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error)
 	GetByID(id string) (*dto.PermintaanDarahResponse, error)
 	GetAll(limit, offset int) ([]dto.PermintaanDarahResponse, error)
+	GetByRsID(rsID string, limit, offset int) ([]dto.PermintaanDarahResponse, error)
 	Update(id string, req dto.UpdatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error)
 	Delete(id string) error
 }
@@ -59,6 +60,18 @@ func (s *permintaanDarahService) GetByID(id string) (*dto.PermintaanDarahRespons
 
 func (s *permintaanDarahService) GetAll(limit, offset int) ([]dto.PermintaanDarahResponse, error) {
 	list, err := s.repo.GetAll(limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]dto.PermintaanDarahResponse, 0, len(list))
+	for _, item := range list {
+		result = append(result, mapPermintaanToResponse(item))
+	}
+	return result, nil
+}
+
+func (s *permintaanDarahService) GetByRsID(rsID string, limit, offset int) ([]dto.PermintaanDarahResponse, error) {
+	list, err := s.repo.GetByRsID(rsID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
