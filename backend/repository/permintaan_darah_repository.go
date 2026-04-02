@@ -14,6 +14,12 @@ type PermintaanDarahRepository interface {
 	GetByRsID(rsID string, limit, offset int) ([]models.PermintaanDarah, error)
 	Update(data *models.PermintaanDarah) error
 	Delete(data *models.PermintaanDarah) error
+
+	//approval permintaan darah
+	Proses(pdID string) error
+	BisaDiambil(pdID string) (bool, error)
+	Selesai(pdID string) error
+	Ditolak(pdID string, reason string) error
 }
 
 type permintaanDarahRepository struct {
@@ -96,4 +102,30 @@ func (r *permintaanDarahRepository) Update(data *models.PermintaanDarah) error {
 
 func (r *permintaanDarahRepository) Delete(data *models.PermintaanDarah) error {
 	return r.db.Delete(data).Error
+}
+
+
+//approval permintaan darah
+func (r *permintaanDarahRepository) Proses(pdID string) error {
+	return r.db.Model(&models.PermintaanDarah{}).Where("pd_id = ?", pdID).Update("pd_status", "proses").Error
+}
+
+func (r *permintaanDarahRepository) BisaDiambil(pdID string) (bool, error) {
+	var data models.PermintaanDarah
+	err := r.db.First(&data, "pd_id = ?", pdID).Error
+	if err != nil {
+		return false, err
+	}
+	return data.PDStatus == "proses", nil
+}
+
+func (r *permintaanDarahRepository) Selesai(pdID string) error {
+	return r.db.Model(&models.PermintaanDarah{}).Where("pd_id = ?", pdID).Update("pd_status", "selesai").Error
+}
+
+func (r *permintaanDarahRepository) Ditolak(pdID string, reason string) error {
+	return r.db.Model(&models.PermintaanDarah{}).Where("pd_id = ?", pdID).Updates(map[string]interface{}{
+		"pd_status":        "ditolak",
+		"pd_cancel_reason": reason,
+	}).Error
 }
