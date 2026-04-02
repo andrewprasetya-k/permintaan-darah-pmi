@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Admin struct {
-	AdminID       string        `gorm:"column:admin_id;primaryKey" json:"adminId"`
+	AdminID string `gorm:"column:admin_id;primaryKey;default:(-)" json:"adminId"`
 	AdminUsername string        `gorm:"column:admin_username;unique" json:"adminUsername"`
 	AdminPassword string        `gorm:"column:admin_password" json:"adminPassword"`
 	DeletedAt     *time.Time    `gorm:"column:deleted_at" json:"deletedAt,omitempty"`
