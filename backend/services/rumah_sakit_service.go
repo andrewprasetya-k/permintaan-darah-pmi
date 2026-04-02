@@ -24,7 +24,7 @@ func NewRumahSakitService(repo repository.RumahSakitRepository) RumahSakitServic
 }
 
 func (s *rumahSakitService) Create(req dto.CreateRumahSakitRequest) (*dto.RumahSakitResponse, error) {
-	hashedPassword, err := utils.HashPassword(*req.RSPassword)
+	hashedPassword, err := utils.HashPassword(req.RSPassword)
 	if err != nil {
 		return nil, err
 	}
@@ -33,6 +33,7 @@ func (s *rumahSakitService) Create(req dto.CreateRumahSakitRequest) (*dto.RumahS
 		RSNoTelp:   req.RSNoTelp,
 		RSAlamat:   req.RSAlamat,
 		RSEmail:    req.RSEmail,
+		RSUsername: req.RSUsername,
 		RSPassword: hashedPassword,
 	}
 	if err := s.repo.Create(&data); err != nil {
