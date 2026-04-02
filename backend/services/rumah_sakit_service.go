@@ -97,7 +97,7 @@ func mapRumahSakitToResponse(data models.RumahSakit) dto.RumahSakitResponse {
 		RSNoTelp:   data.RSNoTelp,
 		RSAlamat:   data.RSAlamat,
 		RSEmail:    data.RSEmail,
-		RSPassword: &data.RSPassword,
+		RSUsername: data.RSUsername,
 		CreatedAt:  data.CreatedAt,
 		UpdatedAt:  data.UpdatedAt,
 		DeletedAt:  data.DeletedAt,
