@@ -46,7 +46,7 @@ func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 	if status := c.Query("status"); status != "" {
 		filters.Status = &status
 	}
-	if rsID := c.Query("rs_id"); rsID != "" {
+	if rsID := c.Query("id"); rsID != "" {
 		filters.RsID = &rsID
 	}
 	if gender := c.Query("gender"); gender != "" {
