@@ -102,12 +102,12 @@ func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	resp, err := ctl.service.UpdateStatus(c.Param("id"), req.Status, req.Reason)
+	_, err := ctl.service.UpdateStatus(c.Param("id"), req.Status, req.Reason)
 	if err != nil {
 		handleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, resp)
+	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
 func (ctl *PermintaanDarahController) CancelPermintaan(c *gin.Context) {
@@ -116,10 +116,10 @@ func (ctl *PermintaanDarahController) CancelPermintaan(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	resp, err := ctl.service.UpdateStatus(c.Param("id"), "dibatalkan", req.Reason)
+	_, err := ctl.service.UpdateStatus(c.Param("id"), "dibatalkan", req.Reason)
 	if err != nil {
 		handleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, resp)
+	c.JSON(http.StatusOK, gin.H{"success": true})
 }
