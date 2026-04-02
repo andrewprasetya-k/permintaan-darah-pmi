@@ -3,7 +3,7 @@ package models
 import "time"
 
 type RumahSakit struct {
-	RSID       string     `gorm:"column:rs_id;primaryKey" json:"rumahSakitId"`
+	RSID       string     `gorm:"column:rs_id;primaryKey;default:(-)" json:"rumahSakitId"`
 	RSNama     string     `gorm:"column:rs_nama" json:"nama"`
 	RSNoTelp   string     `gorm:"column:rs_no_telp" json:"nomorTelepon"`
 	RSAlamat   string     `gorm:"column:rs_alamat" json:"alamat"`
