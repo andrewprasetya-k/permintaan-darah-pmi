@@ -13,6 +13,9 @@ type RumahSakitService interface {
 	GetAll(limit, offset int) ([]dto.RumahSakitResponse, error)
 	Update(id string, req dto.UpdateRumahSakitRequest) (*dto.RumahSakitResponse, error)
 	Delete(id string) error
+
+	//filter purpose
+	GetDistinctRSNama() ([]dto.RumahSakitDistinctNamaResponse, error)
 }
 
 type rumahSakitService struct {
@@ -62,6 +65,10 @@ func (s *rumahSakitService) GetAll(limit, offset int) ([]dto.RumahSakitResponse,
 		result = append(result, mapRumahSakitToResponse(item))
 	}
 	return result, nil
+}
+
+func (s *rumahSakitService) GetDistinctRSNama() ([]dto.RumahSakitDistinctNamaResponse, error) {
+	return s.repo.GetDistinctRSNama()
 }
 
 func (s *rumahSakitService) Update(id string, req dto.UpdateRumahSakitRequest) (*dto.RumahSakitResponse, error) {

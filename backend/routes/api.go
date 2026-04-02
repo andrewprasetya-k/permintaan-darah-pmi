@@ -18,9 +18,14 @@ func RegisterAPIRoutes(
 ) {
 	api := r.Group("/api")
 
+	//utils
 	dashboard := api.Group("/dashboard")
 	dashboard.GET("/status-summary/:rumahSakitID", dashboardController.StatusSummary)
+	
+	filter := api.Group("/filter")
+	filter.GET("/rumah-sakit/", rumahSakitController.GetDistinctRSNama)
 
+	//ya selain utils lah berarti..
 	admins := api.Group("/admin")
 	admins.POST("", adminController.Create)
 	admins.GET("", adminController.GetAll)

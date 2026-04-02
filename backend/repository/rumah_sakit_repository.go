@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"backend/dto"
 	"backend/models"
 
 	"gorm.io/gorm"
@@ -13,6 +14,9 @@ type RumahSakitRepository interface {
 	GetByUsername(username string) (*models.RumahSakit, error)
 	Update(data *models.RumahSakit) error
 	Delete(data *models.RumahSakit) error
+
+	//filter purpose
+	GetDistinctRSNama() ([]dto.RumahSakitDistinctNamaResponse, error)
 }
 
 type rumahSakitRepository struct {
@@ -53,6 +57,18 @@ func (r *rumahSakitRepository) GetAll(limit, offset int) ([]models.RumahSakit, e
 
 	return list, nil
 }
+
+func (r *rumahSakitRepository) GetDistinctRSNama() ([]dto.RumahSakitDistinctNamaResponse, error) {
+	var list []dto.RumahSakitDistinctNamaResponse
+	err := r.db.Model(&models.RumahSakit{}).Select("DISTINCT rs_nama, rs_id").Order("rs_nama ASC").Scan(&list).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+
 
 func (r *rumahSakitRepository) GetByUsername(username string) (*models.RumahSakit, error) {
 	var data models.RumahSakit

@@ -49,6 +49,15 @@ func (ctl *RumahSakitController) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+func (ctl *RumahSakitController) GetDistinctRSNama(c *gin.Context) {
+	resp, err := ctl.service.GetDistinctRSNama()
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
 func (ctl *RumahSakitController) Update(c *gin.Context) {
 	var req dto.UpdateRumahSakitRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

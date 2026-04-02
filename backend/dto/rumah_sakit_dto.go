@@ -31,3 +31,8 @@ type RumahSakitResponse struct {
 	UpdatedAt  time.Time  `json:"updatedAt"`
 	DeletedAt  *time.Time `json:"deletedAt,omitempty"`
 }
+
+type RumahSakitDistinctNamaResponse struct {
+	RSID   string `json:"rumahSakitId"`
+	RSNama string `json:"nama"`
+}
