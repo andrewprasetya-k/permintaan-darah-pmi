@@ -95,3 +95,31 @@ func (ctl *PermintaanDarahController) Delete(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "deleted"})
 }
+
+func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
+	var req dto.UpdatePermintaanStatusRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	resp, err := ctl.service.UpdateStatus(c.Param("id"), req.Status, req.Reason)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+func (ctl *PermintaanDarahController) CancelPermintaan(c *gin.Context) {
+	var req dto.UpdatePermintaanStatusRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	resp, err := ctl.service.UpdateStatus(c.Param("id"), "dibatalkan", req.Reason)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, resp)
+}

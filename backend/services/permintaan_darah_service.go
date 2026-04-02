@@ -13,6 +13,7 @@ type PermintaanDarahService interface {
 	GetByRsID(rsID string, limit, offset int) ([]dto.PermintaanDarahResponse, error)
 	Update(id string, req dto.UpdatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error)
 	Delete(id string) error
+	UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string) (*dto.PermintaanDarahResponse, error)
 }
 
 type permintaanDarahService struct {
@@ -117,6 +118,25 @@ func (s *permintaanDarahService) Delete(id string) error {
 		return err
 	}
 	return s.repo.Delete(data)
+}
+
+func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string) (*dto.PermintaanDarahResponse, error) {
+	data, err := s.repo.GetByID(pdID)
+	if err != nil {
+		return nil, err
+	}
+
+	data.PDStatus = newStatus
+	if newStatus == "dibatalkan" && reason != nil {
+		data.PDCancelReason = reason
+	}
+
+	if err := s.repo.Update(data); err != nil {
+		return nil, err
+	}
+
+	resp := mapPermintaanToResponse(*data)
+	return &resp, nil
 }
 
 func mapPermintaanToResponse(data models.PermintaanDarah) dto.PermintaanDarahResponse {

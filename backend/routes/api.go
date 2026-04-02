@@ -61,6 +61,9 @@ func RegisterAPIRoutes(
 	permintaan.GET("/rumah-sakit/:rsId", permintaanController.GetByRsID)
 	permintaan.PUT("/:id", permintaanController.Update)
 	permintaan.DELETE("/:id", permintaanController.Delete)
+	//approval endpoints
+	permintaan.PUT("/update/:id", permintaanController.UpdateStatus)
+	permintaan.PUT("/cancel/:id", permintaanController.CancelPermintaan)
 
 	detail := api.Group("/detail-permintaan-darah")
 	detail.POST("", detailController.Create)
