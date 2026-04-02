@@ -128,6 +128,10 @@ func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.Perm
 		return nil, err
 	}
 
+	if data.PDStatus == "selesai" || data.PDStatus == "dibatalkan" {
+		return nil, errors.New("cannot update status of a completed or cancelled request")
+	}
+
 	data.PDStatus = newStatus
 	if newStatus == "dibatalkan" && reason == nil {
 		return nil, errors.New("reason is required")
