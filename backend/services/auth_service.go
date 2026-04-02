@@ -24,7 +24,7 @@ func NewAuthService(adm repository.AdminRepository, rs repository.RumahSakitRepo
 func (s *authService) AdminLogin(req dto.LoginRequest) (*dto.LoginResponse, error) {
 	admin, err := s.adm.GetByUsername(req.Username)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("invalid credentials")
 	}
 	if !utils.ValidatePassword(admin.AdminPassword, req.Password) {
 		return nil, errors.New("invalid credentials")
@@ -34,6 +34,9 @@ func (s *authService) AdminLogin(req dto.LoginRequest) (*dto.LoginResponse, erro
 		return nil, err
 	}
 	resp := dto.LoginResponse{
+		UserID: admin.AdminID,
+		Username: admin.AdminUsername,
+		Role: string(admin.AdminRole),
 		Token: token,
 	}
 	return &resp, nil
@@ -42,7 +45,7 @@ func (s *authService) AdminLogin(req dto.LoginRequest) (*dto.LoginResponse, erro
 func (s *authService) RumahSakitLogin(req dto.LoginRequest) (*dto.LoginResponse, error) {
 	rs, err := s.rs.GetByUsername(req.Username)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("invalid credentials")
 	}
 	if !utils.ValidatePassword(rs.RSPassword, req.Password) {
 		return nil, errors.New("invalid credentials")
@@ -52,6 +55,9 @@ func (s *authService) RumahSakitLogin(req dto.LoginRequest) (*dto.LoginResponse,
 		return nil, err
 	}
 	resp := dto.LoginResponse{
+		UserID: rs.RSID,
+		Username: rs.RSUsername,
+		Role: "rumah_sakit",
 		Token: token,
 	}
 	return &resp, nil
