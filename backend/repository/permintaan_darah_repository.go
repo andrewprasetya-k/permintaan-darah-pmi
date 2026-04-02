@@ -32,7 +32,7 @@ func (r *permintaanDarahRepository) Create(data *models.PermintaanDarah) error {
 
 func (r *permintaanDarahRepository) GetByID(pdID string) (*models.PermintaanDarah, error) {
 	var data models.PermintaanDarah
-	err := r.db.First(&data, "pd_id = ?", pdID).Error
+	err := r.db.Preload("Details").First(&data, "pd_id = ?", pdID).Error
 	if err != nil {
 		return nil, err
 	}

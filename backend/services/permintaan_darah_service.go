@@ -120,6 +120,20 @@ func (s *permintaanDarahService) Delete(id string) error {
 }
 
 func mapPermintaanToResponse(data models.PermintaanDarah) dto.PermintaanDarahResponse {
+	details := make([]dto.DetailPermintaanDarahResponse, 0, len(data.Details))
+	for _, d := range data.Details {
+		details = append(details, dto.DetailPermintaanDarahResponse{
+			DPDID:            d.DPDID,
+			DPDPDID:          d.DPDPDID,
+			DPDKomID:         d.DPDKomID,
+			DPDGolonganDarah: d.DPDGolonganDarah,
+			DPDRhesus:        d.DPDRhesus,
+			DPDJmlKantong:    d.DPDJmlKantong,
+			DPDTglDiperlukan: d.DPDTglDiperlukan,
+			CreatedAt:        d.CreatedAt,
+		})
+	}
+
 	return dto.PermintaanDarahResponse{
 		PDID:                data.PDID,
 		PDRsID:              data.PDRsID,
@@ -141,5 +155,6 @@ func mapPermintaanToResponse(data models.PermintaanDarah) dto.PermintaanDarahRes
 		CreatedAt:           data.CreatedAt,
 		UpdatedAt:           data.UpdatedAt,
 		DeletedAt:           data.DeletedAt,
+		Details:              details,
 	}
 }

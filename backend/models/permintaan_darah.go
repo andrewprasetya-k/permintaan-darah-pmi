@@ -30,6 +30,9 @@ type PermintaanDarah struct {
 	UpdatedAt            time.Time            `gorm:"column:updated_at" json:"updatedAt"`
 	IsDeleted            bool                 `gorm:"column:is_deleted;default:false" json:"isDeleted"`
 	DeletedAt            *time.Time           `gorm:"column:deleted_at" json:"deletedAt,omitempty"`
+	
+	// Relations
+	Details              []DetailPermintaanDarah `gorm:"foreignKey:DPDPDID;references:PDID" json:"details"`
 }
 
 func (PermintaanDarah) TableName() string {

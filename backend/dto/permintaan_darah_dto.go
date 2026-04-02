@@ -82,6 +82,9 @@ type PermintaanDarahResponse struct {
 	CreatedAt            time.Time                   `json:"createdAt"`
 	UpdatedAt            time.Time                   `json:"updatedAt"`
 	DeletedAt            *time.Time                  `json:"deletedAt,omitempty"`
+
+	//detail permintaan darah
+	Details []DetailPermintaanDarahResponse `json:"detailPermintaanDarah"`
 }
 
 type PermintaanDarahFilters struct {
