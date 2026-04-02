@@ -82,7 +82,7 @@ func (r *permintaanDarahRepository) GetByRsID(rsID string, limit, offset int) ([
 	}
 
 	var list []models.PermintaanDarah
-	err := r.db.Where("pd_rs_id = ?", rsID).Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
+	err := r.db.Preload("Details.KomponenDarah").Where("pd_rs_id = ?", rsID).Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
