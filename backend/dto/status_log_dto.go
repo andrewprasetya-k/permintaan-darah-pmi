@@ -8,14 +8,14 @@ import (
 type CreateStatusLogRequest struct {
 	LogPdID     string                      `json:"permintaanDarahId" binding:"required"`
 	LogAdminID  string                      `json:"adminId" binding:"required"`
-	LogStatusTo models.PermintaanStatusEnum `json:"statusTo" binding:"required,oneof=diterima diproses bisa_diambil selesai dibatalkan"`
+	LogStatusTo models.PermintaanStatusEnum `json:"statusTo" binding:"required,oneof=dibuat diproses bisa_diambil selesai dibatalkan"`
 	LogNotes    *string                     `json:"notes,omitempty"`
 }
 
 type UpdateStatusLogRequest struct {
 	LogPdID     string                      `json:"permintaanDarahId" binding:"required"`
 	LogAdminID  string                      `json:"adminId" binding:"required"`
-	LogStatusTo models.PermintaanStatusEnum `json:"statusTo" binding:"required,oneof=diterima diproses bisa_diambil selesai dibatalkan"`
+	LogStatusTo models.PermintaanStatusEnum `json:"statusTo" binding:"required,oneof=dibuat diproses bisa_diambil selesai dibatalkan"`
 	LogNotes    *string                     `json:"notes,omitempty"`
 }
 

@@ -25,7 +25,7 @@ type CreatePermintaanDarahRequest struct {
 	PDPernahHamil        *string                     `json:"pernahHamil,omitempty"`
 	
 	// Status
-	PDStatus             models.PermintaanStatusEnum `json:"status" binding:"required,oneof=diterima diproses bisa_diambil selesai dibatalkan"`
+	PDStatus             models.PermintaanStatusEnum `json:"status" binding:"required,oneof=dibuat diproses bisa_diambil selesai dibatalkan"`
 	PDCancelReason       *string                     `json:"cancelReason,omitempty"`
 	PDTglPermintaan      time.Time                   `json:"tanggalPermintaan" binding:"required"`
 }
@@ -50,7 +50,7 @@ type UpdatePermintaanDarahRequest struct {
 	PDPernahHamil        *string                     `json:"pernahHamil,omitempty"`
 	
 	// Status
-	PDStatus             models.PermintaanStatusEnum `json:"status" binding:"required,oneof=diterima diproses bisa_diambil selesai dibatalkan"`
+	PDStatus             models.PermintaanStatusEnum `json:"status" binding:"required,oneof=dibuat diproses bisa_diambil selesai dibatalkan"`
 	PDCancelReason       *string                     `json:"cancelReason,omitempty"`
 	PDTglPermintaan      time.Time                   `json:"tanggalPermintaan" binding:"required"`
 }
