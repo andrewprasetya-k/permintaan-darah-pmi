@@ -34,6 +34,7 @@ func main() {
 	dashboardRepo := repository.NewDashboardRepository(db)
 
 	// service initialization
+	authSvc := services.NewAuthService(adminRepo, rumahSakitRepo)
 	adminSvc := services.NewAdminService(adminRepo)
 	rumahSakitSvc := services.NewRumahSakitService(rumahSakitRepo)
 	komponenSvc := services.NewKomponenDarahService(komponenRepo)
@@ -43,6 +44,7 @@ func main() {
 	dashboardSvc := services.NewDashboardService(dashboardRepo)
 
 	// controller initialization
+	authCtl := controllers.NewAuthController(&authSvc)
 	adminCtl := controllers.NewAdminController(adminSvc)
 	rumahSakitCtl := controllers.NewRumahSakitController(rumahSakitSvc)
 	komponenCtl := controllers.NewKomponenDarahController(komponenSvc)
@@ -60,6 +62,7 @@ func main() {
 		detailCtl,
 		statusLogCtl,
 		dashboardCtl,
+		authCtl,
 	)
 
 	r.GET("/health", func(c *gin.Context) {

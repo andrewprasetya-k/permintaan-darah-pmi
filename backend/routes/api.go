@@ -15,6 +15,7 @@ func RegisterAPIRoutes(
 	detailController *controllers.DetailPermintaanDarahController,
 	statusLogController *controllers.StatusLogController,
 	dashboardController *controllers.DashboardController,
+	authController *controllers.AuthController,
 ) {
 	api := r.Group("/api")
 
@@ -25,7 +26,11 @@ func RegisterAPIRoutes(
 	filter := api.Group("/filter")
 	filter.GET("/rumah-sakit/", rumahSakitController.GetDistinctRSNama)
 
-	//ya selain utils lah berarti..
+	auth := api.Group("/auth")
+	auth.POST("/login/admin", authController.AdminLogin)
+	auth.POST("/login/rumah-sakit", authController.RumahSakitLogin)
+
+	//main endpoints
 	admins := api.Group("/admin")
 	admins.POST("", adminController.Create)
 	admins.GET("", adminController.GetAll)
