@@ -3,7 +3,7 @@ package models
 import "time"
 
 type PermintaanDarah struct {
-	PDID                 string               `gorm:"column:pd_id;primaryKey" json:"permintaanDarahId"`
+	PDID                 string               `gorm:"column:admin_id;primaryKey;default:(-)" json:"permintaanDarahId"`
 	PDRsID               string               `gorm:"column:pd_rs_id" json:"rumahSakitId"`
 	
 	// Data Pasien (Flat - Ditulis Ulang Tiap Permintaan)
