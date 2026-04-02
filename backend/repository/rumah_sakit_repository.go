@@ -46,7 +46,7 @@ func (r *rumahSakitRepository) GetAll(limit, offset int) ([]models.RumahSakit, e
 	}
 
 	var list []models.RumahSakit
-	err := r.db.Order("updated_at asc").Limit(limit).Offset(offset).Find(&list).Error
+	err := r.db.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
