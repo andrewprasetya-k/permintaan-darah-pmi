@@ -54,22 +54,22 @@ func (r *permintaanDarahRepository) GetAll(filters *dto.PermintaanDarahFilters, 
 
 	query := r.db.Where("is_deleted = ?", false)
 	if filters != nil {
-		if filters.Status != nil {
+		if filters.Status != nil && *filters.Status != "" {
 			query = query.Where("pd_status = ?", *filters.Status)
 		}
-		if filters.RsID != nil {
+		if filters.RsID != nil && *filters.RsID != "" {
 			query = query.Where("pd_rs_id = ?", *filters.RsID)
 		}
-		if filters.Gender != nil {
+		if filters.Gender != nil && *filters.Gender != "" {
 			query = query.Where("pd_gender = ?", *filters.Gender)
 		}
-		if filters.GolDarah != nil {
+		if filters.GolDarah != nil && *filters.GolDarah != "" {
 			query = query.Where("pd_gol_darah = ?", *filters.GolDarah)
 		}
-		if filters.StartDate != nil {
+		if filters.StartDate != nil && filters.EndDate != nil {
 			query = query.Where("DATE(pd_tgl_permintaan) >= ?", filters.StartDate.Format("2006-01-02"))
 		}
-		if filters.EndDate != nil {
+		if filters.EndDate != nil && filters.StartDate != nil {
 			query = query.Where("DATE(pd_tgl_permintaan) <= ?", filters.EndDate.Format("2006-01-02"))
 		}
 	}
