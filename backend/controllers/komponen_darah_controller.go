@@ -23,7 +23,10 @@ func (ctl *KomponenDarahController) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	resp, err := ctl.service.Create(req)
+
+	userID, userName, userRole := extractAdminFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
+	resp, err := ctl.service.Create(req, userID, userName, userRole, &userAgent)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -66,7 +69,10 @@ func (ctl *KomponenDarahController) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	resp, err := ctl.service.Update(id, req)
+
+	userID, userName, userRole := extractAdminFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
+	resp, err := ctl.service.Update(id, req, userID, userName, userRole, &userAgent)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -80,7 +86,10 @@ func (ctl *KomponenDarahController) Delete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid id"})
 		return
 	}
-	if err := ctl.service.Delete(id); err != nil {
+
+	userID, userName, userRole := extractAdminFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
+	if err := ctl.service.Delete(id, userID, userName, userRole, &userAgent); err != nil {
 		handleError(c, err)
 		return
 	}
@@ -93,7 +102,10 @@ func (ctl *KomponenDarahController) Activate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid id"})
 		return
 	}
-	resp, err := ctl.service.ActivateKomponenDarah(id)
+
+	userID, userName, userRole := extractAdminFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
+	resp, err := ctl.service.ActivateKomponenDarah(id, userID, userName, userRole, &userAgent)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -107,7 +119,10 @@ func (ctl *KomponenDarahController) Deactivate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid id"})
 		return
 	}
-	resp, err := ctl.service.DeactivateKomponenDarah(id)
+
+	userID, userName, userRole := extractAdminFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
+	resp, err := ctl.service.DeactivateKomponenDarah(id, userID, userName, userRole, &userAgent)
 	if err != nil {
 		handleError(c, err)
 		return
