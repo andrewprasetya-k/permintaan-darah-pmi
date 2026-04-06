@@ -83,8 +83,8 @@ func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 }
 
 func (ctl *PermintaanDarahController) GetByRsID(c *gin.Context) {
-	limit, offset := utils.ParsePagination(c)
-	resp, err := ctl.service.GetByRsID(c.Param("rsID"), limit, offset)
+	rsID := c.Param("rsId")
+	resp, err := ctl.service.GetByRsID(rsID)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
