@@ -24,7 +24,7 @@ func (ctl *DetailPermintaanDarahController) Create(c *gin.Context) {
 		return
 	}
 
-	userID, userName, userRole := extractUserFromContext(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 
 	resp, err := ctl.service.Create(req, userID, userName, userRole)
 	if err != nil {
@@ -70,7 +70,7 @@ func (ctl *DetailPermintaanDarahController) Update(c *gin.Context) {
 		return
 	}
 
-	userID, userName, userRole := extractUserFromContext(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 
 	resp, err := ctl.service.Update(id, req, userID, userName, userRole)
 	if err != nil {
@@ -87,26 +87,11 @@ func (ctl *DetailPermintaanDarahController) Delete(c *gin.Context) {
 		return
 	}
 
-	userID, userName, userRole := extractUserFromContext(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 
 	if err := ctl.service.Delete(id, userID, userName, userRole); err != nil {
 		handleError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "true"})
-}
-
-func extractUserFromJWT(c *gin.Context) (*string, string, string) {
-	claims, _ := c.Get("claims")
-	if claims == nil {
-		return nil, "Unknown User", "unknown"
-	}
-
-	jwtClaims := claims.(jwt.MapClaims)
-
-	userID, _ := jwtClaims["admin_id"].(string)
-	userName, _ := jwtClaims["admin_nama"].(string)
-	userRole, _ := jwtClaims["admin_role"].(string)
-
-	return &userID, userName, userRole
 }

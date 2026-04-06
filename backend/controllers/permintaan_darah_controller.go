@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type PermintaanDarahController struct {
@@ -151,19 +150,4 @@ func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, resp)
-}
-
-func extractUserFromJWT(c *gin.Context) (*string, string, string) {
-	claims, _ := c.Get("claims")
-	if claims == nil {
-		return nil, "Unknown User", "unknown"
-	}
-
-	jwtClaims := claims.(jwt.MapClaims)
-
-	userID, _ := jwtClaims["admin_id"].(string)
-	userName, _ := jwtClaims["admin_nama"].(string)
-	userRole, _ := jwtClaims["admin_role"].(string)
-
-	return &userID, userName, userRole
 }

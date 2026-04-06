@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type AdminController struct {
@@ -25,7 +24,7 @@ func (ctl *AdminController) Create(c *gin.Context) {
 	}
 
 	// Extract user context
-	userID, userName, userRole := extractAdminFromJWT(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
 	resp, err := ctl.service.Create(req, userID, userName, userRole, &userAgent)
@@ -63,7 +62,7 @@ func (ctl *AdminController) Update(c *gin.Context) {
 	}
 
 	// Extract user context
-	userID, userName, userRole := extractAdminFromJWT(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
 	resp, err := ctl.service.Update(c.Param("id"), req, userID, userName, userRole, &userAgent)
@@ -76,7 +75,7 @@ func (ctl *AdminController) Update(c *gin.Context) {
 
 func (ctl *AdminController) Delete(c *gin.Context) {
 	// Extract user context
-	userID, userName, userRole := extractAdminFromJWT(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
 	if err := ctl.service.Delete(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
@@ -88,7 +87,7 @@ func (ctl *AdminController) Delete(c *gin.Context) {
 
 func (ctl *AdminController) Restore(c *gin.Context) {
 	// Extract user context
-	userID, userName, userRole := extractAdminFromJWT(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
 	if err := ctl.service.Restore(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
@@ -96,20 +95,4 @@ func (ctl *AdminController) Restore(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true})
-}
-
-// Helper function to extract admin from JWT
-func extractAdminFromJWT(c *gin.Context) (*string, string, string) {
-	claims, _ := c.Get("claims")
-	if claims == nil {
-		return nil, "Unknown User", "unknown"
-	}
-
-	jwtClaims := claims.(jwt.MapClaims)
-
-	adminID, _ := jwtClaims["admin_id"].(string)
-	adminNama, _ := jwtClaims["admin_nama"].(string)
-	adminRole, _ := jwtClaims["admin_role"].(string)
-
-	return &adminID, adminNama, adminRole
 }

@@ -24,7 +24,7 @@ func (ctl *KomponenDarahController) Create(c *gin.Context) {
 		return
 	}
 
-	userID, userName, userRole := extractAdminFromJWT(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 	resp, err := ctl.service.Create(req, userID, userName, userRole, &userAgent)
 	if err != nil {
@@ -70,7 +70,7 @@ func (ctl *KomponenDarahController) Update(c *gin.Context) {
 		return
 	}
 
-	userID, userName, userRole := extractAdminFromJWT(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 	resp, err := ctl.service.Update(id, req, userID, userName, userRole, &userAgent)
 	if err != nil {
@@ -87,7 +87,7 @@ func (ctl *KomponenDarahController) Delete(c *gin.Context) {
 		return
 	}
 
-	userID, userName, userRole := extractAdminFromJWT(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 	if err := ctl.service.Delete(id, userID, userName, userRole, &userAgent); err != nil {
 		handleError(c, err)
@@ -103,7 +103,7 @@ func (ctl *KomponenDarahController) Activate(c *gin.Context) {
 		return
 	}
 
-	userID, userName, userRole := extractAdminFromJWT(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 	resp, err := ctl.service.ActivateKomponenDarah(id, userID, userName, userRole, &userAgent)
 	if err != nil {
@@ -120,7 +120,7 @@ func (ctl *KomponenDarahController) Deactivate(c *gin.Context) {
 		return
 	}
 
-	userID, userName, userRole := extractAdminFromJWT(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 	resp, err := ctl.service.DeactivateKomponenDarah(id, userID, userName, userRole, &userAgent)
 	if err != nil {
