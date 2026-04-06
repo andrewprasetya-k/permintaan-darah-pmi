@@ -5,29 +5,32 @@ import (
 	"backend/models"
 	"backend/repository"
 	"backend/utils"
+	"fmt"
+	"strings"
 )
 
 type RumahSakitService interface {
-	Create(req dto.CreateRumahSakitRequest) (*dto.RumahSakitResponse, error)
+	Create(req dto.CreateRumahSakitRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.RumahSakitResponse, error)
 	GetByID(id string) (*dto.RumahSakitResponse, error)
 	GetAll(limit, offset int) ([]dto.RumahSakitResponse, error)
-	Update(id string, req dto.UpdateRumahSakitRequest) (*dto.RumahSakitResponse, error)
-	Delete(id string) error
-	Restore(id string) error
+	Update(id string, req dto.UpdateRumahSakitRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.RumahSakitResponse, error)
+	Delete(id string, userID *string, userName string, userRole string, userAgent *string) error
+	Restore(id string, userID *string, userName string, userRole string, userAgent *string) error
 
 	//filter purpose
 	GetDistinctRSNama() ([]dto.RumahSakitDistinctNamaResponse, error)
 }
 
 type rumahSakitService struct {
-	repo repository.RumahSakitRepository
+	repo                     repository.RumahSakitRepository
+	systemAccessLogService SystemAccessLogService
 }
 
-func NewRumahSakitService(repo repository.RumahSakitRepository) RumahSakitService {
-	return &rumahSakitService{repo: repo}
+func NewRumahSakitService(repo repository.RumahSakitRepository, systemAccessLogService SystemAccessLogService) RumahSakitService {
+	return &rumahSakitService{repo: repo, systemAccessLogService: systemAccessLogService}
 }
 
-func (s *rumahSakitService) Create(req dto.CreateRumahSakitRequest) (*dto.RumahSakitResponse, error) {
+func (s *rumahSakitService) Create(req dto.CreateRumahSakitRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.RumahSakitResponse, error) {
 	hashedPassword, err := utils.HashPassword(req.RSPassword)
 	if err != nil {
 		return nil, err
@@ -43,6 +46,18 @@ func (s *rumahSakitService) Create(req dto.CreateRumahSakitRequest) (*dto.RumahS
 	if err := s.repo.Create(&data); err != nil {
 		return nil, err
 	}
+
+	_, _ = s.systemAccessLogService.LogAction(
+		userID,
+		userName,
+		userRole,
+		"CREATE",
+		stringPtr("rumah_sakit"),
+		stringPtr(data.RSID),
+		fmt.Sprintf("Created rumah sakit: %s", data.RSNama),
+		userAgent,
+	)
+
 	resp := mapRumahSakitToResponse(data)
 	return &resp, nil
 }
@@ -72,11 +87,35 @@ func (s *rumahSakitService) GetDistinctRSNama() ([]dto.RumahSakitDistinctNamaRes
 	return s.repo.GetDistinctRSNama()
 }
 
-func (s *rumahSakitService) Update(id string, req dto.UpdateRumahSakitRequest) (*dto.RumahSakitResponse, error) {
+func (s *rumahSakitService) Update(id string, req dto.UpdateRumahSakitRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.RumahSakitResponse, error) {
 	data, err := s.repo.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
+
+	// Track changes for logging
+	changes := []string{}
+	if data.RSNama != req.RSNama {
+		changes = append(changes, fmt.Sprintf("nama: %s → %s", data.RSNama, req.RSNama))
+	}
+	if data.RSNoTelp != req.RSNoTelp {
+		changes = append(changes, fmt.Sprintf("telp: %s → %s", data.RSNoTelp, req.RSNoTelp))
+	}
+	if data.RSAlamat != req.RSAlamat {
+		changes = append(changes, fmt.Sprintf("alamat: %s → %s", data.RSAlamat, req.RSAlamat))
+	}
+	oldEmail := ""
+	if data.RSEmail != nil {
+		oldEmail = *data.RSEmail
+	}
+	newEmail := ""
+	if req.RSEmail != nil {
+		newEmail = *req.RSEmail
+	}
+	if oldEmail != newEmail {
+		changes = append(changes, fmt.Sprintf("email: %s → %s", oldEmail, newEmail))
+	}
+
 	data.RSNama = req.RSNama
 	data.RSNoTelp = req.RSNoTelp
 	data.RSAlamat = req.RSAlamat
@@ -86,16 +125,72 @@ func (s *rumahSakitService) Update(id string, req dto.UpdateRumahSakitRequest) (
 	if err := s.repo.Update(data); err != nil {
 		return nil, err
 	}
+
+	if len(changes) > 0 {
+		notes := fmt.Sprintf("Updated rumah sakit %s: %s", id, strings.Join(changes, "; "))
+		_, _ = s.systemAccessLogService.LogAction(
+			userID,
+			userName,
+			userRole,
+			"UPDATE",
+			stringPtr("rumah_sakit"),
+			stringPtr(id),
+			notes,
+			userAgent,
+		)
+	}
+
 	resp := mapRumahSakitToResponse(*data)
 	return &resp, nil
 }
 
-func (s *rumahSakitService) Delete(id string) error {
-	return s.repo.SoftDelete(id)
+func (s *rumahSakitService) Delete(id string, userID *string, userName string, userRole string, userAgent *string) error {
+	rs, err := s.repo.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	if err := s.repo.SoftDelete(id); err != nil {
+		return err
+	}
+
+	_, _ = s.systemAccessLogService.LogAction(
+		userID,
+		userName,
+		userRole,
+		"SOFT_DELETE",
+		stringPtr("rumah_sakit"),
+		stringPtr(id),
+		fmt.Sprintf("Soft deleted rumah sakit: %s", rs.RSNama),
+		userAgent,
+	)
+
+	return nil
 }
 
-func (s *rumahSakitService) Restore(id string) error {
-	return s.repo.Restore(id)
+func (s *rumahSakitService) Restore(id string, userID *string, userName string, userRole string, userAgent *string) error {
+	rs, err := s.repo.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	if err := s.repo.Restore(id); err != nil {
+		return err
+	}
+
+	// ✅ Auto-log: Restore
+	_, _ = s.systemAccessLogService.LogAction(
+		userID,
+		userName,
+		userRole,
+		"RESTORE",
+		stringPtr("rumah_sakit"),
+		stringPtr(id),
+		fmt.Sprintf("Restored rumah sakit: %s", rs.RSNama),
+		userAgent,
+	)
+
+	return nil
 }
 
 func mapRumahSakitToResponse(data models.RumahSakit) dto.RumahSakitResponse {

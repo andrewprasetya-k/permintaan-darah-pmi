@@ -17,11 +17,12 @@ type KomponenDarahService interface {
 }
 
 type komponenDarahService struct {
-	repo repository.KomponenDarahRepository
+	repo                     repository.KomponenDarahRepository
+	systemAccessLogService SystemAccessLogService
 }
 
-func NewKomponenDarahService(repo repository.KomponenDarahRepository) KomponenDarahService {
-	return &komponenDarahService{repo: repo}
+func NewKomponenDarahService(repo repository.KomponenDarahRepository, systemAccessLogService SystemAccessLogService) KomponenDarahService {
+	return &komponenDarahService{repo: repo, systemAccessLogService: systemAccessLogService}
 }
 
 func (s *komponenDarahService) Create(req dto.CreateKomponenDarahRequest) (*dto.KomponenDarahResponse, error) {
