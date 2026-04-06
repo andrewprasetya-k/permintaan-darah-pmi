@@ -14,6 +14,7 @@ func RegisterAPIRoutes(
 	permintaanController *controllers.PermintaanDarahController,
 	detailController *controllers.DetailPermintaanDarahController,
 	statusLogController *controllers.StatusLogController,
+	systemAccessLogController *controllers.SystemAccessLogController,
 	dashboardController *controllers.DashboardController,
 	authController *controllers.AuthController,
 ) {
@@ -76,4 +77,12 @@ func RegisterAPIRoutes(
 
 	statusLogs := api.Group("/status-logs")
 	statusLogs.GET("", statusLogController.GetAll)
+
+	systemLogs := api.Group("/system-logs")
+	systemLogs.GET("", systemAccessLogController.GetAll)
+	systemLogs.GET("/:id", systemAccessLogController.GetByID)
+	systemLogs.GET("/user/:userId", systemAccessLogController.GetByUserID)
+	systemLogs.GET("/action/:action", systemAccessLogController.GetByAction)
+	systemLogs.GET("/table/:table", systemAccessLogController.GetByTargetTable)
+	systemLogs.GET("/target/:targetId", systemAccessLogController.GetByTargetID)
 }

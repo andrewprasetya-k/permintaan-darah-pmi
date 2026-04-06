@@ -31,6 +31,7 @@ func main() {
 	permintaanRepo := repository.NewPermintaanDarahRepository(db)
 	detailRepo := repository.NewDetailPermintaanDarahRepository(db)
 	statusLogRepo := repository.NewStatusLogRepository(db)
+	systemAccessLogRepo := repository.NewSystemAccessLogRepository(db)
 	dashboardRepo := repository.NewDashboardRepository(db)
 
 	// service initialization
@@ -41,6 +42,7 @@ func main() {
 	permintaanSvc := services.NewPermintaanDarahService(permintaanRepo, statusLogRepo)
 	detailSvc := services.NewDetailPermintaanDarahService(detailRepo)
 	statusLogSvc := services.NewStatusLogService(statusLogRepo)
+	systemAccessLogSvc := services.NewSystemAccessLogService(systemAccessLogRepo)
 	dashboardSvc := services.NewDashboardService(dashboardRepo)
 
 	// controller initialization
@@ -51,6 +53,7 @@ func main() {
 	permintaanCtl := controllers.NewPermintaanDarahController(permintaanSvc)
 	detailCtl := controllers.NewDetailPermintaanDarahController(detailSvc)
 	statusLogCtl := controllers.NewStatusLogController(statusLogSvc)
+	systemAccessLogCtl := controllers.NewSystemAccessLogController(systemAccessLogSvc)
 	dashboardCtl := controllers.NewDashboardController(dashboardSvc)
 
 	routes.RegisterAPIRoutes(
@@ -61,6 +64,7 @@ func main() {
 		permintaanCtl,
 		detailCtl,
 		statusLogCtl,
+		systemAccessLogCtl,
 		dashboardCtl,
 		authCtl,
 	)
