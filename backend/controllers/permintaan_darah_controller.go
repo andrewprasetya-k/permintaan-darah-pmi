@@ -82,16 +82,6 @@ func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
 }
 
-func (ctl *PermintaanDarahController) GetByRsID(c *gin.Context) {
-	rsID := c.Param("rsId")
-	resp, err := ctl.service.GetByRsID(rsID)
-	if err != nil {
-		utils.HandleError(c, err)
-		return
-	}
-	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
-}
-
 func (ctl *PermintaanDarahController) Update(c *gin.Context) {
 	var req dto.UpdatePermintaanDarahRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

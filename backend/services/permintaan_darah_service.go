@@ -12,7 +12,6 @@ type PermintaanDarahService interface {
 	Create(req dto.CreatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
 	GetByID(id string) (*dto.PermintaanDarahResponse, error)
 	GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]dto.PermintaanDarahResponse, int, error)
-	GetByRsID(rsID string) (dto.PermintaanDarahResponse, error)
 	Update(id string, req dto.UpdatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
 	Delete(id string, userID *string, userName string, userRole string, userAgent *string) error
 	Restore(id string, userID *string, userName string, userRole string, userAgent *string) error
@@ -92,15 +91,6 @@ func (s *permintaanDarahService) GetAll(filters *dto.PermintaanDarahFilters, lim
 		result = append(result, mapPermintaanToResponse(item))
 	}
 	return result, int(total), nil
-}
-
-func (s *permintaanDarahService) GetByRsID(rsID string) (dto.PermintaanDarahResponse, error) {
-	data, err := s.repo.GetByRsID(rsID)
-	if err != nil {
-		return dto.PermintaanDarahResponse{}, err
-	}
-	resp := mapPermintaanToResponse(data)
-	return resp, nil
 }
 
 func (s *permintaanDarahService) Update(id string, req dto.UpdatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error) {

@@ -60,7 +60,6 @@ func RegisterAPIRoutes(
 	permintaan := api.Group("/permintaan-darah")
 	permintaan.POST("", permintaanController.Create)
 	permintaan.GET("", permintaanController.GetAll)
-	permintaan.GET("/rumah-sakit/:rsId", permintaanController.GetByRsID)
 	permintaan.GET("/:id", permintaanController.GetByID)
 	permintaan.PUT("/:id", permintaanController.Update)
 	permintaan.DELETE("/:id", permintaanController.Delete)

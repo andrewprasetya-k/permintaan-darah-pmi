@@ -12,7 +12,6 @@ type PermintaanDarahRepository interface {
 	Create(data *models.PermintaanDarah) error
 	GetByID(pdID string) (*models.PermintaanDarah, error)
 	GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]models.PermintaanDarah, error)
-	GetByRsID(rsID string) (models.PermintaanDarah, error)
 	Count() (int64, error)
 	Update(data *models.PermintaanDarah) error
 	Delete(data *models.PermintaanDarah) error
@@ -78,16 +77,6 @@ func (r *permintaanDarahRepository) GetAll(filters *dto.PermintaanDarahFilters, 
 	err := query.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
-	}
-
-	return list, nil
-}
-
-func (r *permintaanDarahRepository) GetByRsID(rsID string) (models.PermintaanDarah, error) {
-	var list models.PermintaanDarah
-	err := r.db.Where("is_deleted = ?", false).Where("pd_rs_id = ?", rsID).Preload("Details.KomponenDarah").First(&list).Error
-	if err != nil {
-		return models.PermintaanDarah{}, err
 	}
 
 	return list, nil
