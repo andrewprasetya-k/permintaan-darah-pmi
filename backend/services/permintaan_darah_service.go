@@ -150,7 +150,7 @@ func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.Perm
 	// Auto-create status log
 	notes := fmt.Sprintf("Status berubah dari %s menjadi %s", oldStatus, newStatus)
 	if reason != nil {
-		notes = fmt.Sprintf("%s. Reason: %s", notes, *reason)
+		notes = fmt.Sprintf("%s. Alasan: %s", notes, *reason)
 	}
 
 	log := models.StatusLog{
