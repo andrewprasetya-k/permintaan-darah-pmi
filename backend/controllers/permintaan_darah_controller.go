@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type PermintaanDarahController struct {
@@ -121,10 +122,34 @@ func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	_, err := ctl.service.UpdateStatus(c.Param("id"), req.Status, req.Reason)
+
+	adminID, adminNama := getAdminFromJWT(c)
+
+	_, err := ctl.service.UpdateStatus(c.Param("id"), req.Status, req.Reason, adminID, adminNama)
 	if err != nil {
 		handleError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true})
+}
+
+func getAdminFromJWT(c *gin.Context) (*string, string) {
+	claims, exists := c.Get("claims")
+	if !exists {
+		return nil, "Unknown Admin"
+	}
+
+	jwtClaims, ok := claims.(jwt.MapClaims)
+	if !ok {
+		return nil, "Unknown Admin"
+	}
+
+	adminID, _ := jwtClaims["admin_id"].(string)
+	adminNama, _ := jwtClaims["admin_nama"].(string)
+
+	if adminID == "" || adminNama == "" {
+		return nil, "Unknown Admin"
+	}
+
+	return &adminID, adminNama
 }

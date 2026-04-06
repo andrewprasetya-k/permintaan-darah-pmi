@@ -5,6 +5,7 @@ import (
 	"backend/models"
 	"backend/repository"
 	"errors"
+	"fmt"
 )
 
 type PermintaanDarahService interface {
@@ -16,15 +17,16 @@ type PermintaanDarahService interface {
 	Delete(id string) error
 	Restore(id string) error
 
-	UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string) (*dto.PermintaanDarahResponse, error)
+	UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string, adminID *string, adminNama string) (*dto.PermintaanDarahResponse, error)
 }
 
 type permintaanDarahService struct {
-	repo repository.PermintaanDarahRepository
+	repo          repository.PermintaanDarahRepository
+	statusLogRepo repository.StatusLogRepository
 }
 
-func NewPermintaanDarahService(repo repository.PermintaanDarahRepository) PermintaanDarahService {
-	return &permintaanDarahService{repo: repo}
+func NewPermintaanDarahService(repo repository.PermintaanDarahRepository, statusLogRepo repository.StatusLogRepository) PermintaanDarahService {
+	return &permintaanDarahService{repo: repo, statusLogRepo: statusLogRepo}
 }
 
 func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error) {
@@ -123,7 +125,7 @@ func (s *permintaanDarahService) Restore(id string) error {
 	return s.repo.Restore(id)
 }
 
-func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string) (*dto.PermintaanDarahResponse, error) {
+func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string, adminID *string, adminNama string) (*dto.PermintaanDarahResponse, error) {
 	data, err := s.repo.GetByID(pdID)
 	if err != nil {
 		return nil, err
@@ -133,6 +135,7 @@ func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.Perm
 		return nil, errors.New("cannot update status of a completed or cancelled request")
 	}
 
+	oldStatus := data.PDStatus
 	data.PDStatus = newStatus
 	if newStatus == "dibatalkan" && reason == nil {
 		return nil, errors.New("reason is required")
@@ -142,6 +145,26 @@ func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.Perm
 	
 	if err := s.repo.Update(data); err != nil {
 		return nil, err
+	}
+
+	// Auto-create status log
+	notes := fmt.Sprintf("Status changed from %s to %s", oldStatus, newStatus)
+	if reason != nil {
+		notes = fmt.Sprintf("%s. Reason: %s", notes, *reason)
+	}
+
+	log := models.StatusLog{
+		LogPdID:       pdID,
+		LogAdminID:    adminID,
+		LogAdminNama:  adminNama,
+		LogStatusFrom: &oldStatus,
+		LogStatusTo:   newStatus,
+		LogNotes:      &notes,
+	}
+	
+	if err := s.statusLogRepo.Create(&log); err != nil {
+		// Log creation error tapi jangan return error (status update sudah sukses)
+		fmt.Printf("Warning: Failed to create status log: %v\n", err)
 	}
 
 	resp := mapPermintaanToResponse(*data)
