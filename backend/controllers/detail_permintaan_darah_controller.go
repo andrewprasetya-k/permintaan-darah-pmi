@@ -84,5 +84,5 @@ func (ctl *DetailPermintaanDarahController) Delete(c *gin.Context) {
 		handleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "deleted"})
+	c.JSON(http.StatusOK, gin.H{"message": "true"})
 }
