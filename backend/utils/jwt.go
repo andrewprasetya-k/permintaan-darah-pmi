@@ -75,14 +75,34 @@ func JWTMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		payload, err := ValidateJWT(parts[1])
-		if err != nil {
+		token, err := jwt.Parse(parts[1], func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, jwt.ErrSignatureInvalid
+			}
+			return []byte(os.Getenv("JWT_SECRET")), nil
+		})
+
+		if err != nil || !token.Valid {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
 			return
 		}
 
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
+			c.Abort()
+			return
+		}
+
+		payload := &dto.TokenPayload{
+			UserID:   claims["user_id"].(string),
+			Username: claims["username"].(string),
+			Role:     claims["role"].(string),
+		}
+
 		c.Set("user", payload)
+		c.Set("claims", claims)
 		c.Next()
 	}
 }
