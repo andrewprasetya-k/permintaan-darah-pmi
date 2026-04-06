@@ -22,7 +22,7 @@ type RumahSakitService interface {
 }
 
 type rumahSakitService struct {
-	repo                     repository.RumahSakitRepository
+	repo                   repository.RumahSakitRepository
 	systemAccessLogService SystemAccessLogService
 }
 

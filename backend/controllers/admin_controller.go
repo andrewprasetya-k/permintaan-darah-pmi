@@ -11,9 +11,9 @@ import (
 
 type AdminController struct {
 	service services.AdminService
-	}
+}
 
-	func NewAdminController(service services.AdminService) *AdminController {
+func NewAdminController(service services.AdminService) *AdminController {
 	return &AdminController{service: service}
 }
 

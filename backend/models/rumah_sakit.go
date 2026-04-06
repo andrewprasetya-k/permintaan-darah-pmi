@@ -9,7 +9,7 @@ type RumahSakit struct {
 	RSAlamat   string     `gorm:"column:rs_alamat" json:"alamat"`
 	RSEmail    *string    `gorm:"column:rs_email;unique" json:"email,omitempty"`
 	RSUsername string     `gorm:"column:rs_username;unique" json:"username"`
-	RSPassword string    `gorm:"column:rs_password" json:"password"`
+	RSPassword string     `gorm:"column:rs_password" json:"password"`
 	CreatedAt  time.Time  `gorm:"column:created_at" json:"createdAt"`
 	UpdatedAt  time.Time  `gorm:"column:updated_at" json:"updatedAt"`
 	DeletedAt  *time.Time `gorm:"column:deleted_at" json:"deletedAt,omitempty"`

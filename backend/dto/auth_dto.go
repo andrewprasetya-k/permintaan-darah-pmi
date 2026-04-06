@@ -9,7 +9,7 @@ type LoginResponse struct {
 	UserID   string `json:"id"`
 	Username string `json:"username"`
 	Role     string `json:"role"`
-	Token string `json:"token"`
+	Token    string `json:"token"`
 }
 
 type TokenPayload struct {

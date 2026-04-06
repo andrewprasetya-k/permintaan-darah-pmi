@@ -12,12 +12,12 @@ type KomponenDarahService interface {
 	GetAll(limit, offset int) ([]dto.KomponenDarahResponse, error)
 	Update(id int, req dto.UpdateKomponenDarahRequest) (*dto.KomponenDarahResponse, error)
 	Delete(id int) error
-	ActivateKomponenDarah(id int)(*dto.KomponenDarahResponse, error)
-	DeactivateKomponenDarah(id int)(*dto.KomponenDarahResponse, error)
+	ActivateKomponenDarah(id int) (*dto.KomponenDarahResponse, error)
+	DeactivateKomponenDarah(id int) (*dto.KomponenDarahResponse, error)
 }
 
 type komponenDarahService struct {
-	repo                     repository.KomponenDarahRepository
+	repo                   repository.KomponenDarahRepository
 	systemAccessLogService SystemAccessLogService
 }
 

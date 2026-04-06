@@ -18,7 +18,6 @@ type AdminRepository interface {
 	Restore(adminID string) error
 }
 
-
 type adminRepository struct {
 	db *gorm.DB
 }
@@ -37,7 +36,7 @@ func (r *adminRepository) GetByID(adminID string) (*models.Admin, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &data, nil
 }
 
@@ -48,13 +47,13 @@ func (r *adminRepository) GetAll(limit, offset int) ([]models.Admin, error) {
 	if offset < 0 {
 		offset = 0
 	}
-	
+
 	var list []models.Admin
 	err := r.db.Where("is_deleted = ?", false).Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return list, nil
 }
 

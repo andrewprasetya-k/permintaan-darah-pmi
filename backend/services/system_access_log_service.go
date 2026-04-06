@@ -10,12 +10,12 @@ type SystemAccessLogService interface {
 	Create(req dto.CreateSystemAccessLogRequest) (*dto.SystemAccessLogResponse, error)
 	GetByID(logID int64) (*dto.SystemAccessLogResponse, error)
 	GetAll(limit, offset int) (*dto.SystemAccessLogListResponse, error)
-	
+
 	GetByUserID(userID string, limit, offset int) (*dto.SystemAccessLogListResponse, error)
 	GetByAction(action string, limit, offset int) (*dto.SystemAccessLogListResponse, error)
 	GetByTargetTable(targetTable string, limit, offset int) (*dto.SystemAccessLogListResponse, error)
 	GetByTargetID(targetID string, limit, offset int) (*dto.SystemAccessLogListResponse, error)
-	
+
 	LogAction(
 		userID *string,
 		userName string,

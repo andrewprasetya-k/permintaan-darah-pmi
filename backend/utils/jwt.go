@@ -12,13 +12,12 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-
 func GenerateJWT(userID, username, role string) (string, error) {
 	payload := jwt.MapClaims{
-		"user_id": userID,
+		"user_id":  userID,
 		"username": username,
 		"role":     role,
-		"exp":     time.Now().Add(24 * time.Hour).Unix(),
+		"exp":      time.Now().Add(24 * time.Hour).Unix(),
 	}
 
 	secretKey := os.Getenv("JWT_SECRET")
@@ -29,7 +28,7 @@ func GenerateJWT(userID, username, role string) (string, error) {
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	tokenString, err := jwtToken.SignedString([]byte(secretKey))
 	if err != nil {
-		return "",err
+		return "", err
 	}
 	return tokenString, nil
 }

@@ -8,7 +8,7 @@ type CreateRumahSakitRequest struct {
 	RSAlamat   string  `json:"alamat" binding:"required"`
 	RSEmail    *string `json:"email,omitempty" binding:"omitempty,email"`
 	RSUsername string  `json:"username" binding:"required"`
-	RSPassword string `json:"password" binding:"required"`
+	RSPassword string  `json:"password" binding:"required"`
 }
 
 type UpdateRumahSakitRequest struct {
@@ -25,7 +25,7 @@ type RumahSakitResponse struct {
 	RSNoTelp   string     `json:"nomorTelepon"`
 	RSAlamat   string     `json:"alamat"`
 	RSEmail    *string    `json:"email,omitempty"`
-	RSUsername string  `json:"username" binding:"required"`
+	RSUsername string     `json:"username" binding:"required"`
 	RSPassword *string    `json:"password,omitempty"`
 	CreatedAt  time.Time  `json:"createdAt"`
 	UpdatedAt  time.Time  `json:"updatedAt"`

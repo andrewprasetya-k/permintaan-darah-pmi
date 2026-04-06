@@ -34,10 +34,10 @@ func (s *authService) AdminLogin(req dto.LoginRequest) (*dto.LoginResponse, erro
 		return nil, err
 	}
 	resp := dto.LoginResponse{
-		UserID: admin.AdminID,
+		UserID:   admin.AdminID,
 		Username: admin.AdminUsername,
-		Role: string(admin.AdminRole),
-		Token: token,
+		Role:     string(admin.AdminRole),
+		Token:    token,
 	}
 	return &resp, nil
 }
@@ -55,10 +55,10 @@ func (s *authService) RumahSakitLogin(req dto.LoginRequest) (*dto.LoginResponse,
 		return nil, err
 	}
 	resp := dto.LoginResponse{
-		UserID: rs.RSID,
+		UserID:   rs.RSID,
 		Username: rs.RSUsername,
-		Role: "rumah_sakit",
-		Token: token,
+		Role:     "rumah_sakit",
+		Token:    token,
 	}
 	return &resp, nil
 }

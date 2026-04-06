@@ -11,7 +11,7 @@ type SystemAccessLogRepository interface {
 	Create(data *models.SystemAccessLog) error
 	GetByID(logID int64) (*models.SystemAccessLog, error)
 	GetAll(limit, offset int) ([]models.SystemAccessLog, int64, error)
-	
+
 	GetByUserID(userID string, limit, offset int) ([]models.SystemAccessLog, int64, error)
 	GetByAction(action string, limit, offset int) ([]models.SystemAccessLog, int64, error)
 	GetByTargetTable(targetTable string, limit, offset int) ([]models.SystemAccessLog, int64, error)

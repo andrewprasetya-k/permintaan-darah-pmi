@@ -23,7 +23,7 @@ func RegisterAPIRoutes(
 	//utils
 	dashboard := api.Group("/dashboard")
 	dashboard.GET("/status-summary/:rumahSakitID", dashboardController.StatusSummary)
-	
+
 	filter := api.Group("/filter")
 	filter.GET("/rumah-sakit/", rumahSakitController.GetDistinctRSNama)
 

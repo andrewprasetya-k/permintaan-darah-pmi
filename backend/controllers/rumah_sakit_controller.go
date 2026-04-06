@@ -1,124 +1,124 @@
 package controllers
 
 import (
-"backend/dto"
-"backend/services"
-"net/http"
+	"backend/dto"
+	"backend/services"
+	"net/http"
 
-"github.com/golang-jwt/jwt/v5"
-"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type RumahSakitController struct {
-service services.RumahSakitService
+	service services.RumahSakitService
 }
 
 func NewRumahSakitController(service services.RumahSakitService) *RumahSakitController {
-return &RumahSakitController{service: service}
+	return &RumahSakitController{service: service}
 }
 
 func (ctl *RumahSakitController) Create(c *gin.Context) {
-var req dto.CreateRumahSakitRequest
-if err := c.ShouldBindJSON(&req); err != nil {
-c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-return
-}
+	var req dto.CreateRumahSakitRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
 
-// Extract user context
-userID, userName, userRole := extractUserFromJWT(c)
-userAgent := c.GetHeader("User-Agent")
+	// Extract user context
+	userID, userName, userRole := extractUserFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
 
-resp, err := ctl.service.Create(req, userID, userName, userRole, &userAgent)
-if err != nil {
-handleError(c, err)
-return
-}
-c.JSON(http.StatusCreated, resp)
+	resp, err := ctl.service.Create(req, userID, userName, userRole, &userAgent)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusCreated, resp)
 }
 
 func (ctl *RumahSakitController) GetByID(c *gin.Context) {
-resp, err := ctl.service.GetByID(c.Param("id"))
-if err != nil {
-handleError(c, err)
-return
-}
-c.JSON(http.StatusOK, resp)
+	resp, err := ctl.service.GetByID(c.Param("id"))
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
 func (ctl *RumahSakitController) GetAll(c *gin.Context) {
-limit, offset := parsePagination(c)
-resp, err := ctl.service.GetAll(limit, offset)
-if err != nil {
-handleError(c, err)
-return
-}
-c.JSON(http.StatusOK, resp)
+	limit, offset := parsePagination(c)
+	resp, err := ctl.service.GetAll(limit, offset)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
 func (ctl *RumahSakitController) Update(c *gin.Context) {
-var req dto.UpdateRumahSakitRequest
-if err := c.ShouldBindJSON(&req); err != nil {
-c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-return
-}
+	var req dto.UpdateRumahSakitRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
 
-// Extract user context
-userID, userName, userRole := extractUserFromJWT(c)
-userAgent := c.GetHeader("User-Agent")
+	// Extract user context
+	userID, userName, userRole := extractUserFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
 
-resp, err := ctl.service.Update(c.Param("id"), req, userID, userName, userRole, &userAgent)
-if err != nil {
-handleError(c, err)
-return
-}
-c.JSON(http.StatusOK, resp)
+	resp, err := ctl.service.Update(c.Param("id"), req, userID, userName, userRole, &userAgent)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
 func (ctl *RumahSakitController) Delete(c *gin.Context) {
-// Extract user context
-userID, userName, userRole := extractUserFromJWT(c)
-userAgent := c.GetHeader("User-Agent")
+	// Extract user context
+	userID, userName, userRole := extractUserFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
 
-if err := ctl.service.Delete(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
-handleError(c, err)
-return
-}
-c.JSON(http.StatusOK, gin.H{"success": true})
+	if err := ctl.service.Delete(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
 func (ctl *RumahSakitController) Restore(c *gin.Context) {
-// Extract user context
-userID, userName, userRole := extractUserFromJWT(c)
-userAgent := c.GetHeader("User-Agent")
+	// Extract user context
+	userID, userName, userRole := extractUserFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
 
-if err := ctl.service.Restore(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
-handleError(c, err)
-return
-}
-c.JSON(http.StatusOK, gin.H{"success": true})
+	if err := ctl.service.Restore(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
 func (ctl *RumahSakitController) GetDistinctRSNama(c *gin.Context) {
-resp, err := ctl.service.GetDistinctRSNama()
-if err != nil {
-handleError(c, err)
-return
-}
-c.JSON(http.StatusOK, resp)
+	resp, err := ctl.service.GetDistinctRSNama()
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
 // Helper function to extract user from JWT
 func extractUserFromJWT(c *gin.Context) (*string, string, string) {
-claims, _ := c.Get("claims")
-if claims == nil {
-return nil, "Unknown User", "unknown"
-}
+	claims, _ := c.Get("claims")
+	if claims == nil {
+		return nil, "Unknown User", "unknown"
+	}
 
-jwtClaims := claims.(jwt.MapClaims)
+	jwtClaims := claims.(jwt.MapClaims)
 
-userID, _ := jwtClaims["admin_id"].(string)
-userName, _ := jwtClaims["admin_nama"].(string)
-userRole, _ := jwtClaims["admin_role"].(string)
+	userID, _ := jwtClaims["admin_id"].(string)
+	userName, _ := jwtClaims["admin_nama"].(string)
+	userRole, _ := jwtClaims["admin_role"].(string)
 
-return &userID, userName, userRole
+	return &userID, userName, userRole
 }

@@ -28,5 +28,3 @@ func (r *dashboardRepository) StatusSummary(rumahSakitID string) ([]int, error) 
 	}
 	return status, nil
 }
-
-	

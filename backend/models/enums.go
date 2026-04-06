@@ -26,7 +26,7 @@ const (
 type PermintaanStatusEnum string
 
 const (
-	StatusDibuat    PermintaanStatusEnum = "dibuat"
+	StatusDibuat      PermintaanStatusEnum = "dibuat"
 	StatusDiproses    PermintaanStatusEnum = "diproses"
 	StatusBisaDiambil PermintaanStatusEnum = "bisa_diambil"
 	StatusSelesai     PermintaanStatusEnum = "selesai"

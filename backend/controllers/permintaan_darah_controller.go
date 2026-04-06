@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/dto"
+	"backend/models"
 	"backend/services"
 	"net/http"
 	"time"
@@ -24,7 +25,11 @@ func (ctl *PermintaanDarahController) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	resp, err := ctl.service.Create(req)
+
+	userID, userName, userRole := extractUserFromContext(c)
+	userAgent := c.GetHeader("User-Agent")
+
+	resp, err := ctl.service.Create(req, userID, userName, userRole, &userAgent)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -42,32 +47,33 @@ func (ctl *PermintaanDarahController) GetByID(c *gin.Context) {
 }
 
 func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
+	status := c.Query("status")
+	rsID := c.Query("rsID")
+	golDarah := c.Query("golDarah")
+	startDateStr := c.Query("startDate")
+	endDateStr := c.Query("endDate")
+
+	var startDate, endDate *time.Time
+	if startDateStr != "" {
+		if t, err := time.Parse("2006-01-02", startDateStr); err == nil {
+			startDate = &t
+		}
+	}
+	if endDateStr != "" {
+		if t, err := time.Parse("2006-01-02", endDateStr); err == nil {
+			endDate = &t
+		}
+	}
+
+	filters := &dto.PermintaanDarahFilters{
+		Status:    &status,
+		RsID:      &rsID,
+		GolDarah:  &golDarah,
+		StartDate: startDate,
+		EndDate:   endDate,
+	}
+
 	limit, offset := parsePagination(c)
-	
-	filters := &dto.PermintaanDarahFilters{}
-	if status := c.Query("status"); status != "" {
-		filters.Status = &status
-	}
-	if rsID := c.Query("id"); rsID != "" {
-		filters.RsID = &rsID
-	}
-	if gender := c.Query("gender"); gender != "" {
-		filters.Gender = &gender
-	}
-	if golDarah := c.Query("gol_darah"); golDarah != "" {
-		filters.GolDarah = &golDarah
-	}
-	if startDate := c.Query("start_date"); startDate != "" {
-		if t, err := time.Parse("2006-01-02", startDate); err == nil {
-			filters.StartDate = &t
-		}
-	}
-	if endDate := c.Query("end_date"); endDate != "" {
-		if t, err := time.Parse("2006-01-02", endDate); err == nil {
-			filters.EndDate = &t
-		}
-	}
-	
 	resp, err := ctl.service.GetAll(filters, limit, offset)
 	if err != nil {
 		handleError(c, err)
@@ -78,7 +84,7 @@ func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 
 func (ctl *PermintaanDarahController) GetByRsID(c *gin.Context) {
 	limit, offset := parsePagination(c)
-	resp, err := ctl.service.GetByRsID(c.Param("rsId"), limit, offset)
+	resp, err := ctl.service.GetByRsID(c.Param("rsID"), limit, offset)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -92,7 +98,11 @@ func (ctl *PermintaanDarahController) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	resp, err := ctl.service.Update(c.Param("id"), req)
+
+	userID, userName, userRole := extractUserFromContext(c)
+	userAgent := c.GetHeader("User-Agent")
+
+	resp, err := ctl.service.Update(c.Param("id"), req, userID, userName, userRole, &userAgent)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -101,55 +111,59 @@ func (ctl *PermintaanDarahController) Update(c *gin.Context) {
 }
 
 func (ctl *PermintaanDarahController) Delete(c *gin.Context) {
-	if err := ctl.service.Delete(c.Param("id")); err != nil {
-		handleError(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "deleted successfully"})
-}
+	userID, userName, userRole := extractUserFromContext(c)
+	userAgent := c.GetHeader("User-Agent")
 
-func (ctl *PermintaanDarahController) Restore(c *gin.Context) {
-	if err := ctl.service.Restore(c.Param("id")); err != nil {
-		handleError(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "restored successfully"})
-}
-
-func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
-	var req dto.UpdatePermintaanStatusRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
-	}
-
-	adminID, adminNama := getAdminFromJWT(c)
-
-	_, err := ctl.service.UpdateStatus(c.Param("id"), req.Status, req.Reason, adminID, adminNama)
-	if err != nil {
+	if err := ctl.service.Delete(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
 		handleError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
-func getAdminFromJWT(c *gin.Context) (*string, string) {
-	claims, exists := c.Get("claims")
-	if !exists {
-		return nil, "Unknown Admin"
+func (ctl *PermintaanDarahController) Restore(c *gin.Context) {
+	userID, userName, userRole := extractUserFromContext(c)
+	userAgent := c.GetHeader("User-Agent")
+
+	if err := ctl.service.Restore(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true})
+}
+
+func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
+	var req struct {
+		Status string  `json:"status" binding:"required"`
+		Reason *string `json:"reason"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
 	}
 
-	jwtClaims, ok := claims.(jwt.MapClaims)
-	if !ok {
-		return nil, "Unknown Admin"
+	userID, userName, userRole := extractUserFromContext(c)
+	userAgent := c.GetHeader("User-Agent")
+
+	resp, err := ctl.service.UpdateStatus(c.Param("id"), models.PermintaanStatusEnum(req.Status), req.Reason, userID, userName, userRole, &userAgent)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+func extractUserFromContext(c *gin.Context) (*string, string, string) {
+	claims, _ := c.Get("claims")
+	if claims == nil {
+		return nil, "Unknown User", "unknown"
 	}
 
-	adminID, _ := jwtClaims["admin_id"].(string)
-	adminNama, _ := jwtClaims["admin_nama"].(string)
+	jwtClaims := claims.(jwt.MapClaims)
 
-	if adminID == "" || adminNama == "" {
-		return nil, "Unknown Admin"
-	}
+	userID, _ := jwtClaims["admin_id"].(string)
+	userName, _ := jwtClaims["admin_nama"].(string)
+	userRole, _ := jwtClaims["admin_role"].(string)
 
-	return &adminID, adminNama
+	return &userID, userName, userRole
 }

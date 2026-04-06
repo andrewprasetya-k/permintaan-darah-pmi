@@ -40,7 +40,7 @@ func main() {
 	adminSvc := services.NewAdminService(adminRepo, systemAccessLogSvc)
 	rumahSakitSvc := services.NewRumahSakitService(rumahSakitRepo, systemAccessLogSvc)
 	komponenSvc := services.NewKomponenDarahService(komponenRepo, systemAccessLogSvc)
-	permintaanSvc := services.NewPermintaanDarahService(permintaanRepo, statusLogRepo)
+	permintaanSvc := services.NewPermintaanDarahService(permintaanRepo, statusLogRepo, systemAccessLogSvc)
 	detailSvc := services.NewDetailPermintaanDarahService(detailRepo)
 	statusLogSvc := services.NewStatusLogService(statusLogRepo)
 	dashboardSvc := services.NewDashboardService(dashboardRepo)

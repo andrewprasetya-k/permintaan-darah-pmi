@@ -3,11 +3,11 @@ package models
 import "time"
 
 type DetailPermintaanDarah struct {
-	DPDID            int           `gorm:"column:dpd_id;primaryKey;autoIncrement" json:"detailId"`
-	DPDPDID          string        `gorm:"column:dpd_pd_id" json:"permintaanDarahId"`
-	DPDKomID         int           `gorm:"column:dpd_kom_id" json:"komponenDarahId"`
+	DPDID    int    `gorm:"column:dpd_id;primaryKey;autoIncrement" json:"detailId"`
+	DPDPDID  string `gorm:"column:dpd_pd_id" json:"permintaanDarahId"`
+	DPDKomID int    `gorm:"column:dpd_kom_id" json:"komponenDarahId"`
 
-	KomponenDarah    KomponenDarah `gorm:"foreignKey:DPDKomID;references:KomID" json:"komponenDarah"`
+	KomponenDarah KomponenDarah `gorm:"foreignKey:DPDKomID;references:KomID" json:"komponenDarah"`
 
 	DPDGolonganDarah BloodTypeEnum `gorm:"column:dpd_golongan_darah" json:"golonganDarah"`
 	DPDRhesus        RhesusEnum    `gorm:"column:dpd_rhesus" json:"rhesusDarah"`

@@ -9,27 +9,28 @@ import (
 )
 
 type PermintaanDarahService interface {
-	Create(req dto.CreatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error)
+	Create(req dto.CreatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
 	GetByID(id string) (*dto.PermintaanDarahResponse, error)
 	GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]dto.PermintaanDarahResponse, error)
 	GetByRsID(rsID string, limit, offset int) ([]dto.PermintaanDarahResponse, error)
-	Update(id string, req dto.UpdatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error)
-	Delete(id string) error
-	Restore(id string) error
+	Update(id string, req dto.UpdatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
+	Delete(id string, userID *string, userName string, userRole string, userAgent *string) error
+	Restore(id string, userID *string, userName string, userRole string, userAgent *string) error
 
-	UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string, adminID *string, adminNama string) (*dto.PermintaanDarahResponse, error)
+	UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
 }
 
 type permintaanDarahService struct {
-	repo          repository.PermintaanDarahRepository
-	statusLogRepo repository.StatusLogRepository
+	repo                   repository.PermintaanDarahRepository
+	statusLogRepo          repository.StatusLogRepository
+	systemAccessLogService SystemAccessLogService
 }
 
-func NewPermintaanDarahService(repo repository.PermintaanDarahRepository, statusLogRepo repository.StatusLogRepository) PermintaanDarahService {
-	return &permintaanDarahService{repo: repo, statusLogRepo: statusLogRepo}
+func NewPermintaanDarahService(repo repository.PermintaanDarahRepository, statusLogRepo repository.StatusLogRepository, systemAccessLogService SystemAccessLogService) PermintaanDarahService {
+	return &permintaanDarahService{repo: repo, statusLogRepo: statusLogRepo, systemAccessLogService: systemAccessLogService}
 }
 
-func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error) {
+func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error) {
 	data := models.PermintaanDarah{
 		PDRsID:              req.PDRsID,
 		PDNamaPasien:        req.PDNamaPasien,
@@ -51,6 +52,19 @@ func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest) (*
 	if err := s.repo.Create(&data); err != nil {
 		return nil, err
 	}
+
+	// ✅ Auto-log: Create
+	_, _ = s.systemAccessLogService.LogAction(
+		userID,
+		userName,
+		userRole,
+		"CREATE",
+		stringPtr("permintaan_darah"),
+		stringPtr(data.PDID),
+		fmt.Sprintf("Created permintaan darah untuk pasien: %s (gol darah: %v%v)", data.PDNamaPasien, data.PDGolDarah, data.PDRhesus),
+		userAgent,
+	)
+
 	resp := mapPermintaanToResponse(data)
 	return &resp, nil
 }
@@ -88,11 +102,23 @@ func (s *permintaanDarahService) GetByRsID(rsID string, limit, offset int) ([]dt
 	return result, nil
 }
 
-func (s *permintaanDarahService) Update(id string, req dto.UpdatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error) {
+func (s *permintaanDarahService) Update(id string, req dto.UpdatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error) {
 	data, err := s.repo.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
+
+	changes := []string{}
+	if data.PDNamaPasien != req.PDNamaPasien {
+		changes = append(changes, fmt.Sprintf("nama pasien: %s → %s", data.PDNamaPasien, req.PDNamaPasien))
+	}
+	if data.PDGolDarah != req.PDGolDarah {
+		changes = append(changes, fmt.Sprintf("gol darah: %v → %v", data.PDGolDarah, req.PDGolDarah))
+	}
+	if data.PDStatus != req.PDStatus {
+		changes = append(changes, fmt.Sprintf("status: %s → %s", data.PDStatus, req.PDStatus))
+	}
+
 	data.PDRsID = req.PDRsID
 	data.PDNamaPasien = req.PDNamaPasien
 	data.PDNoRM = req.PDNoRM
@@ -113,19 +139,74 @@ func (s *permintaanDarahService) Update(id string, req dto.UpdatePermintaanDarah
 	if err := s.repo.Update(data); err != nil {
 		return nil, err
 	}
+
+	if len(changes) > 0 {
+		notes := fmt.Sprintf("Updated permintaan darah %s: changed", id)
+		_, _ = s.systemAccessLogService.LogAction(
+			userID,
+			userName,
+			userRole,
+			"UPDATE",
+			stringPtr("permintaan_darah"),
+			stringPtr(id),
+			notes,
+			userAgent,
+		)
+	}
+
 	resp := mapPermintaanToResponse(*data)
 	return &resp, nil
 }
 
-func (s *permintaanDarahService) Delete(id string) error {
-	return s.repo.SoftDelete(id)
+func (s *permintaanDarahService) Delete(id string, userID *string, userName string, userRole string, userAgent *string) error {
+	pd, err := s.repo.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	if err := s.repo.SoftDelete(id); err != nil {
+		return err
+	}
+
+	_, _ = s.systemAccessLogService.LogAction(
+		userID,
+		userName,
+		userRole,
+		"SOFT_DELETE",
+		stringPtr("permintaan_darah"),
+		stringPtr(id),
+		fmt.Sprintf("Soft deleted permintaan darah untuk pasien: %s", pd.PDNamaPasien),
+		userAgent,
+	)
+
+	return nil
 }
 
-func (s *permintaanDarahService) Restore(id string) error {
-	return s.repo.Restore(id)
+func (s *permintaanDarahService) Restore(id string, userID *string, userName string, userRole string, userAgent *string) error {
+	pd, err := s.repo.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	if err := s.repo.Restore(id); err != nil {
+		return err
+	}
+
+	_, _ = s.systemAccessLogService.LogAction(
+		userID,
+		userName,
+		userRole,
+		"RESTORE",
+		stringPtr("permintaan_darah"),
+		stringPtr(id),
+		fmt.Sprintf("Restored permintaan darah untuk pasien: %s", pd.PDNamaPasien),
+		userAgent,
+	)
+
+	return nil
 }
 
-func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string, adminID *string, adminNama string) (*dto.PermintaanDarahResponse, error) {
+func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error) {
 	data, err := s.repo.GetByID(pdID)
 	if err != nil {
 		return nil, err
@@ -142,7 +223,7 @@ func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.Perm
 	} else if newStatus == "dibatalkan" && reason != nil {
 		data.PDCancelReason = reason
 	}
-	
+
 	if err := s.repo.Update(data); err != nil {
 		return nil, err
 	}
@@ -154,18 +235,33 @@ func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.Perm
 	}
 
 	log := models.StatusLog{
-		LogPdID:       pdID,
-		LogAdminID:    adminID,
-		LogAdminNama:  adminNama,
+		LogPdID:    pdID,
+		LogAdminID: userID,
+
 		LogStatusFrom: &oldStatus,
 		LogStatusTo:   newStatus,
 		LogNotes:      &notes,
 	}
-	
+
 	if err := s.statusLogRepo.Create(&log); err != nil {
 		// Log creation error tapi jangan return error (status update sudah sukses)
 		fmt.Printf("Warning: Failed to create status log: %v\n", err)
 	}
+
+	logNotes := fmt.Sprintf("Updated status permintaan darah dari %s → %s", oldStatus, newStatus)
+	if reason != nil {
+		logNotes += fmt.Sprintf(" (reason: %s)", *reason)
+	}
+	_, _ = s.systemAccessLogService.LogAction(
+		userID,
+		userName,
+		userRole,
+		"UPDATE_STATUS",
+		stringPtr("permintaan_darah"),
+		stringPtr(pdID),
+		logNotes,
+		userAgent,
+	)
 
 	resp := mapPermintaanToResponse(*data)
 	return &resp, nil
@@ -177,7 +273,7 @@ func mapPermintaanToResponse(data models.PermintaanDarah) dto.PermintaanDarahRes
 		details = append(details, dto.DetailPermintaanDarahResponse{
 			DPDID:            d.DPDID,
 			DPDPDID:          d.DPDPDID,
-			KomponenNama:    d.KomponenDarah.KomNama,
+			KomponenNama:     d.KomponenDarah.KomNama,
 			DPDGolonganDarah: d.DPDGolonganDarah,
 			DPDRhesus:        d.DPDRhesus,
 			DPDJmlKantong:    d.DPDJmlKantong,
@@ -207,6 +303,6 @@ func mapPermintaanToResponse(data models.PermintaanDarah) dto.PermintaanDarahRes
 		CreatedAt:           data.CreatedAt,
 		UpdatedAt:           data.UpdatedAt,
 		DeletedAt:           data.DeletedAt,
-		Details:              details,
+		Details:             details,
 	}
 }

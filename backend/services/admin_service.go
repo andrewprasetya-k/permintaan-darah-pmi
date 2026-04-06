@@ -19,7 +19,7 @@ type AdminService interface {
 }
 
 type adminService struct {
-	repo                     repository.AdminRepository
+	repo                   repository.AdminRepository
 	systemAccessLogService SystemAccessLogService
 }
 

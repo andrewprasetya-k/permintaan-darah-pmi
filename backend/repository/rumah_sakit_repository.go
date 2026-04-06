@@ -71,8 +71,6 @@ func (r *rumahSakitRepository) GetDistinctRSNama() ([]dto.RumahSakitDistinctNama
 	return list, nil
 }
 
-
-
 func (r *rumahSakitRepository) GetByUsername(username string) (*models.RumahSakit, error) {
 	var data models.RumahSakit
 	err := r.db.Where("is_deleted = ?", false).First(&data, "rs_username = ?", username).Error

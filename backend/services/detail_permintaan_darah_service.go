@@ -34,13 +34,13 @@ func (s *detailPermintaanDarahService) Create(req dto.CreateDetailPermintaanDara
 	if err := s.repo.Create(&data); err != nil {
 		return nil, err
 	}
-	
+
 	// Fetch ulang untuk load KomponenDarah
 	fetchedData, err := s.repo.GetByID(data.DPDID)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	resp := mapDetailPermintaanToResponse(*fetchedData)
 	return &resp, nil
 }
