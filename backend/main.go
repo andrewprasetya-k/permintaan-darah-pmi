@@ -36,13 +36,13 @@ func main() {
 
 	// service initialization
 	authSvc := services.NewAuthService(adminRepo, rumahSakitRepo)
-	adminSvc := services.NewAdminService(adminRepo)
+	systemAccessLogSvc := services.NewSystemAccessLogService(systemAccessLogRepo)
+	adminSvc := services.NewAdminService(adminRepo, systemAccessLogSvc)
 	rumahSakitSvc := services.NewRumahSakitService(rumahSakitRepo)
 	komponenSvc := services.NewKomponenDarahService(komponenRepo)
 	permintaanSvc := services.NewPermintaanDarahService(permintaanRepo, statusLogRepo)
 	detailSvc := services.NewDetailPermintaanDarahService(detailRepo)
 	statusLogSvc := services.NewStatusLogService(statusLogRepo)
-	systemAccessLogSvc := services.NewSystemAccessLogService(systemAccessLogRepo)
 	dashboardSvc := services.NewDashboardService(dashboardRepo)
 
 	// controller initialization

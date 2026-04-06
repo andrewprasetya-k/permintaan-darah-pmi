@@ -6,13 +6,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type AdminController struct {
 	service services.AdminService
-}
+	}
 
-func NewAdminController(service services.AdminService) *AdminController {
+	func NewAdminController(service services.AdminService) *AdminController {
 	return &AdminController{service: service}
 }
 
@@ -22,7 +23,12 @@ func (ctl *AdminController) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	resp, err := ctl.service.Create(req)
+
+	// Extract user context
+	userID, userName, userRole := extractAdminFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
+
+	resp, err := ctl.service.Create(req, userID, userName, userRole, &userAgent)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -55,7 +61,12 @@ func (ctl *AdminController) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	resp, err := ctl.service.Update(c.Param("id"), req)
+
+	// Extract user context
+	userID, userName, userRole := extractAdminFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
+
+	resp, err := ctl.service.Update(c.Param("id"), req, userID, userName, userRole, &userAgent)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -64,17 +75,41 @@ func (ctl *AdminController) Update(c *gin.Context) {
 }
 
 func (ctl *AdminController) Delete(c *gin.Context) {
-	if err := ctl.service.Delete(c.Param("id")); err != nil {
+	// Extract user context
+	userID, userName, userRole := extractAdminFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
+
+	if err := ctl.service.Delete(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
 		handleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "deleted successfully"})
+	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
 func (ctl *AdminController) Restore(c *gin.Context) {
-	if err := ctl.service.Restore(c.Param("id")); err != nil {
+	// Extract user context
+	userID, userName, userRole := extractAdminFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
+
+	if err := ctl.service.Restore(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
 		handleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "restored successfully"})
+	c.JSON(http.StatusOK, gin.H{"success": true})
+}
+
+// Helper function to extract admin from JWT
+func extractAdminFromJWT(c *gin.Context) (*string, string, string) {
+	claims, _ := c.Get("claims")
+	if claims == nil {
+		return nil, "Unknown User", "unknown"
+	}
+
+	jwtClaims := claims.(jwt.MapClaims)
+
+	adminID, _ := jwtClaims["admin_id"].(string)
+	adminNama, _ := jwtClaims["admin_nama"].(string)
+	adminRole, _ := jwtClaims["admin_role"].(string)
+
+	return &adminID, adminNama, adminRole
 }
