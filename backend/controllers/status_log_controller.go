@@ -48,25 +48,3 @@ func (ctl *StatusLogController) GetAll(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, resp)
 }
-
-func (ctl *StatusLogController) Update(c *gin.Context) {
-	var req dto.UpdateStatusLogRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return
-	}
-	resp, err := ctl.service.Update(c.Param("id"), req)
-	if err != nil {
-		handleError(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, resp)
-}
-
-func (ctl *StatusLogController) Delete(c *gin.Context) {
-	if err := ctl.service.Delete(c.Param("id")); err != nil {
-		handleError(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "deleted"})
-}
