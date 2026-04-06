@@ -75,7 +75,7 @@ func (r *permintaanDarahRepository) GetAll(filters *dto.PermintaanDarahFilters, 
 	}
 
 	var list []models.PermintaanDarah
-	err := query.Preload("Details.KomponenDarah").Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
+	err := query.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
