@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type RumahSakitController struct {
@@ -105,20 +104,4 @@ func (ctl *RumahSakitController) GetDistinctRSNama(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, resp)
-}
-
-// Helper function to extract user from JWT
-func extractUserFromJWT(c *gin.Context) (*string, string, string) {
-	claims, _ := c.Get("claims")
-	if claims == nil {
-		return nil, "Unknown User", "unknown"
-	}
-
-	jwtClaims := claims.(jwt.MapClaims)
-
-	userID, _ := jwtClaims["admin_id"].(string)
-	userName, _ := jwtClaims["admin_nama"].(string)
-	userRole, _ := jwtClaims["admin_role"].(string)
-
-	return &userID, userName, userRole
 }

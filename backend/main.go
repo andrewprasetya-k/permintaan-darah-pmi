@@ -35,13 +35,13 @@ func main() {
 	dashboardRepo := repository.NewDashboardRepository(db)
 
 	// service initialization
-	authSvc := services.NewAuthService(adminRepo, rumahSakitRepo)
 	systemAccessLogSvc := services.NewSystemAccessLogService(systemAccessLogRepo)
+	authSvc := services.NewAuthService(adminRepo, rumahSakitRepo, systemAccessLogSvc)
 	adminSvc := services.NewAdminService(adminRepo, systemAccessLogSvc)
 	rumahSakitSvc := services.NewRumahSakitService(rumahSakitRepo, systemAccessLogSvc)
 	komponenSvc := services.NewKomponenDarahService(komponenRepo, systemAccessLogSvc)
 	permintaanSvc := services.NewPermintaanDarahService(permintaanRepo, statusLogRepo, systemAccessLogSvc)
-	detailSvc := services.NewDetailPermintaanDarahService(detailRepo)
+	detailSvc := services.NewDetailPermintaanDarahService(detailRepo, systemAccessLogSvc)
 	statusLogSvc := services.NewStatusLogService(statusLogRepo)
 	dashboardSvc := services.NewDashboardService(dashboardRepo)
 

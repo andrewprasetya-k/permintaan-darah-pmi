@@ -26,7 +26,7 @@ func (ctl *PermintaanDarahController) Create(c *gin.Context) {
 		return
 	}
 
-	userID, userName, userRole := extractUserFromContext(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
 	resp, err := ctl.service.Create(req, userID, userName, userRole, &userAgent)
@@ -99,7 +99,7 @@ func (ctl *PermintaanDarahController) Update(c *gin.Context) {
 		return
 	}
 
-	userID, userName, userRole := extractUserFromContext(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
 	resp, err := ctl.service.Update(c.Param("id"), req, userID, userName, userRole, &userAgent)
@@ -111,7 +111,7 @@ func (ctl *PermintaanDarahController) Update(c *gin.Context) {
 }
 
 func (ctl *PermintaanDarahController) Delete(c *gin.Context) {
-	userID, userName, userRole := extractUserFromContext(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
 	if err := ctl.service.Delete(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
@@ -122,7 +122,7 @@ func (ctl *PermintaanDarahController) Delete(c *gin.Context) {
 }
 
 func (ctl *PermintaanDarahController) Restore(c *gin.Context) {
-	userID, userName, userRole := extractUserFromContext(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
 	if err := ctl.service.Restore(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
@@ -142,7 +142,7 @@ func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
 		return
 	}
 
-	userID, userName, userRole := extractUserFromContext(c)
+	userID, userName, userRole := extractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
 	resp, err := ctl.service.UpdateStatus(c.Param("id"), models.PermintaanStatusEnum(req.Status), req.Reason, userID, userName, userRole, &userAgent)
@@ -153,7 +153,7 @@ func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-func extractUserFromContext(c *gin.Context) (*string, string, string) {
+func extractUserFromJWT(c *gin.Context) (*string, string, string) {
 	claims, _ := c.Get("claims")
 	if claims == nil {
 		return nil, "Unknown User", "unknown"
