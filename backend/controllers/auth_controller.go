@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/dto"
+	"backend/utils"
 	"backend/services"
 	"net/http"
 
@@ -19,27 +20,27 @@ func NewAuthController(service services.AuthService) *AuthController {
 func (ctl *AuthController) AdminLogin(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
 		return
 	}
 	resp, err := ctl.service.AdminLogin(req)
 	if err != nil {
-		handleError(c, err)
+		utils.HandleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, resp)
+	utils.SendSuccess(c, http.StatusOK, "Login successful", resp)
 }
 
 func (ctl *AuthController) RumahSakitLogin(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
 		return
 	}
 	resp, err := ctl.service.RumahSakitLogin(req)
 	if err != nil {
-		handleError(c, err)
+		utils.HandleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, resp)
+	utils.SendSuccess(c, http.StatusOK, "Login successful", resp)
 }

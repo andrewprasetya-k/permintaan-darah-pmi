@@ -11,6 +11,7 @@ type AdminRepository interface {
 	Create(data *models.Admin) error
 	GetByID(adminID string) (*models.Admin, error)
 	GetAll(limit, offset int) ([]models.Admin, error)
+	Count() (int64, error)
 	GetByUsername(username string) (*models.Admin, error)
 	Update(data *models.Admin) error
 	Delete(data *models.Admin) error
@@ -87,4 +88,10 @@ func (r *adminRepository) Restore(adminID string) error {
 		"is_deleted": false,
 		"deleted_at": nil,
 	}).Error
+}
+
+func (r *adminRepository) Count() (int64, error) {
+	var count int64
+	err := r.db.Model(&models.Admin{}).Where("is_deleted = ?", false).Count(&count).Error
+	return count, err
 }

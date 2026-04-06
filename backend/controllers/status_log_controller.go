@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/dto"
+	"backend/utils"
 	"backend/services"
 	"net/http"
 
@@ -19,32 +20,32 @@ func NewStatusLogController(service services.StatusLogService) *StatusLogControl
 func (ctl *StatusLogController) Create(c *gin.Context) {
 	var req dto.CreateStatusLogRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
 		return
 	}
 	resp, err := ctl.service.Create(req)
 	if err != nil {
-		handleError(c, err)
+		utils.HandleError(c, err)
 		return
 	}
-	c.JSON(http.StatusCreated, resp)
+	utils.SendSuccess(c, http.StatusCreated, "Created successfully", resp)
 }
 
 func (ctl *StatusLogController) GetByID(c *gin.Context) {
 	resp, err := ctl.service.GetByID(c.Param("id"))
 	if err != nil {
-		handleError(c, err)
+		utils.HandleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, resp)
+	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
 }
 
 func (ctl *StatusLogController) GetAll(c *gin.Context) {
-	limit, offset := parsePagination(c)
+	limit, offset := utils.ParsePagination(c)
 	resp, err := ctl.service.GetAll(limit, offset)
 	if err != nil {
-		handleError(c, err)
+		utils.HandleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, resp)
+	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
 }

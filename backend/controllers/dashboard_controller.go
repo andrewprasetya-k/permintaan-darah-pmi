@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/services"
+	"backend/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,8 +20,8 @@ func (ctl *DashboardController) StatusSummary(c *gin.Context) {
 	rumahSakitID := c.Param("rumahSakitID")
 	resp, err := ctl.service.StatusSummary(rumahSakitID)
 	if err != nil {
-		handleError(c, err)
+		utils.HandleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, resp)
+	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
 }

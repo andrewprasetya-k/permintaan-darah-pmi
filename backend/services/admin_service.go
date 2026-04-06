@@ -12,7 +12,7 @@ import (
 type AdminService interface {
 	Create(req dto.CreateAdminRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.AdminResponse, error)
 	GetByID(id string) (*dto.AdminResponse, error)
-	GetAll(limit, offset int) ([]dto.AdminResponse, error)
+	GetAll(limit, offset int) ([]dto.AdminResponse, int, error)
 	Update(id string, req dto.UpdateAdminRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.AdminResponse, error)
 	Delete(id string, userID *string, userName string, userRole string, userAgent *string) error
 	Restore(id string, userID *string, userName string, userRole string, userAgent *string) error
@@ -67,16 +67,22 @@ func (s *adminService) GetByID(id string) (*dto.AdminResponse, error) {
 	return &resp, nil
 }
 
-func (s *adminService) GetAll(limit, offset int) ([]dto.AdminResponse, error) {
+func (s *adminService) GetAll(limit, offset int) ([]dto.AdminResponse, int, error) {
 	list, err := s.repo.GetAll(limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
+	
+	total, err := s.repo.Count()
+	if err != nil {
+		return nil, 0, err
+	}
+	
 	result := make([]dto.AdminResponse, 0, len(list))
 	for _, item := range list {
 		result = append(result, mapAdminToResponse(item))
 	}
-	return result, nil
+	return result, int(total), nil
 }
 
 func (s *adminService) Update(id string, req dto.UpdateAdminRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.AdminResponse, error) {
