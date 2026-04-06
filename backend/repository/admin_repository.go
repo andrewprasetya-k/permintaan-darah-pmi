@@ -2,6 +2,7 @@ package repository
 
 import (
 	"backend/models"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -13,6 +14,8 @@ type AdminRepository interface {
 	GetByUsername(username string) (*models.Admin, error)
 	Update(data *models.Admin) error
 	Delete(data *models.Admin) error
+	SoftDelete(adminID string) error
+	Restore(adminID string) error
 }
 
 
@@ -30,7 +33,7 @@ func (r *adminRepository) Create(data *models.Admin) error {
 
 func (r *adminRepository) GetByID(adminID string) (*models.Admin, error) {
 	var data models.Admin
-	err := r.db.First(&data, "admin_id = ?", adminID).Error
+	err := r.db.Where("is_deleted = ?", false).First(&data, "admin_id = ?", adminID).Error
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +50,7 @@ func (r *adminRepository) GetAll(limit, offset int) ([]models.Admin, error) {
 	}
 	
 	var list []models.Admin
-	err := r.db.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
+	err := r.db.Where("is_deleted = ?", false).Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +60,7 @@ func (r *adminRepository) GetAll(limit, offset int) ([]models.Admin, error) {
 
 func (a *adminRepository) GetByUsername(username string) (*models.Admin, error) {
 	var data models.Admin
-	err := a.db.First(&data, "admin_username = ?", username).Error
+	err := a.db.Where("is_deleted = ?", false).First(&data, "admin_username = ?", username).Error
 	if err != nil {
 		return nil, err
 	}
@@ -71,4 +74,18 @@ func (r *adminRepository) Update(data *models.Admin) error {
 
 func (r *adminRepository) Delete(data *models.Admin) error {
 	return r.db.Delete(data).Error
+}
+
+func (r *adminRepository) SoftDelete(adminID string) error {
+	return r.db.Model(&models.Admin{}).Where("admin_id = ?", adminID).Updates(map[string]interface{}{
+		"is_deleted": true,
+		"deleted_at": time.Now(),
+	}).Error
+}
+
+func (r *adminRepository) Restore(adminID string) error {
+	return r.db.Model(&models.Admin{}).Where("admin_id = ?", adminID).Updates(map[string]interface{}{
+		"is_deleted": false,
+		"deleted_at": nil,
+	}).Error
 }

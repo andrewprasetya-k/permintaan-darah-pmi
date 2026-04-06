@@ -13,6 +13,7 @@ type RumahSakitService interface {
 	GetAll(limit, offset int) ([]dto.RumahSakitResponse, error)
 	Update(id string, req dto.UpdateRumahSakitRequest) (*dto.RumahSakitResponse, error)
 	Delete(id string) error
+	Restore(id string) error
 
 	//filter purpose
 	GetDistinctRSNama() ([]dto.RumahSakitDistinctNamaResponse, error)
@@ -90,11 +91,11 @@ func (s *rumahSakitService) Update(id string, req dto.UpdateRumahSakitRequest) (
 }
 
 func (s *rumahSakitService) Delete(id string) error {
-	data, err := s.repo.GetByID(id)
-	if err != nil {
-		return err
-	}
-	return s.repo.Delete(data)
+	return s.repo.SoftDelete(id)
+}
+
+func (s *rumahSakitService) Restore(id string) error {
+	return s.repo.Restore(id)
 }
 
 func mapRumahSakitToResponse(data models.RumahSakit) dto.RumahSakitResponse {

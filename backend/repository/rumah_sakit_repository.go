@@ -3,6 +3,7 @@ package repository
 import (
 	"backend/dto"
 	"backend/models"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -14,6 +15,8 @@ type RumahSakitRepository interface {
 	GetByUsername(username string) (*models.RumahSakit, error)
 	Update(data *models.RumahSakit) error
 	Delete(data *models.RumahSakit) error
+	SoftDelete(rsID string) error
+	Restore(rsID string) error
 
 	//filter purpose
 	GetDistinctRSNama() ([]dto.RumahSakitDistinctNamaResponse, error)
@@ -33,7 +36,7 @@ func (r *rumahSakitRepository) Create(data *models.RumahSakit) error {
 
 func (r *rumahSakitRepository) GetByID(rsID string) (*models.RumahSakit, error) {
 	var data models.RumahSakit
-	err := r.db.First(&data, "rs_id = ?", rsID).Error
+	err := r.db.Where("is_deleted = ?", false).First(&data, "rs_id = ?", rsID).Error
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +53,7 @@ func (r *rumahSakitRepository) GetAll(limit, offset int) ([]models.RumahSakit, e
 	}
 
 	var list []models.RumahSakit
-	err := r.db.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
+	err := r.db.Where("is_deleted = ?", false).Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +75,7 @@ func (r *rumahSakitRepository) GetDistinctRSNama() ([]dto.RumahSakitDistinctNama
 
 func (r *rumahSakitRepository) GetByUsername(username string) (*models.RumahSakit, error) {
 	var data models.RumahSakit
-	err := r.db.First(&data, "rs_username = ?", username).Error
+	err := r.db.Where("is_deleted = ?", false).First(&data, "rs_username = ?", username).Error
 	if err != nil {
 		return nil, err
 	}
@@ -85,4 +88,18 @@ func (r *rumahSakitRepository) Update(data *models.RumahSakit) error {
 
 func (r *rumahSakitRepository) Delete(data *models.RumahSakit) error {
 	return r.db.Delete(data).Error
+}
+
+func (r *rumahSakitRepository) SoftDelete(rsID string) error {
+	return r.db.Model(&models.RumahSakit{}).Where("rs_id = ?", rsID).Updates(map[string]interface{}{
+		"is_deleted": true,
+		"deleted_at": time.Now(),
+	}).Error
+}
+
+func (r *rumahSakitRepository) Restore(rsID string) error {
+	return r.db.Model(&models.RumahSakit{}).Where("rs_id = ?", rsID).Updates(map[string]interface{}{
+		"is_deleted": false,
+		"deleted_at": nil,
+	}).Error
 }

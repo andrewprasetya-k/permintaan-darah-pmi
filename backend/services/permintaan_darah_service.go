@@ -14,6 +14,7 @@ type PermintaanDarahService interface {
 	GetByRsID(rsID string, limit, offset int) ([]dto.PermintaanDarahResponse, error)
 	Update(id string, req dto.UpdatePermintaanDarahRequest) (*dto.PermintaanDarahResponse, error)
 	Delete(id string) error
+	Restore(id string) error
 
 	UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string) (*dto.PermintaanDarahResponse, error)
 }
@@ -115,11 +116,11 @@ func (s *permintaanDarahService) Update(id string, req dto.UpdatePermintaanDarah
 }
 
 func (s *permintaanDarahService) Delete(id string) error {
-	data, err := s.repo.GetByID(id)
-	if err != nil {
-		return err
-	}
-	return s.repo.Delete(data)
+	return s.repo.SoftDelete(id)
+}
+
+func (s *permintaanDarahService) Restore(id string) error {
+	return s.repo.Restore(id)
 }
 
 func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string) (*dto.PermintaanDarahResponse, error) {

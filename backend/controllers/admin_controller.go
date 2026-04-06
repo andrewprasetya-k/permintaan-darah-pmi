@@ -68,5 +68,13 @@ func (ctl *AdminController) Delete(c *gin.Context) {
 		handleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "deleted"})
+	c.JSON(http.StatusOK, gin.H{"message": "deleted successfully"})
+}
+
+func (ctl *AdminController) Restore(c *gin.Context) {
+	if err := ctl.service.Restore(c.Param("id")); err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "restored successfully"})
 }

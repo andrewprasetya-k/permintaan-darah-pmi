@@ -3,6 +3,7 @@ package repository
 import (
 	"backend/dto"
 	"backend/models"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -14,6 +15,8 @@ type PermintaanDarahRepository interface {
 	GetByRsID(rsID string, limit, offset int) ([]models.PermintaanDarah, error)
 	Update(data *models.PermintaanDarah) error
 	Delete(data *models.PermintaanDarah) error
+	SoftDelete(pdID string) error
+	Restore(pdID string) error
 }
 
 type permintaanDarahRepository struct {
@@ -32,7 +35,7 @@ func (r *permintaanDarahRepository) Create(data *models.PermintaanDarah) error {
 
 func (r *permintaanDarahRepository) GetByID(pdID string) (*models.PermintaanDarah, error) {
 	var data models.PermintaanDarah
-	err := r.db.Preload("Details.KomponenDarah").First(&data, "pd_id = ?", pdID).Error
+	err := r.db.Where("is_deleted = ?", false).Preload("Details.KomponenDarah").First(&data, "pd_id = ?", pdID).Error
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +51,7 @@ func (r *permintaanDarahRepository) GetAll(filters *dto.PermintaanDarahFilters, 
 		offset = 0
 	}
 
-	query := r.db
+	query := r.db.Where("is_deleted = ?", false)
 	if filters != nil {
 		if filters.Status != nil {
 			query = query.Where("pd_status = ?", *filters.Status)
@@ -88,7 +91,7 @@ func (r *permintaanDarahRepository) GetByRsID(rsID string, limit, offset int) ([
 	}
 
 	var list []models.PermintaanDarah
-	err := r.db.Preload("Details.KomponenDarah").Where("pd_rs_id = ?", rsID).Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
+	err := r.db.Where("is_deleted = ?", false).Where("pd_rs_id = ?", rsID).Preload("Details.KomponenDarah").Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
@@ -102,4 +105,18 @@ func (r *permintaanDarahRepository) Update(data *models.PermintaanDarah) error {
 
 func (r *permintaanDarahRepository) Delete(data *models.PermintaanDarah) error {
 	return r.db.Delete(data).Error
+}
+
+func (r *permintaanDarahRepository) SoftDelete(pdID string) error {
+	return r.db.Model(&models.PermintaanDarah{}).Where("pd_id = ?", pdID).Updates(map[string]interface{}{
+		"is_deleted": true,
+		"deleted_at": time.Now(),
+	}).Error
+}
+
+func (r *permintaanDarahRepository) Restore(pdID string) error {
+	return r.db.Model(&models.PermintaanDarah{}).Where("pd_id = ?", pdID).Updates(map[string]interface{}{
+		"is_deleted": false,
+		"deleted_at": nil,
+	}).Error
 }

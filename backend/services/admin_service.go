@@ -13,6 +13,7 @@ type AdminService interface {
 	GetAll(limit, offset int) ([]dto.AdminResponse, error)
 	Update(id string, req dto.UpdateAdminRequest) (*dto.AdminResponse, error)
 	Delete(id string) error
+	Restore(id string) error
 }
 
 type adminService struct {
@@ -82,11 +83,11 @@ func (s *adminService) Update(id string, req dto.UpdateAdminRequest) (*dto.Admin
 }
 
 func (s *adminService) Delete(id string) error {
-	data, err := s.repo.GetByID(id)
-	if err != nil {
-		return err
-	}
-	return s.repo.Delete(data)
+	return s.repo.SoftDelete(id)
+}
+
+func (s *adminService) Restore(id string) error {
+	return s.repo.Restore(id)
 }
 
 func mapAdminToResponse(data models.Admin) dto.AdminResponse {

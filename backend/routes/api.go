@@ -37,6 +37,7 @@ func RegisterAPIRoutes(
 	admins.GET("/:id", adminController.GetByID)
 	admins.PUT("/:id", adminController.Update)
 	admins.DELETE("/:id", adminController.Delete)
+	admins.PUT("/restore/:id", adminController.Restore)
 
 	rumahSakit := api.Group("/rumah-sakit")
 	rumahSakit.POST("", rumahSakitController.Create)
@@ -44,6 +45,7 @@ func RegisterAPIRoutes(
 	rumahSakit.GET("/:id", rumahSakitController.GetByID)
 	rumahSakit.PUT("/:id", rumahSakitController.Update)
 	rumahSakit.DELETE("/:id", rumahSakitController.Delete)
+	rumahSakit.PUT("/restore/:id", rumahSakitController.Restore)
 
 	komponen := api.Group("/komponen-darah")
 	komponen.POST("", komponenController.Create)
@@ -61,6 +63,7 @@ func RegisterAPIRoutes(
 	permintaan.GET("/rumah-sakit/:rsId", permintaanController.GetByRsID)
 	permintaan.PUT("/:id", permintaanController.Update)
 	permintaan.DELETE("/:id", permintaanController.Delete)
+	permintaan.PUT("/restore/:id", permintaanController.Restore)
 	//approval endpoints
 	permintaan.PUT("/update/:id", permintaanController.UpdateStatus)
 

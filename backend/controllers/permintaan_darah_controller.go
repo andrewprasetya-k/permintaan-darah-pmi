@@ -104,7 +104,15 @@ func (ctl *PermintaanDarahController) Delete(c *gin.Context) {
 		handleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "deleted"})
+	c.JSON(http.StatusOK, gin.H{"message": "deleted successfully"})
+}
+
+func (ctl *PermintaanDarahController) Restore(c *gin.Context) {
+	if err := ctl.service.Restore(c.Param("id")); err != nil {
+		handleError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "restored successfully"})
 }
 
 func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
