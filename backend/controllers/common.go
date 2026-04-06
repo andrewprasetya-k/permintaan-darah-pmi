@@ -38,9 +38,9 @@ func extractUserFromJWT(c *gin.Context) (*string, string, string) {
 
 	jwtClaims := claims.(jwt.MapClaims)
 
-	userID, _ := jwtClaims["admin_id"].(string)
-	userName, _ := jwtClaims["admin_nama"].(string)
-	userRole, _ := jwtClaims["admin_role"].(string)
+	userID, _ := jwtClaims["user_id"].(string)
+	userName, _ := jwtClaims["username"].(string)
+	userRole, _ := jwtClaims["role"].(string)
 
 	return &userID, userName, userRole
 }
