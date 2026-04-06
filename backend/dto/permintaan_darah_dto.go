@@ -88,8 +88,10 @@ type PermintaanDarahResponse struct {
 }
 
 type PermintaanDarahFilters struct {
-	Status   *string
-	RsID     *string
-	Gender   *string
-	GolDarah *string
+	Status    *string
+	RsID      *string
+	Gender    *string
+	GolDarah  *string
+	StartDate *time.Time
+	EndDate   *time.Time
 }

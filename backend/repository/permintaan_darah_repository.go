@@ -62,6 +62,12 @@ func (r *permintaanDarahRepository) GetAll(filters *dto.PermintaanDarahFilters, 
 		if filters.GolDarah != nil {
 			query = query.Where("pd_gol_darah = ?", *filters.GolDarah)
 		}
+		if filters.StartDate != nil {
+			query = query.Where("DATE(pd_tgl_permintaan) >= ?", filters.StartDate.Format("2006-01-02"))
+		}
+		if filters.EndDate != nil {
+			query = query.Where("DATE(pd_tgl_permintaan) <= ?", filters.EndDate.Format("2006-01-02"))
+		}
 	}
 
 	var list []models.PermintaanDarah

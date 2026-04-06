@@ -4,6 +4,7 @@ import (
 	"backend/dto"
 	"backend/services"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -54,6 +55,16 @@ func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 	}
 	if golDarah := c.Query("gol_darah"); golDarah != "" {
 		filters.GolDarah = &golDarah
+	}
+	if startDate := c.Query("start_date"); startDate != "" {
+		if t, err := time.Parse("2006-01-02", startDate); err == nil {
+			filters.StartDate = &t
+		}
+	}
+	if endDate := c.Query("end_date"); endDate != "" {
+		if t, err := time.Parse("2006-01-02", endDate); err == nil {
+			filters.EndDate = &t
+		}
 	}
 	
 	resp, err := ctl.service.GetAll(filters, limit, offset)
