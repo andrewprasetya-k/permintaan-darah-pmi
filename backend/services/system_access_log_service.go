@@ -9,7 +9,7 @@ import (
 type SystemAccessLogService interface {
 	Create(req dto.CreateSystemAccessLogRequest) (*dto.SystemAccessLogResponse, error)
 	GetByID(logID int64) (*dto.SystemAccessLogResponse, error)
-	GetAll(limit, offset int) (*dto.SystemAccessLogListResponse, error)
+	GetAll(limit, offset int) (*dto.SystemAccessLogListResponse, int, error)
 
 	GetByUserID(userID string, limit, offset int) (*dto.SystemAccessLogListResponse, error)
 	GetByAction(action string, limit, offset int) (*dto.SystemAccessLogListResponse, error)
@@ -64,10 +64,10 @@ func (s *systemAccessLogService) GetByID(logID int64) (*dto.SystemAccessLogRespo
 	return mapToResponse(log), nil
 }
 
-func (s *systemAccessLogService) GetAll(limit, offset int) (*dto.SystemAccessLogListResponse, error) {
+func (s *systemAccessLogService) GetAll(limit, offset int) (*dto.SystemAccessLogListResponse, int, error) {
 	logs, total, err := s.repo.GetAll(limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	return &dto.SystemAccessLogListResponse{
@@ -75,7 +75,7 @@ func (s *systemAccessLogService) GetAll(limit, offset int) (*dto.SystemAccessLog
 		Total:    total,
 		Page:     offset/limit + 1,
 		PageSize: limit,
-	}, nil
+	}, int(total), nil
 }
 
 func (s *systemAccessLogService) GetByUserID(userID string, limit, offset int) (*dto.SystemAccessLogListResponse, error) {

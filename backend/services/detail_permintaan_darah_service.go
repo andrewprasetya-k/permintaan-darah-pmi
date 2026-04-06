@@ -10,7 +10,7 @@ import (
 type DetailPermintaanDarahService interface {
 	Create(req dto.CreateDetailPermintaanDarahRequest, userID *string, userName, userRole string) (*dto.DetailPermintaanDarahResponse, error)
 	GetByID(id int) (*dto.DetailPermintaanDarahResponse, error)
-	GetAll(limit, offset int) ([]dto.DetailPermintaanDarahResponse, error)
+	GetAll(limit, offset int) ([]dto.DetailPermintaanDarahResponse, int, error)
 	Update(id int, req dto.UpdateDetailPermintaanDarahRequest, userID *string, userName, userRole string) (*dto.DetailPermintaanDarahResponse, error)
 	Delete(id int, userID *string, userName, userRole string) error
 }
@@ -57,16 +57,20 @@ func (s *detailPermintaanDarahService) GetByID(id int) (*dto.DetailPermintaanDar
 	return &resp, nil
 }
 
-func (s *detailPermintaanDarahService) GetAll(limit, offset int) ([]dto.DetailPermintaanDarahResponse, error) {
+func (s *detailPermintaanDarahService) GetAll(limit, offset int) ([]dto.DetailPermintaanDarahResponse, int, error) {
 	list, err := s.repo.GetAll(limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
+	}
+	total, err := s.repo.Count()
+	if err != nil {
+		return nil, 0, err
 	}
 	result := make([]dto.DetailPermintaanDarahResponse, 0, len(list))
 	for _, item := range list {
 		result = append(result, mapDetailPermintaanToResponse(item))
 	}
-	return result, nil
+	return result, int(total), nil
 }
 
 func (s *detailPermintaanDarahService) Update(id int, req dto.UpdateDetailPermintaanDarahRequest, userID *string, userName, userRole string) (*dto.DetailPermintaanDarahResponse, error) {

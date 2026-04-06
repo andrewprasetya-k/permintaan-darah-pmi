@@ -21,12 +21,12 @@ func (ctl *SystemAccessLogController) GetAll(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 
-	result, err := ctl.service.GetAll(limit, offset)
+	result, count, err := ctl.service.GetAll(limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, result)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Operation successful", result, count, limit, offset)
 }
 
 func (ctl *SystemAccessLogController) GetByID(c *gin.Context) {

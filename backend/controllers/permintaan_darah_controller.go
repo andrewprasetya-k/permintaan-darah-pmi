@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"backend/dto"
-	"backend/utils"
 	"backend/models"
 	"backend/services"
+	"backend/utils"
 	"net/http"
 	"time"
 
@@ -43,7 +43,7 @@ func (ctl *PermintaanDarahController) GetByID(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
 }
 
 func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
@@ -74,12 +74,12 @@ func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 	}
 
 	limit, offset := utils.ParsePagination(c)
-	resp, err := ctl.service.GetAll(filters, limit, offset)
+	resp, total, err := ctl.service.GetAll(filters, limit, offset)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
 }
 
 func (ctl *PermintaanDarahController) GetByRsID(c *gin.Context) {
@@ -89,7 +89,7 @@ func (ctl *PermintaanDarahController) GetByRsID(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
 }
 
 func (ctl *PermintaanDarahController) Update(c *gin.Context) {
@@ -107,7 +107,7 @@ func (ctl *PermintaanDarahController) Update(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
 }
 
 func (ctl *PermintaanDarahController) Delete(c *gin.Context) {
@@ -150,5 +150,5 @@ func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
 }

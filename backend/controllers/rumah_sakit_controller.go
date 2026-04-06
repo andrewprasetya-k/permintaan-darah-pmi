@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"backend/dto"
-	"backend/utils"
 	"backend/services"
+	"backend/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -42,17 +42,17 @@ func (ctl *RumahSakitController) GetByID(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
 }
 
 func (ctl *RumahSakitController) GetAll(c *gin.Context) {
 	limit, offset := utils.ParsePagination(c)
-	resp, err := ctl.service.GetAll(limit, offset)
+	resp, total, err := ctl.service.GetAll(limit, offset)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
 }
 
 func (ctl *RumahSakitController) Update(c *gin.Context) {
@@ -71,7 +71,7 @@ func (ctl *RumahSakitController) Update(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data updated successfully", resp)
 }
 
 func (ctl *RumahSakitController) Delete(c *gin.Context) {
@@ -104,5 +104,5 @@ func (ctl *RumahSakitController) GetDistinctRSNama(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
 }

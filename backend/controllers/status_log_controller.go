@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"backend/dto"
-	"backend/utils"
 	"backend/services"
+	"backend/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -37,15 +37,15 @@ func (ctl *StatusLogController) GetByID(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
 }
 
 func (ctl *StatusLogController) GetAll(c *gin.Context) {
 	limit, offset := utils.ParsePagination(c)
-	resp, err := ctl.service.GetAll(limit, offset)
+	resp, total, err := ctl.service.GetAll(limit, offset)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
 }

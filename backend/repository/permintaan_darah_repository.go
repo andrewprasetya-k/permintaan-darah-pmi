@@ -13,6 +13,7 @@ type PermintaanDarahRepository interface {
 	GetByID(pdID string) (*models.PermintaanDarah, error)
 	GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]models.PermintaanDarah, error)
 	GetByRsID(rsID string, limit, offset int) ([]models.PermintaanDarah, error)
+	Count() (int64, error)
 	Update(data *models.PermintaanDarah) error
 	Delete(data *models.PermintaanDarah) error
 	SoftDelete(pdID string) error
@@ -119,4 +120,10 @@ func (r *permintaanDarahRepository) Restore(pdID string) error {
 		"is_deleted": false,
 		"deleted_at": nil,
 	}).Error
+}
+
+func (r *permintaanDarahRepository) Count() (int64, error) {
+var count int64
+err := r.db.Model(&models.PermintaanDarah{}).Where("is_deleted = ?", false).Count(&count).Error
+return count, err
 }

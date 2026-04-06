@@ -12,7 +12,7 @@ import (
 type RumahSakitService interface {
 	Create(req dto.CreateRumahSakitRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.RumahSakitResponse, error)
 	GetByID(id string) (*dto.RumahSakitResponse, error)
-	GetAll(limit, offset int) ([]dto.RumahSakitResponse, error)
+	GetAll(limit, offset int) ([]dto.RumahSakitResponse, int, error)
 	Update(id string, req dto.UpdateRumahSakitRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.RumahSakitResponse, error)
 	Delete(id string, userID *string, userName string, userRole string, userAgent *string) error
 	Restore(id string, userID *string, userName string, userRole string, userAgent *string) error
@@ -71,16 +71,20 @@ func (s *rumahSakitService) GetByID(id string) (*dto.RumahSakitResponse, error) 
 	return &resp, nil
 }
 
-func (s *rumahSakitService) GetAll(limit, offset int) ([]dto.RumahSakitResponse, error) {
+func (s *rumahSakitService) GetAll(limit, offset int) ([]dto.RumahSakitResponse, int, error) {
 	list, err := s.repo.GetAll(limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	result := make([]dto.RumahSakitResponse, 0, len(list))
 	for _, item := range list {
 		result = append(result, mapRumahSakitToResponse(item))
 	}
-	return result, nil
+	total, err := s.repo.Count()
+	if err != nil {
+		return nil, 0, err
+	}
+	return result, int(total), nil
 }
 
 func (s *rumahSakitService) GetDistinctRSNama() ([]dto.RumahSakitDistinctNamaResponse, error) {

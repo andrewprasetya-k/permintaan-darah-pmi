@@ -12,6 +12,7 @@ type RumahSakitRepository interface {
 	Create(data *models.RumahSakit) error
 	GetByID(rsID string) (*models.RumahSakit, error)
 	GetAll(limit, offset int) ([]models.RumahSakit, error)
+	Count() (int64, error)
 	GetByUsername(username string) (*models.RumahSakit, error)
 	Update(data *models.RumahSakit) error
 	Delete(data *models.RumahSakit) error
@@ -100,4 +101,10 @@ func (r *rumahSakitRepository) Restore(rsID string) error {
 		"is_deleted": false,
 		"deleted_at": nil,
 	}).Error
+}
+
+func (r *rumahSakitRepository) Count() (int64, error) {
+	var count int64
+	err := r.db.Model(&models.RumahSakit{}).Where("is_deleted = ?", false).Count(&count).Error
+	return count, err
 }

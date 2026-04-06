@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"backend/dto"
-	"backend/utils"
 	"backend/services"
+	"backend/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

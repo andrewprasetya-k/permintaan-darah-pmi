@@ -174,3 +174,9 @@ func (r *systemAccessLogRepository) GetByDateRange(startDate, endDate time.Time,
 
 	return list, total, nil
 }
+
+func (r *systemAccessLogRepository) Count() (int64, error) {
+var count int64
+err := r.db.Model(&models.SystemAccessLog{}).Where("is_deleted = ?", false).Count(&count).Error
+return count, err
+}

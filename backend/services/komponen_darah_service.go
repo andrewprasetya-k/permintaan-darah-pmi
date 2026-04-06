@@ -11,7 +11,7 @@ import (
 type KomponenDarahService interface {
 	Create(req dto.CreateKomponenDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.KomponenDarahResponse, error)
 	GetByID(id int) (*dto.KomponenDarahResponse, error)
-	GetAll(limit, offset int) ([]dto.KomponenDarahResponse, error)
+	GetAll(limit, offset int) ([]dto.KomponenDarahResponse, int, error)
 	Update(id int, req dto.UpdateKomponenDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.KomponenDarahResponse, error)
 	Delete(id int, userID *string, userName string, userRole string, userAgent *string) error
 	ActivateKomponenDarah(id int, userID *string, userName string, userRole string, userAgent *string) (*dto.KomponenDarahResponse, error)
@@ -61,16 +61,20 @@ func (s *komponenDarahService) GetByID(id int) (*dto.KomponenDarahResponse, erro
 	return &resp, nil
 }
 
-func (s *komponenDarahService) GetAll(limit, offset int) ([]dto.KomponenDarahResponse, error) {
+func (s *komponenDarahService) GetAll(limit, offset int) ([]dto.KomponenDarahResponse, int, error) {
 	list, err := s.repo.GetAll(limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	result := make([]dto.KomponenDarahResponse, 0, len(list))
 	for _, item := range list {
 		result = append(result, mapKomponenToResponse(item))
 	}
-	return result, nil
+	total, err := s.repo.Count()
+	if err != nil {
+		return nil, 0, err
+	}
+	return result, int(total), nil
 }
 
 func (s *komponenDarahService) Update(id int, req dto.UpdateKomponenDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.KomponenDarahResponse, error) {

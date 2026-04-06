@@ -9,7 +9,7 @@ import (
 type StatusLogService interface {
 	Create(req dto.CreateStatusLogRequest) (*dto.StatusLogResponse, error)
 	GetByID(id string) (*dto.StatusLogResponse, error)
-	GetAll(limit, offset int) ([]dto.StatusLogResponse, error)
+	GetAll(limit, offset int) ([]dto.StatusLogResponse, int, error)
 }
 
 type statusLogService struct {
@@ -43,16 +43,20 @@ func (s *statusLogService) GetByID(id string) (*dto.StatusLogResponse, error) {
 	return &resp, nil
 }
 
-func (s *statusLogService) GetAll(limit, offset int) ([]dto.StatusLogResponse, error) {
+func (s *statusLogService) GetAll(limit, offset int) ([]dto.StatusLogResponse, int, error) {
 	list, err := s.repo.GetAll(limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	result := make([]dto.StatusLogResponse, 0, len(list))
 	for _, item := range list {
 		result = append(result, mapStatusLogToResponse(item))
 	}
-	return result, nil
+	total, err := s.repo.Count()
+	if err != nil {
+		return nil, 0, err
+	}
+	return result, int(total), nil
 }
 
 func mapStatusLogToResponse(data models.StatusLog) dto.StatusLogResponse {

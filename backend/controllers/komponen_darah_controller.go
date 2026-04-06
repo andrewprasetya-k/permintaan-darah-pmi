@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"backend/dto"
-	"backend/utils"
 	"backend/services"
+	"backend/utils"
 	"net/http"
 	"strconv"
 
@@ -46,17 +46,17 @@ func (ctl *KomponenDarahController) GetByID(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
 }
 
 func (ctl *KomponenDarahController) GetAll(c *gin.Context) {
 	limit, offset := utils.ParsePagination(c)
-	resp, err := ctl.service.GetAll(limit, offset)
+	resp, total, err := ctl.service.GetAll(limit, offset)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
 }
 
 func (ctl *KomponenDarahController) Update(c *gin.Context) {
@@ -78,7 +78,7 @@ func (ctl *KomponenDarahController) Update(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Updated successfully", resp)
 }
 
 func (ctl *KomponenDarahController) Delete(c *gin.Context) {
@@ -111,7 +111,7 @@ func (ctl *KomponenDarahController) Activate(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Komponen activated successfuly", resp)
 }
 
 func (ctl *KomponenDarahController) Deactivate(c *gin.Context) {
@@ -128,5 +128,5 @@ func (ctl *KomponenDarahController) Deactivate(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Komponen deactivated successfuly", resp)
 }

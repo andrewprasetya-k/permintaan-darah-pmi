@@ -10,6 +10,7 @@ type DetailPermintaanDarahRepository interface {
 	Create(data *models.DetailPermintaanDarah) error
 	GetByID(dpdID int) (*models.DetailPermintaanDarah, error)
 	GetAll(limit, offset int) ([]models.DetailPermintaanDarah, error)
+	Count() (int64, error)
 	Update(data *models.DetailPermintaanDarah) error
 	Delete(data *models.DetailPermintaanDarah) error
 }
@@ -59,4 +60,10 @@ func (r *detailPermintaanDarahRepository) Update(data *models.DetailPermintaanDa
 
 func (r *detailPermintaanDarahRepository) Delete(data *models.DetailPermintaanDarah) error {
 	return r.db.Delete(data).Error
+}
+
+func (r *detailPermintaanDarahRepository) Count() (int64, error) {
+	var count int64
+	err := r.db.Model(&models.DetailPermintaanDarah{}).Where("is_deleted = ?", false).Count(&count).Error
+return count, err
 }

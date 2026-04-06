@@ -10,6 +10,7 @@ type KomponenDarahRepository interface {
 	Create(data *models.KomponenDarah) error
 	GetByID(komID int) (*models.KomponenDarah, error)
 	GetAll(limit, offset int) ([]models.KomponenDarah, error)
+	Count() (int64, error)
 	Update(data *models.KomponenDarah) error
 	Delete(data *models.KomponenDarah) error
 	ActivateKomponenDarah(komID int) (*models.KomponenDarah, error)
@@ -90,4 +91,10 @@ func (r *komponenDarahRepository) DeactivateKomponenDarah(komID int) (*models.Ko
 	}
 
 	return &data, nil
+}
+
+func (r *komponenDarahRepository) Count() (int64, error) {
+var count int64
+err := r.db.Model(&models.KomponenDarah{}).Where("is_deleted = ?", false).Count(&count).Error
+return count, err
 }

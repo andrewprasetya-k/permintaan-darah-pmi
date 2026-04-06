@@ -9,6 +9,7 @@ import (
 type StatusLogRepository interface {
 	Create(data *models.StatusLog) error
 	GetByID(logID string) (*models.StatusLog, error)
+	Count() (int64, error)
 	GetAll(limit, offset int) ([]models.StatusLog, error)
 }
 
@@ -49,4 +50,10 @@ func (r *statusLogRepository) GetAll(limit, offset int) ([]models.StatusLog, err
 	}
 
 	return list, nil
+}
+
+func (r *statusLogRepository) Count() (int64, error) {
+	var count int64
+	err := r.db.Model(&models.StatusLog{}).Where("is_deleted = ?", false).Count(&count).Error
+	return count, err
 }
