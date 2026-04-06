@@ -10,8 +10,6 @@ type StatusLogRepository interface {
 	Create(data *models.StatusLog) error
 	GetByID(logID string) (*models.StatusLog, error)
 	GetAll(limit, offset int) ([]models.StatusLog, error)
-	Update(data *models.StatusLog) error
-	Delete(data *models.StatusLog) error
 }
 
 type statusLogRepository struct {
@@ -51,12 +49,4 @@ func (r *statusLogRepository) GetAll(limit, offset int) ([]models.StatusLog, err
 	}
 
 	return list, nil
-}
-
-func (r *statusLogRepository) Update(data *models.StatusLog) error {
-	return r.db.Save(data).Error
-}
-
-func (r *statusLogRepository) Delete(data *models.StatusLog) error {
-	return r.db.Delete(data).Error
 }

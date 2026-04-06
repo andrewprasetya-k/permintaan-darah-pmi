@@ -10,8 +10,6 @@ type StatusLogService interface {
 	Create(req dto.CreateStatusLogRequest) (*dto.StatusLogResponse, error)
 	GetByID(id string) (*dto.StatusLogResponse, error)
 	GetAll(limit, offset int) ([]dto.StatusLogResponse, error)
-	Update(id string, req dto.UpdateStatusLogRequest) (*dto.StatusLogResponse, error)
-	Delete(id string) error
 }
 
 type statusLogService struct {
@@ -55,31 +53,6 @@ func (s *statusLogService) GetAll(limit, offset int) ([]dto.StatusLogResponse, e
 		result = append(result, mapStatusLogToResponse(item))
 	}
 	return result, nil
-}
-
-func (s *statusLogService) Update(id string, req dto.UpdateStatusLogRequest) (*dto.StatusLogResponse, error) {
-	data, err := s.repo.GetByID(id)
-	if err != nil {
-		return nil, err
-	}
-	data.LogPdID = req.LogPdID
-	data.LogAdminID = req.LogAdminID
-	data.LogStatusTo = req.LogStatusTo
-	data.LogNotes = req.LogNotes
-
-	if err := s.repo.Update(data); err != nil {
-		return nil, err
-	}
-	resp := mapStatusLogToResponse(*data)
-	return &resp, nil
-}
-
-func (s *statusLogService) Delete(id string) error {
-	data, err := s.repo.GetByID(id)
-	if err != nil {
-		return err
-	}
-	return s.repo.Delete(data)
 }
 
 func mapStatusLogToResponse(data models.StatusLog) dto.StatusLogResponse {
