@@ -75,9 +75,5 @@ func RegisterAPIRoutes(
 	detail.DELETE("/:id", detailController.Delete)
 
 	statusLogs := api.Group("/status-logs")
-	statusLogs.POST("", statusLogController.Create)
 	statusLogs.GET("", statusLogController.GetAll)
-	statusLogs.GET("/:id", statusLogController.GetByID)
-	statusLogs.PUT("/:id", statusLogController.Update)
-	statusLogs.DELETE("/:id", statusLogController.Delete)
 }
