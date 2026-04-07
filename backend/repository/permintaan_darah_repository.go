@@ -93,7 +93,7 @@ func (r *permintaanDarahRepository) GetByRsID(rsID string, limit, offset int) ([
 		return nil, 0, err
 	}
 
-	err := query.Preload("Details.KomponenDarah").Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
+	err := query.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, 0, err
 	}
