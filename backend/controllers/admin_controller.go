@@ -93,3 +93,52 @@ func (ctl *AdminController) Restore(c *gin.Context) {
 	}
 	utils.SendSuccess(c, http.StatusOK, "Admin restored successfully", nil)
 }
+
+func (ctl *AdminController) GetMe(c *gin.Context) {
+	userID, _, userRole := utils.ExtractUserFromJWT(c)
+
+	if userRole != "admin" && userRole != "superadmin" {
+		utils.SendError(c, http.StatusForbidden, "Only admin can access this endpoint")
+		return
+	}
+
+	if userID == nil || *userID == "" {
+		utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+		return
+	}
+
+	resp, err := ctl.service.GetByID(*userID)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+	utils.SendSuccess(c, http.StatusOK, "Admin retrieved successfully", resp)
+}
+
+func (ctl *AdminController) UpdateMe(c *gin.Context) {
+	var req dto.UpdateAdminRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		return
+	}
+
+	userID, userName, userRole := utils.ExtractUserFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
+
+	if userRole != "admin" && userRole != "superadmin" {
+		utils.SendError(c, http.StatusForbidden, "Only admin can access this endpoint")
+		return
+	}
+
+	if userID == nil || *userID == "" {
+		utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+		return
+	}
+
+	resp, err := ctl.service.Update(*userID, req, userID, userName, userRole, &userAgent)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+	utils.SendSuccess(c, http.StatusOK, "Admin profile updated successfully", resp)
+}
