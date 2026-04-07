@@ -60,6 +60,14 @@ func (ctrl *WebSocketController) handleRead(client *services.Client, hub *servic
 		client.Conn.Close()
 	}()
 
+	// Set longer timeout: 24 hours (keep alive during admin session)
+	client.Conn.SetReadDeadline(time.Now().Add(24 * time.Hour))
+	// Set pong handler to reset read deadline on pong messages
+	client.Conn.SetPongHandler(func(string) error {
+		client.Conn.SetReadDeadline(time.Now().Add(24 * time.Hour))
+		return nil
+	})
+
 	for {
 		var msg services.WebSocketMessage
 		err := client.Conn.ReadJSON(&msg)
@@ -77,10 +85,23 @@ func (ctrl *WebSocketController) handleRead(client *services.Client, hub *servic
 
 // handleWrite writes messages to WebSocket client
 func (ctrl *WebSocketController) handleWrite(client *services.Client) {
-	for msg := range client.Send {
-		err := client.Conn.WriteJSON(msg)
-		if err != nil {
-			return
+	ticker := time.NewTicker(30 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case msg := <-client.Send:
+			client.Conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+			err := client.Conn.WriteJSON(msg)
+			if err != nil {
+				return
+			}
+		case <-ticker.C:
+			// Send ping to keep connection alive
+			client.Conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+			if err := client.Conn.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
+				return
+			}
 		}
 	}
 }
