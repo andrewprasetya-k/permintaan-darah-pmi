@@ -4,6 +4,7 @@ import (
 	"backend/dto"
 	"backend/models"
 	"backend/repository"
+	"backend/utils"
 	"errors"
 	"fmt"
 )
@@ -33,6 +34,11 @@ func NewPermintaanDarahService(repo repository.PermintaanDarahRepository, status
 }
 
 func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error) {
+	// Validate input
+	if err := utils.ValidatePermintaanDarahInput(req.PDHemoglobin, req.PDTglLahir, req.PDTglPermintaan); err != nil {
+		return nil, err
+	}
+
 	data := models.PermintaanDarah{
 		PDRsID:              req.PDRsID,
 		PDNamaPasien:        req.PDNamaPasien,
@@ -111,6 +117,11 @@ func (s *permintaanDarahService) GetByRsID(rsID string, limit, offset int) ([]dt
 func (s *permintaanDarahService) Update(id string, req dto.UpdatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error) {
 	data, err := s.repo.GetByID(id)
 	if err != nil {
+		return nil, err
+	}
+
+	// Validate input
+	if err := utils.ValidatePermintaanDarahInput(req.PDHemoglobin, req.PDTglLahir, req.PDTglPermintaan); err != nil {
 		return nil, err
 	}
 
