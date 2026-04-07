@@ -24,12 +24,16 @@ func RegisterAPIRoutes(
 
 	// public routes (no JWT required)
 	auth := api.Group("/auth")
+	// Apply strict rate limiting to login endpoints (5 attempts per minute)
+	auth.Use(middleware.LoginRateLimiter())
 	auth.POST("/login/admin", authController.AdminLogin)
 	auth.POST("/login/rumah-sakit", authController.RumahSakitLogin)
 
 	// apply JWT middleware to all protected routes
 	protected := api.Group("")
 	protected.Use(utils.JWTMiddleware())
+	// Apply general rate limiting to all protected routes (100 requests per minute)
+	protected.Use(middleware.GeneralAPIRateLimiter())
 
 	// superadmin only
 	admins := protected.Group("/admin")
