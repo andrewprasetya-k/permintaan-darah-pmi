@@ -4,6 +4,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func SuperAdminOnly() gin.HandlerFunc{
+	return func (c *gin.Context) { 
+		userRole, exists := c.Get("userRole")
+		if !exists || userRole != "super_admin" {
+			c.AbortWithStatusJSON(403, gin.H{"error": "Forbidden: Super Admins only"})
+			return
+		}
+	}
+}
+
 func AdminOnly() gin.HandlerFunc{
 	return func (c *gin.Context) { 
 		userRole, exists := c.Get("userRole")
