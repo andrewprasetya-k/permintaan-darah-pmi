@@ -107,7 +107,7 @@ func RegisterAPIRoutes(
 	detail.DELETE("/:id", detailController.Delete)
 
 	filter := protected.Group("/filter")
-	filter.Use(middleware.AdminOrRumahSakit())
+	filter.Use(middleware.AdminOnly())
 	filter.GET("/rumah-sakit/", rumahSakitController.GetDistinctRSNama)
 
 	dashboard := protected.Group("/dashboard")
