@@ -14,6 +14,7 @@ type PermintaanDarahService interface {
 	GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]dto.PermintaanDarahResponse, int, error)
 	GetByRsID(rsID string, limit, offset int) ([]dto.PermintaanDarahResponse, int, error)
 	Update(id string, req dto.UpdatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
+	UpdateMyRequest(id string, rsID string, req dto.UpdatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
 	Delete(id string, userID *string, userName string, userRole string, userAgent *string) error
 	Restore(id string, userID *string, userName string, userRole string, userAgent *string) error
 
@@ -208,6 +209,61 @@ func (s *permintaanDarahService) Restore(id string, userID *string, userName str
 	)
 
 	return nil
+}
+
+func (s *permintaanDarahService) UpdateMyRequest(id string, rsID string, req dto.UpdatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error) {
+	data, err := s.repo.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	// Ensure rumah sakit can only update their own request
+	if data.PDRsID != rsID {
+		return nil, errors.New("not authorized to update this request")
+	}
+
+	changes := []string{}
+	if data.PDNamaPasien != req.PDNamaPasien {
+		changes = append(changes, fmt.Sprintf("nama pasien: %s → %s", data.PDNamaPasien, req.PDNamaPasien))
+	}
+	if data.PDGolDarah != req.PDGolDarah {
+		changes = append(changes, fmt.Sprintf("gol darah: %v → %v", data.PDGolDarah, req.PDGolDarah))
+	}
+
+	data.PDNamaPasien = req.PDNamaPasien
+	data.PDNoRM = req.PDNoRM
+	data.PDTempatLahir = req.PDTempatLahir
+	data.PDTglLahir = req.PDTglLahir
+	data.PDGender = req.PDGender
+	data.PDGolDarah = req.PDGolDarah
+	data.PDRhesus = req.PDRhesus
+	data.PDHemoglobin = req.PDHemoglobin
+	data.PDRuangBagianKelas = req.PDRuangBagianKelas
+	data.PDPernahTransfusi = req.PDPernahTransfusi
+	data.PDIndikasiTransfusi = req.PDIndikasiTransfusi
+	data.PDPernahHamil = req.PDPernahHamil
+	data.PDTglPermintaan = req.PDTglPermintaan
+
+	if err := s.repo.Update(data); err != nil {
+		return nil, err
+	}
+
+	if len(changes) > 0 {
+		notes := fmt.Sprintf("Rumah sakit updated their own permintaan darah %s", id)
+		_, _ = s.systemAccessLogService.LogAction(
+			userID,
+			userName,
+			userRole,
+			"UPDATE",
+			stringPtr("permintaan_darah"),
+			stringPtr(id),
+			notes,
+			userAgent,
+		)
+	}
+
+	resp := mapPermintaanToResponse(*data)
+	return &resp, nil
 }
 
 func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error) {

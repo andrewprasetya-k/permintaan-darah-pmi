@@ -164,3 +164,31 @@ func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
 	}
 	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
 }
+
+func (ctl *PermintaanDarahController) UpdateMyRequest(c *gin.Context) {
+	var req dto.UpdatePermintaanDarahRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		return
+	}
+
+	userID, userName, userRole := utils.ExtractUserFromJWT(c)
+	userAgent := c.GetHeader("User-Agent")
+
+	if userRole != "rumah_sakit" {
+		utils.SendError(c, http.StatusForbidden, "Only rumah sakit can update their own requests")
+		return
+	}
+
+	if userID == nil || *userID == "" {
+		utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+		return
+	}
+
+	resp, err := ctl.service.UpdateMyRequest(c.Param("id"), *userID, req, userID, userName, userRole, &userAgent)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+	utils.SendSuccess(c, http.StatusOK, "Request updated successfully", resp)
+}

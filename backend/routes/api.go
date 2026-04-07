@@ -41,6 +41,11 @@ func RegisterAPIRoutes(
 	admins.DELETE("/:id", adminController.Delete)
 	admins.PUT("/restore/:id", adminController.Restore)
 
+	// admin - self profile (no SuperAdminOnly)
+	adminProfile := protected.Group("/admin")
+	adminProfile.GET("/me", adminController.GetMe)
+	adminProfile.PUT("/me", adminController.UpdateMe)
+
 	// admin only
 	rumahSakit := protected.Group("/rumah-sakit")
 	rumahSakit.Use(middleware.AdminOnly())
@@ -87,6 +92,7 @@ func RegisterAPIRoutes(
 	permintaan.POST("", permintaanController.Create)
 	permintaan.GET("", permintaanController.GetAll)
 	permintaan.GET("/my-requests", permintaanController.GetMyRequests)
+	permintaan.PUT("/my-requests/:id", permintaanController.UpdateMyRequest)
 	permintaan.GET("/:id", permintaanController.GetByID)
 	permintaan.PUT("/:id", permintaanController.Update)
 	permintaan.DELETE("/:id", permintaanController.Delete)
