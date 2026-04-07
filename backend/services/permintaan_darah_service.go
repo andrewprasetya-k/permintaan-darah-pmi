@@ -349,12 +349,6 @@ func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.Perm
 		msg := NewWebSocketMessage("status_change", "UPDATE", data.PDID, "permintaan_darah", resp)
 		s.wsHub.Broadcast(msg)
 	}
-
-	// Broadcast WebSocket event
-	if s.wsHub != nil {
-		msg := NewWebSocketMessage("update_status", "UPDATE", pdID, "permintaan_darah", resp)
-		s.wsHub.Broadcast(msg)
-	}
 	return &resp, nil
 }
 
@@ -478,5 +472,10 @@ func (s *permintaanDarahService) UpdateStatusWithOwnershipCheck(pdID string, new
 	)
 
 	resp := mapPermintaanToResponse(*data)
+	// Broadcast WebSocket event
+	if s.wsHub != nil {
+		msg := NewWebSocketMessage("status_change", "UPDATE", data.PDID, "permintaan_darah", resp)
+		s.wsHub.Broadcast(msg)
+	}
 	return &resp, nil
 }
