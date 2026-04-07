@@ -60,6 +60,12 @@ func SendError(c *gin.Context, statusCode int, message string, errors ...string)
 	c.JSON(statusCode, dto.ErrorResponse(message, errors...))
 }
 
+// SendValidationError sends a validation error response with formatted messages
+func SendValidationError(c *gin.Context, err error) {
+	formattedErrors := FormatValidationError(err)
+	c.JSON(http.StatusBadRequest, dto.ErrorResponse("Invalid input", formattedErrors...))
+}
+
 // ExtractUserFromJWT extracts user info from context set by JWT middleware
 func ExtractUserFromJWT(c *gin.Context) (*string, string, string) {
 	userID, _ := c.Get("userID")
