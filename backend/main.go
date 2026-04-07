@@ -7,6 +7,7 @@ import (
 	"backend/routes"
 	"backend/services"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -14,10 +15,20 @@ import (
 
 func main() {
 	r := gin.Default()
-	
-	//CORS
+
+	godotenv.Load()
+
+	// CORS middleware
 	r.Use(func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		origin := c.GetHeader("Origin")
+		allowedOrigin := os.Getenv("CORS_ALLOWED_ORIGIN")
+		if allowedOrigin == "" {
+			allowedOrigin = "http://localhost:3000"
+		}
+
+		if origin == allowedOrigin || allowedOrigin == "*" {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+		}
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
 		if c.Request.Method == "OPTIONS" {
@@ -26,9 +37,6 @@ func main() {
 		}
 		c.Next()
 	})
-
-	//load env variables
-	godotenv.Load()
 
 	// db connection
 	db, err := config.ConnectDB()
