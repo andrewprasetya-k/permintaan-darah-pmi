@@ -3,6 +3,7 @@ package routes
 import (
 	"backend/controllers"
 	"backend/middleware"
+	"backend/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,13 +22,17 @@ func RegisterAPIRoutes(
 ) {
 	api := r.Group("/api")
 
-	// public routes
+	// public routes (no JWT required)
 	auth := api.Group("/auth")
 	auth.POST("/login/admin", authController.AdminLogin)
 	auth.POST("/login/rumah-sakit", authController.RumahSakitLogin)
 
+	// apply JWT middleware to all protected routes
+	protected := api.Group("")
+	protected.Use(utils.JWTMiddleware())
+
 	// superadmin only
-	admins := api.Group("/admin")
+	admins := protected.Group("/admin")
 	admins.Use(middleware.SuperAdminOnly())
 	admins.POST("", adminController.Create)
 	admins.GET("", adminController.GetAll)
@@ -37,7 +42,7 @@ func RegisterAPIRoutes(
 	admins.PUT("/restore/:id", adminController.Restore)
 
 	// admin only
-	rumahSakit := api.Group("/rumah-sakit")
+	rumahSakit := protected.Group("/rumah-sakit")
 	rumahSakit.Use(middleware.AdminOnly())
 	rumahSakit.POST("", rumahSakitController.Create)
 	rumahSakit.GET("", rumahSakitController.GetAll)
@@ -46,7 +51,7 @@ func RegisterAPIRoutes(
 	rumahSakit.DELETE("/:id", rumahSakitController.Delete)
 	rumahSakit.PUT("/restore/:id", rumahSakitController.Restore)
 
-	komponen := api.Group("/komponen-darah")
+	komponen := protected.Group("/komponen-darah")
 	komponen.Use(middleware.AdminOnly())
 	komponen.POST("", komponenController.Create)
 	komponen.GET("", komponenController.GetAll)
@@ -57,11 +62,11 @@ func RegisterAPIRoutes(
 	komponen.PUT("/deactivate/:id", komponenController.Deactivate)
 
 	// admin only
-	statusLogs := api.Group("/status-logs")
+	statusLogs := protected.Group("/status-logs")
 	statusLogs.Use(middleware.AdminOnly())
 	statusLogs.GET("", statusLogController.GetAll)
 
-	systemLogs := api.Group("/system-logs")
+	systemLogs := protected.Group("/system-logs")
 	systemLogs.Use(middleware.AdminOnly())
 	systemLogs.GET("", systemAccessLogController.GetAll)
 	systemLogs.GET("/:id", systemAccessLogController.GetByID)
@@ -71,7 +76,7 @@ func RegisterAPIRoutes(
 	systemLogs.GET("/target/:targetId", systemAccessLogController.GetByTargetID)
 
 	// admin/rumah sakit
-	permintaan := api.Group("/permintaan-darah")
+	permintaan := protected.Group("/permintaan-darah")
 	permintaan.Use(middleware.AdminOrRumahSakit())
 	permintaan.POST("", permintaanController.Create)
 	permintaan.GET("", permintaanController.GetAll)
@@ -81,7 +86,7 @@ func RegisterAPIRoutes(
 	permintaan.PUT("/restore/:id", permintaanController.Restore)
 	permintaan.PUT("/update/:id", permintaanController.UpdateStatus)
 
-	detail := api.Group("/detail-permintaan-darah")
+	detail := protected.Group("/detail-permintaan-darah")
 	detail.Use(middleware.RumahSakitOnly())
 	detail.POST("", detailController.Create)
 	detail.GET("", detailController.GetAll)
@@ -89,11 +94,11 @@ func RegisterAPIRoutes(
 	detail.PUT("/:id", detailController.Update)
 	detail.DELETE("/:id", detailController.Delete)
 
-	filter := api.Group("/filter")
+	filter := protected.Group("/filter")
 	filter.Use(middleware.AdminOrRumahSakit())
 	filter.GET("/rumah-sakit/", rumahSakitController.GetDistinctRSNama)
 
-	dashboard := api.Group("/dashboard")
+	dashboard := protected.Group("/dashboard")
 	dashboard.Use(middleware.AdminOrRumahSakit())
 	dashboard.GET("/status-summary/:rumahSakitID", dashboardController.StatusSummary)
 }
