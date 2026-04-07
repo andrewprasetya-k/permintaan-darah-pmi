@@ -10,6 +10,7 @@ import (
 
 type DetailPermintaanDarahService interface {
 	Create(req dto.CreateDetailPermintaanDarahRequest, userID *string, userName, userRole string) (*dto.DetailPermintaanDarahResponse, error)
+	CreateWithOwnershipCheck(req dto.CreateDetailPermintaanDarahRequest, userID *string, userName, userRole string) (*dto.DetailPermintaanDarahResponse, error)
 	GetByID(id int) (*dto.DetailPermintaanDarahResponse, error)
 	GetAll(limit, offset int) ([]dto.DetailPermintaanDarahResponse, int, error)
 	Update(id int, req dto.UpdateDetailPermintaanDarahRequest, userID *string, userName, userRole string) (*dto.DetailPermintaanDarahResponse, error)
@@ -194,4 +195,23 @@ func (s *detailPermintaanDarahService) DeleteWithOwnershipCheck(id int, userID *
 	s.logSvc.LogAction(userID, userName, userRole, "DELETE", stringPtr("detail_permintaan_darah"), stringPtr(fmt.Sprintf("%d", id)), deleteInfo, nil)
 
 	return s.repo.Delete(data)
+}
+
+func (s *detailPermintaanDarahService) CreateWithOwnershipCheck(req dto.CreateDetailPermintaanDarahRequest, userID *string, userName, userRole string) (*dto.DetailPermintaanDarahResponse, error) {
+	// If rumah sakit, validate that they own the parent permintaan
+	if userRole == "rumah_sakit" {
+		if userID == nil || *userID == "" {
+			return nil, errors.New("invalid user ID in token")
+		}
+		permintaan, err := s.permintaanSvc.GetByID(req.DPDPDID)
+		if err != nil {
+			return nil, err
+		}
+		if permintaan.PDRsID != *userID {
+			return nil, errors.New("not authorized to create detail for this permintaan")
+		}
+	}
+
+	// Call regular Create method
+	return s.Create(req, userID, userName, userRole)
 }

@@ -27,7 +27,16 @@ func (ctl *DetailPermintaanDarahController) Create(c *gin.Context) {
 
 	userID, userName, userRole := utils.ExtractUserFromJWT(c)
 
-	resp, err := ctl.service.Create(req, userID, userName, userRole)
+	// If rumah sakit, validate that they can only create detail for their own permintaan
+	if userRole == "rumah_sakit" {
+		if userID == nil || *userID == "" {
+			utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+			return
+		}
+		// This validation will be done in service with permintaan lookup
+	}
+
+	resp, err := ctl.service.CreateWithOwnershipCheck(req, userID, userName, userRole)
 	if err != nil {
 		utils.HandleError(c, err)
 		return

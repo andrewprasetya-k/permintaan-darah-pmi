@@ -29,6 +29,15 @@ func (ctl *PermintaanDarahController) Create(c *gin.Context) {
 	userID, userName, userRole := utils.ExtractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
+	// If rumah sakit, auto-set rs_id from token
+	if userRole == "rumah_sakit" {
+		if userID == nil || *userID == "" {
+			utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+			return
+		}
+		req.PDRsID = *userID
+	}
+
 	resp, err := ctl.service.Create(req, userID, userName, userRole, &userAgent)
 	if err != nil {
 		utils.HandleError(c, err)
