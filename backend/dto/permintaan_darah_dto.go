@@ -6,7 +6,7 @@ import (
 )
 
 type CreatePermintaanDarahRequest struct {
-	PDRsID string `json:"rumahSakitId" binding:"required"`
+	PDRsID string `json:"rumahSakitId,omitempty" binding:"omitempty"`
 
 	// Data Pasien
 	PDNamaPasien  string                `json:"namaPasien" binding:"required"`
@@ -53,6 +53,22 @@ type UpdatePermintaanDarahRequest struct {
 	PDStatus        models.PermintaanStatusEnum `json:"status" binding:"required,oneof=dibuat diproses bisa_diambil selesai dibatalkan"`
 	PDCancelReason  *string                     `json:"cancelReason,omitempty"`
 	PDTglPermintaan time.Time                   `json:"tanggalPermintaan" binding:"required"`
+}
+
+type PermintaanDarahGetAllResponse struct {
+	PDID   string `json:"permintaanDarahId"`
+
+	// Data Pasien
+	PDNamaPasien  string                `json:"namaPasien"`
+	PDGender      models.GenderEnum     `json:"jenisKelamin"`
+	PDGolDarah    *models.BloodTypeEnum `json:"golonganDarah,omitempty"`
+	PDRhesus      *models.RhesusEnum    `json:"rhesusDarah,omitempty"`
+
+	// Status
+	PDStatus        models.PermintaanStatusEnum `json:"status"`
+	CreatedAt       time.Time                   `json:"createdAt"`
+	UpdatedAt       time.Time                   `json:"updatedAt"`
+	DeletedAt       *time.Time                  `json:"deletedAt,omitempty"`
 }
 
 type PermintaanDarahResponse struct {
