@@ -24,7 +24,7 @@ func ValidatePermintaanDarahInput(hemoglobin *float64, tglLahir time.Time, tglPe
 
 	//validate tanggal permintaan - cannot be in the past
 	if tglPermintaan.Before(now) {
-		return fmt.Errorf("tanggal lahir cannot be in the past")
+		return fmt.Errorf("tanggal permintaan cannot be in the past")
 	}
 
 	// Validate age - cannot be more than 150 years old
