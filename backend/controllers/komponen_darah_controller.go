@@ -21,7 +21,7 @@ func NewKomponenDarahController(service services.KomponenDarahService) *Komponen
 func (ctl *KomponenDarahController) Create(c *gin.Context) {
 	var req dto.CreateKomponenDarahRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 
@@ -67,7 +67,7 @@ func (ctl *KomponenDarahController) Update(c *gin.Context) {
 	}
 	var req dto.UpdateKomponenDarahRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 

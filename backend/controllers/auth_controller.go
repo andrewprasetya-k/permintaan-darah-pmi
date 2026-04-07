@@ -20,7 +20,7 @@ func NewAuthController(service services.AuthService) *AuthController {
 func (ctl *AuthController) AdminLogin(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 	resp, err := ctl.service.AdminLogin(req)
@@ -34,7 +34,7 @@ func (ctl *AuthController) AdminLogin(c *gin.Context) {
 func (ctl *AuthController) RumahSakitLogin(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 	resp, err := ctl.service.RumahSakitLogin(req)

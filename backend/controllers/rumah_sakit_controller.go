@@ -20,7 +20,7 @@ func NewRumahSakitController(service services.RumahSakitService) *RumahSakitCont
 func (ctl *RumahSakitController) Create(c *gin.Context) {
 	var req dto.CreateRumahSakitRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 
@@ -79,7 +79,7 @@ func (ctl *RumahSakitController) GetAll(c *gin.Context) {
 func (ctl *RumahSakitController) Update(c *gin.Context) {
 	var req dto.UpdateRumahSakitRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 
@@ -98,7 +98,7 @@ func (ctl *RumahSakitController) Update(c *gin.Context) {
 func (ctl *RumahSakitController) UpdateMe(c *gin.Context) {
 	var req dto.UpdateRumahSakitRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 

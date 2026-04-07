@@ -20,7 +20,7 @@ func NewStatusLogController(service services.StatusLogService) *StatusLogControl
 func (ctl *StatusLogController) Create(c *gin.Context) {
 	var req dto.CreateStatusLogRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 	resp, err := ctl.service.Create(req)

@@ -20,7 +20,7 @@ func NewAdminController(service services.AdminService) *AdminController {
 func (ctl *AdminController) Create(c *gin.Context) {
 	var req dto.CreateAdminRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 
@@ -57,7 +57,7 @@ func (ctl *AdminController) GetAll(c *gin.Context) {
 func (ctl *AdminController) Update(c *gin.Context) {
 	var req dto.UpdateAdminRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 
@@ -118,7 +118,7 @@ func (ctl *AdminController) GetMe(c *gin.Context) {
 func (ctl *AdminController) UpdateMe(c *gin.Context) {
 	var req dto.UpdateAdminRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 

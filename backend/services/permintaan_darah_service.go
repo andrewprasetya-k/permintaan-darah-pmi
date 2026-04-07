@@ -59,6 +59,7 @@ func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest, us
 	}
 	if err := s.repo.Create(&data); err != nil {
 		return nil, err
+		
 	}
 
 	// ✅ Auto-log: Create

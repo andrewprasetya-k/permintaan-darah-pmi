@@ -22,7 +22,7 @@ func NewPermintaanDarahController(service services.PermintaanDarahService) *Perm
 func (ctl *PermintaanDarahController) Create(c *gin.Context) {
 	var req dto.CreatePermintaanDarahRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 
@@ -116,7 +116,7 @@ func (ctl *PermintaanDarahController) GetMyRequests(c *gin.Context) {
 func (ctl *PermintaanDarahController) Update(c *gin.Context) {
 	var req dto.UpdatePermintaanDarahRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 
@@ -153,7 +153,7 @@ func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
 		Reason *string `json:"reason"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 
@@ -171,7 +171,7 @@ func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
 func (ctl *PermintaanDarahController) UpdateMyRequest(c *gin.Context) {
 	var req dto.UpdatePermintaanDarahRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendError(c, http.StatusBadRequest, "Invalid input", err.Error())
+		utils.SendValidationError(c, err)
 		return
 	}
 
