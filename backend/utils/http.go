@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 )
 
@@ -61,18 +60,26 @@ func SendError(c *gin.Context, statusCode int, message string, errors ...string)
 	c.JSON(statusCode, dto.ErrorResponse(message, errors...))
 }
 
-// ExtractUserFromJWT extracts user info from JWT claims
+// ExtractUserFromJWT extracts user info from context set by JWT middleware
 func ExtractUserFromJWT(c *gin.Context) (*string, string, string) {
-	claims, _ := c.Get("claims")
-	if claims == nil {
-		return nil, "Unknown User", "unknown"
+	userID, _ := c.Get("userID")
+	username, _ := c.Get("username")
+	userRole, _ := c.Get("userRole")
+
+	userIDStr := ""
+	if id, ok := userID.(string); ok {
+		userIDStr = id
 	}
 
-	jwtClaims := claims.(jwt.MapClaims)
+	usernameStr := "Unknown User"
+	if name, ok := username.(string); ok {
+		usernameStr = name
+	}
 
-	userID, _ := jwtClaims["user_id"].(string)
-	userName, _ := jwtClaims["username"].(string)
-	userRole, _ := jwtClaims["role"].(string)
+	roleStr := "unknown"
+	if role, ok := userRole.(string); ok {
+		roleStr = role
+	}
 
-	return &userID, userName, userRole
+	return &userIDStr, usernameStr, roleStr
 }
