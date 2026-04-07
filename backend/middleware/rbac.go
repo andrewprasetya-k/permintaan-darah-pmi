@@ -6,8 +6,8 @@ import (
 
 func SuperAdminOnly() gin.HandlerFunc{
 	return func (c *gin.Context) { 
-		userRole, exists := c.Get("userRole")
-		if !exists || userRole != "super_admin" {
+		userRole, exists := c.Get("user")
+		if !exists || userRole != "superadmin" {
 			c.AbortWithStatusJSON(403, gin.H{"error": "Forbidden: Super Admins only"})
 			return
 		}
@@ -16,7 +16,7 @@ func SuperAdminOnly() gin.HandlerFunc{
 
 func AdminOnly() gin.HandlerFunc{
 	return func (c *gin.Context) { 
-		userRole, exists := c.Get("userRole")
+		userRole, exists := c.Get("user")
 		if !exists || userRole != "admin" {
 			c.AbortWithStatusJSON(403, gin.H{"error": "Forbidden: Admins only"})
 			return
@@ -26,7 +26,7 @@ func AdminOnly() gin.HandlerFunc{
 
 func RumahSakitOnly() gin.HandlerFunc{
 	return func (c *gin.Context) { 
-		userRole, exists := c.Get("userRole")
+		userRole, exists := c.Get("user")
 		if !exists || userRole != "rumah_sakit" {
 			c.AbortWithStatusJSON(403, gin.H{"error": "Forbidden: Rumah Sakit only"})
 			return
