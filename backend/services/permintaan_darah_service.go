@@ -76,6 +76,11 @@ func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest, us
 	)
 
 	resp := mapPermintaanToResponse(data)
+	//broadcast WebSocket event
+	if s.wsHub != nil {
+		msg := NewWebSocketMessage("new_permintaan", "CREATE", data.PDID, "permintaan_darah", resp)
+		s.wsHub.Broadcast(msg)
+	}
 	return &resp, nil
 }
 
