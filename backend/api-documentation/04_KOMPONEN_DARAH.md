@@ -1,4 +1,4 @@
-# API Documentation - Komponen Darah
+# API Documentation - Komponen Darah (Blood Components)
 
 **Base URL:** `http://localhost:8080/api`
 
@@ -8,11 +8,15 @@
 Authorization: Bearer {token}
 ```
 
+**Access Control:** All endpoints - **Admin Only**
+
 ---
 
-## Create Komponen Darah
+## Create Komponen Darah (Admin Only)
 
 **POST** `/komponen-darah`
+
+**Access:** Admin or Superadmin only
 
 **Request:**
 
@@ -28,9 +32,9 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Created successfully",
+  "message": "Blood component created successfully",
   "data": {
-    "komId": 1,
+    "komId": 2,
     "komNama": "Packed Red Cell (PRC)",
     "komKode": "PRC",
     "isActive": true
@@ -40,9 +44,11 @@ Authorization: Bearer {token}
 
 ---
 
-## Get All Komponen Darah
+## Get All Komponen Darah (Admin Only)
 
 **GET** `/komponen-darah?limit=20&offset=0`
+
+**Access:** Admin or Superadmin only
 
 **Query Parameters:**
 
@@ -54,7 +60,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Data retrieved successfully",
+  "message": "Blood components retrieved successfully",
   "data": [
     {
       "komId": 1,
@@ -67,10 +73,16 @@ Authorization: Bearer {token}
       "komNama": "Packed Red Cell (PRC)",
       "komKode": "PRC",
       "isActive": true
+    },
+    {
+      "komId": 3,
+      "komNama": "Washed Erythrocyte (WE)",
+      "komKode": "WE",
+      "isActive": true
     }
   ],
   "pagination": {
-    "total": 2,
+    "total": 8,
     "page": 1,
     "limit": 20,
     "offset": 0
@@ -80,20 +92,22 @@ Authorization: Bearer {token}
 
 ---
 
-## Get Komponen Darah by ID
+## Get Komponen Darah by ID (Admin Only)
 
 **GET** `/komponen-darah/{id}`
 
+**Access:** Admin or Superadmin only
+
 **Path Parameters:**
 
-- `id` (required): Komponen Darah ID
+- `id` (required): Component ID (e.g., 1, 2, 3)
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Operation successful",
+  "message": "Blood component retrieved successfully",
   "data": {
     "komId": 1,
     "komNama": "Whole Blood",
@@ -103,21 +117,32 @@ Authorization: Bearer {token}
 }
 ```
 
+**Response (404 Not Found):**
+
+```json
+{
+  "success": false,
+  "message": "Data not found"
+}
+```
+
 ---
 
-## Update Komponen Darah
+## Update Komponen Darah (Admin Only)
 
 **PUT** `/komponen-darah/{id}`
 
+**Access:** Admin or Superadmin only
+
 **Path Parameters:**
 
-- `id` (required): Komponen Darah ID
+- `id` (required): Component ID
 
 **Request:**
 
 ```json
 {
-  "komNama": "Whole Blood Updated",
+  "komNama": "Whole Blood - Updated",
   "komKode": "WB_UPD"
 }
 ```
@@ -127,10 +152,10 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Operation successful",
+  "message": "Blood component updated successfully",
   "data": {
     "komId": 1,
-    "komNama": "Whole Blood Updated",
+    "komNama": "Whole Blood - Updated",
     "komKode": "WB_UPD",
     "isActive": true
   }
@@ -139,20 +164,24 @@ Authorization: Bearer {token}
 
 ---
 
-## Activate Komponen Darah
+## Activate Komponen Darah (Admin Only)
 
 **PUT** `/komponen-darah/activate/{id}`
 
+**Access:** Admin or Superadmin only
+
+**Purpose:** Set component as active (available for use)
+
 **Path Parameters:**
 
-- `id` (required): Komponen Darah ID
+- `id` (required): Component ID
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Operation successful",
+  "message": "Blood component activated successfully",
   "data": {
     "komId": 1,
     "komNama": "Whole Blood",
@@ -164,20 +193,24 @@ Authorization: Bearer {token}
 
 ---
 
-## Deactivate Komponen Darah
+## Deactivate Komponen Darah (Admin Only)
 
 **PUT** `/komponen-darah/deactivate/{id}`
 
+**Access:** Admin or Superadmin only
+
+**Purpose:** Set component as inactive (no longer available)
+
 **Path Parameters:**
 
-- `id` (required): Komponen Darah ID
+- `id` (required): Component ID
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Operation successful",
+  "message": "Blood component deactivated successfully",
   "data": {
     "komId": 1,
     "komNama": "Whole Blood",
@@ -189,43 +222,54 @@ Authorization: Bearer {token}
 
 ---
 
-## Delete Komponen Darah
+## Delete Komponen Darah (Admin Only)
 
 **DELETE** `/komponen-darah/{id}`
 
+**Access:** Admin or Superadmin only
+
 **Path Parameters:**
 
-- `id` (required): Komponen Darah ID
+- `id` (required): Component ID
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Operation successful",
+  "message": "Blood component deleted successfully",
   "data": null
 }
 ```
 
----
-
-## Komponen Darah Kode Reference
-
-- `WB` - Whole Blood
-- `PRC` - Packed Red Cell
-- `WE` - Washed Erythrocyte
-- `FFP` - Fresh Frozen Plasma
-- `PRP` - Platelet Rich Plasma
-- `TC` - Thrombocyte Concentrate
-- `CRY` - Cryoprecipitate
-- `PRCL` - PRC Leukodepleted
+**Note:** Hard delete (not soft delete like admins/hospitals)
 
 ---
 
-## Error Codes
+## Blood Component Reference
 
-- `400` - Bad Request (Invalid input)
-- `401` - Unauthorized (Missing/invalid token)
-- `403` - Forbidden (No permission)
-- `404` - Not Found
-- `500` - Internal Server Error
+### Pre-seeded Components
+
+| ID | Name                           | Code | Description                          |
+|----|--------------------------------|------|--------------------------------------|
+| 1  | Whole Blood                    | WB   | Complete blood with all components   |
+| 2  | Packed Red Cell (PRC)          | PRC  | Red cells only                       |
+| 3  | Washed Erythrocyte (WE)        | WE   | Thoroughly washed red cells          |
+| 4  | Fresh Frozen Plasma (FFP)      | FFP  | Plasma with coagulation factors      |
+| 5  | Platelet Rich Plasma (PRP)     | PRP  | Plasma with platelets                |
+| 6  | Thrombocyte Concentrate (TC)   | TC   | Platelet concentrate                 |
+| 7  | Cryoprecipitate                | CRY  | Fibrinogen concentrate               |
+| 8  | PRC Leukodepleted              | PRCL | Red cells with WBC removed           |
+
+---
+
+## Notes
+
+- Components are used in blood requests (detail_permintaan_darah)
+- Only active components can be used in new requests
+- Component activation/deactivation affects availability without hard delete
+- All operations are logged in system_access_logs
+
+---
+
+**Last Updated:** 2026-04-07

@@ -1,4 +1,4 @@
-# API Documentation - Permintaan Darah
+# API Documentation - Permintaan Darah (Blood Requests)
 
 **Base URL:** `http://localhost:8080/api`
 
@@ -8,31 +8,44 @@
 Authorization: Bearer {token}
 ```
 
+**Access Control:**
+- Create/Read/Update/Delete - **Admin or Rumah Sakit**
+- Status updates - **Admin** (UpdateStatus) or **Rumah Sakit** (UpdateMyRequest)
+
 ---
 
-## Create Permintaan Darah
+## Create Blood Request
 
 **POST** `/permintaan-darah`
+
+**Access:** Admin or Rumah Sakit
 
 **Request:**
 
 ```json
 {
-  "rumahSakitId": "RS001",
-  "namaPasien": "John Doe",
-  "noRM": "RM-001",
+  "rsId": "RS001",
+  "namaPasien": "Budi Santoso",
+  "noRM": "RM123",
   "tempatLahir": "Jakarta",
-  "tanggalLahir": "1990-01-15",
+  "tanggalLahir": "1990-05-15",
   "jenisKelamin": "L",
   "golonganDarah": "O",
   "rhesusDarah": "+",
   "hemoglobin": 12.5,
   "ruangBagianKelas": "ICU",
   "pernahTransfusi": false,
-  "indikasiTransfusi": "Anemia",
+  "indikasiTransfusi": "Transfusi rutin",
   "pernahHamil": null,
-  "status": "dibuat",
-  "tanggalPermintaan": "2026-04-06T08:33:32Z"
+  "details": [
+    {
+      "komId": 1,
+      "golonganDarah": "O",
+      "rhesusDarah": "+",
+      "jumlahKantong": 2,
+      "tanggalDiperlukan": "2026-04-10T10:00:00Z"
+    }
+  ]
 }
 ```
 
@@ -41,77 +54,61 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Created successfully",
+  "message": "Blood request created successfully",
   "data": {
-    "permintaanDarahId": "PD0406082826001",
+    "permintaanDarahId": "PD04071430001",
     "rumahSakitId": "RS001",
-    "namaPasien": "John Doe",
-    "noRM": "RM-001",
+    "namaPasien": "Budi Santoso",
+    "noRM": "RM123",
     "tempatLahir": "Jakarta",
-    "tanggalLahir": "1990-01-15T00:00:00Z",
+    "tanggalLahir": "1990-05-15",
     "jenisKelamin": "L",
     "golonganDarah": "O",
     "rhesusDarah": "+",
     "hemoglobin": 12.5,
-    "ruangBagianKelas": "ICU",
-    "pernahTransfusi": false,
-    "indikasiTransfusi": "Anemia",
-    "pernahHamil": null,
     "status": "dibuat",
-    "cancelReason": null,
-    "tanggalPermintaan": "2026-04-06T08:33:32Z",
-    "createdAt": "2026-04-06T08:33:32Z",
-    "updatedAt": "2026-04-06T08:33:32Z"
+    "createdAt": "2026-04-07T14:30:45Z",
+    "updatedAt": "2026-04-07T14:30:45Z",
+    "details": [
+      {
+        "dpdId": 1,
+        "komId": 1,
+        "komNama": "Whole Blood",
+        "golonganDarah": "O",
+        "rhesusDarah": "+",
+        "jumlahKantong": 2,
+        "tanggalDiperlukan": "2026-04-10T10:00:00Z"
+      }
+    ]
   }
 }
 ```
 
 ---
 
-## Get All Permintaan Darah
+## Get All Blood Requests
 
-**GET** `/permintaan-darah?limit=20&offset=0&status=dibuat&rsID=RS001&gender=L&golDarah=O`
+**GET** `/permintaan-darah?limit=20&offset=0&status=dibuat`
+
+**Access:** Admin (all requests) or Rumah Sakit (own + shared)
 
 **Query Parameters:**
 
 - `limit` (optional): default 20, max 100
 - `offset` (optional): default 0
-- `status` (optional): dibuat, diproses, bisa_diambil, selesai, dibatalkan
-- `rsID` (optional): filter by rumah sakit
-- `gender` (optional): L, P
-- `golDarah` (optional): A, B, AB, O
-- `startDate` (optional): ISO 8601 date format
-- `endDate` (optional): ISO 8601 date format
+- `status` (optional): dibuat | diproses | bisa_diambil | selesai | dibatalkan
+- `searchByName` (optional): patient name
+- `searchByRM` (optional): medical record number
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Data retrieved successfully",
-  "data": [
-    {
-      "permintaanDarahId": "PD0406082826001",
-      "rumahSakitId": "RS001",
-      "namaPasien": "John Doe",
-      "noRM": "RM-001",
-      "tempatLahir": "Jakarta",
-      "tanggalLahir": "1990-01-15T00:00:00Z",
-      "jenisKelamin": "L",
-      "golonganDarah": "O",
-      "rhesusDarah": "+",
-      "hemoglobin": 12.5,
-      "ruangBagianKelas": "ICU",
-      "pernahTransfusi": false,
-      "indikasiTransfusi": "Anemia",
-      "status": "dibuat",
-      "tanggalPermintaan": "2026-04-06T08:33:32Z",
-      "createdAt": "2026-04-06T08:33:32Z",
-      "updatedAt": "2026-04-06T08:33:32Z"
-    }
-  ],
+  "message": "Blood requests retrieved successfully",
+  "data": [...],
   "pagination": {
-    "total": 1,
+    "total": 50,
     "page": 1,
     "limit": 20,
     "offset": 0
@@ -121,168 +118,186 @@ Authorization: Bearer {token}
 
 ---
 
-## Get Permintaan Darah by ID
+## Get Own Blood Requests (Rumah Sakit)
 
-**GET** `/permintaan-darah/{id}`
+**GET** `/permintaan-darah/my-requests?limit=20&offset=0`
 
-**Path Parameters:**
+**Access:** Rumah Sakit only
 
-- `id` (required): Permintaan Darah ID
+**Query Parameters:**
+
+- `limit` (optional): default 20, max 100
+- `offset` (optional): default 0
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Operation successful",
-  "data": {
-    "permintaanDarahId": "PD0406082826001",
-    "rumahSakitId": "RS001",
-    "namaPasien": "John Doe",
-    "noRM": "RM-001",
-    "tempatLahir": "Jakarta",
-    "tanggalLahir": "1990-01-15T00:00:00Z",
-    "jenisKelamin": "L",
-    "golonganDarah": "O",
-    "rhesusDarah": "+",
-    "hemoglobin": 12.5,
-    "ruangBagianKelas": "ICU",
-    "pernahTransfusi": false,
-    "indikasiTransfusi": "Anemia",
-    "status": "dibuat",
-    "tanggalPermintaan": "2026-04-06T08:33:32Z",
-    "createdAt": "2026-04-06T08:33:32Z",
-    "updatedAt": "2026-04-06T08:33:32Z",
-    "detailPermintaanDarah": [
-      {
-        "dpdId": 1,
-        "dpdPdId": "PD0406082826001",
-        "komponenNama": "Packed Red Cell (PRC)",
-        "golonganDarah": "O",
-        "rhesusDarah": "+",
-        "jmlKantong": 2,
-        "tglDiperlukan": "2026-04-08T10:00:00Z",
-        "createdAt": "2026-04-06T08:33:32Z"
-      }
-    ]
+  "message": "Own blood requests retrieved successfully",
+  "data": [...],
+  "pagination": {
+    "total": 15,
+    "page": 1,
+    "limit": 20,
+    "offset": 0
   }
 }
 ```
 
 ---
 
-## Get Permintaan Darah by Rumah Sakit ID
+## Get Blood Request by ID
 
-**GET** `/permintaan-darah/rumah-sakit/{rsId}?limit=20&offset=0`
+**GET** `/permintaan-darah/{id}`
+
+**Access:** Admin or Rumah Sakit (own or shared)
 
 **Path Parameters:**
 
-- `rsId` (required): Rumah Sakit ID
+- `id` (required): Request ID (e.g., PD04071430001)
 
-**Query Parameters:**
+**Response (200 OK):**
 
-- `limit` (optional): default 20
-- `offset` (optional): default 0
-
-**Response (200 OK):** Same as GetAll
+```json
+{
+  "success": true,
+  "message": "Blood request retrieved successfully",
+  "data": {
+    "permintaanDarahId": "PD04071430001",
+    "rumahSakitId": "RS001",
+    "namaPasien": "Budi Santoso",
+    "status": "diproses",
+    "createdAt": "2026-04-07T14:30:45Z",
+    "updatedAt": "2026-04-07T15:00:00Z",
+    "details": [...]
+  }
+}
+```
 
 ---
 
-## Update Permintaan Darah
+## Update Blood Request (Admin Only)
 
 **PUT** `/permintaan-darah/{id}`
 
-**Path Parameters:**
-
-- `id` (required): Permintaan Darah ID
+**Access:** Admin only
 
 **Request:**
 
 ```json
 {
-  "rumahSakitId": "RS001",
-  "namaPasien": "John Doe Updated",
-  "noRM": "RM-001",
-  "tempatLahir": "Jakarta",
-  "tanggalLahir": "1990-01-15",
-  "jenisKelamin": "L",
-  "golonganDarah": "O",
-  "rhesusDarah": "+",
   "hemoglobin": 13.0,
-  "ruangBagianKelas": "ICCU",
-  "pernahTransfusi": false,
-  "indikasiTransfusi": "Anemia",
-  "status": "diproses",
-  "tanggalPermintaan": "2026-04-06T08:33:32Z"
+  "ruangBagianKelas": "VVIP"
 }
 ```
 
-**Response (200 OK):** Same as Create
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "message": "Blood request updated successfully",
+  "data": {...}
+}
+```
 
 ---
 
-## Update Permintaan Darah Status
+## Update Own Blood Request (Rumah Sakit)
+
+**PUT** `/permintaan-darah/my-requests/{id}`
+
+**Access:** Rumah Sakit only (own requests)
+
+**Request:**
+
+```json
+{
+  "hemoglobin": 13.0,
+  "indikasiTransfusi": "Transfusi emergensi"
+}
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "message": "Blood request updated successfully",
+  "data": {...}
+}
+```
+
+---
+
+## Update Blood Request Status (Admin Only)
 
 **PUT** `/permintaan-darah/update/{id}`
 
-**Path Parameters:**
-
-- `id` (required): Permintaan Darah ID
+**Access:** Admin only
 
 **Request:**
 
 ```json
 {
-  "status": "bisa_diambil",
-  "cancelReason": null
+  "status": "diproses",
+  "reason": null
 }
 ```
 
-**Response (200 OK):** Same as Create
+**Valid Status Transitions:**
+
+- `dibuat` → `diproses` | `dibatalkan`
+- `diproses` → `bisa_diambil` | `dibatalkan`
+- `bisa_diambil` → `selesai` | `dibatalkan`
+- `selesai` → ❌ (cannot change)
+- `dibatalkan` → ❌ (cannot change)
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "message": "Blood request status updated successfully",
+  "data": {
+    "permintaanDarahId": "PD04071430001",
+    "status": "diproses",
+    "updatedAt": "2026-04-07T15:15:00Z"
+  }
+}
+```
+
+**Response (400 Bad Request) - Invalid Status:**
+
+```json
+{
+  "success": false,
+  "message": "cannot update status of a completed or cancelled request"
+}
+```
 
 ---
 
-## Delete Permintaan Darah (Soft Delete)
+## Delete Blood Request
 
 **DELETE** `/permintaan-darah/{id}`
 
-**Path Parameters:**
-
-- `id` (required): Permintaan Darah ID
+**Access:** Admin
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Operation successful",
+  "message": "Blood request deleted successfully",
   "data": null
 }
 ```
 
 ---
 
-## Restore Permintaan Darah
-
-**PUT** `/permintaan-darah/restore/{id}`
-
-**Path Parameters:**
-
-- `id` (required): Permintaan Darah ID
-
-**Response (200 OK):**
-
-```json
-{
-  "success": true,
-  "message": "Operation successful",
-  "data": null
-}
-```
-
----
-
-## Status Values
+## Blood Request Status Values
 
 - `dibuat` - Newly created
 - `diproses` - Being processed
@@ -290,29 +305,26 @@ Authorization: Bearer {token}
 - `selesai` - Completed
 - `dibatalkan` - Cancelled
 
-## Jenis Kelamin Values
+---
 
-- `L` - Laki-laki (Male)
-- `P` - Perempuan (Female)
+## Blood Type & Rhesus Values
 
-## Golongan Darah Values
+**Blood Types:** A, B, AB, O
 
-- `A`
-- `B`
-- `AB`
-- `O`
+**Rhesus:** +, -
 
-## Rhesus Values
-
-- `+` - Positive
-- `-` - Negative
+**Gender:** L (Male), P (Female)
 
 ---
 
-## Error Codes
+## Notes
 
-- `400` - Bad Request (Invalid input)
-- `401` - Unauthorized (Missing/invalid token)
-- `403` - Forbidden (No permission)
-- `404` - Not Found
-- `500` - Internal Server Error
+- Request ID format: PD + DDMMYYHHMM + 3-digit sequence
+- Patient data is flattened (duplicated per request, not normalized)
+- Status changes are logged in status_logs for audit trail
+- Real-time WebSocket notifications on status changes
+- Requests marked selesai or dibatalkan cannot be modified
+
+---
+
+**Last Updated:** 2026-04-07

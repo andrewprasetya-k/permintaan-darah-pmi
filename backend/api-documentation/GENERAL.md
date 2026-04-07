@@ -197,21 +197,102 @@ Format:
 
 ---
 
+## WebSocket Authentication
+
+### Token Location for WebSocket
+
+Karena WebSocket upgrade HTTP tidak allow custom headers (RFC 6455), token harus dikirim via query parameter:
+
+```
+ws://localhost:8080/api/ws/connect?token=JWT_TOKEN
+```
+
+### WebSocket Flow
+
+1. Connect ke `/ws/connect` dengan token di query param
+2. JWTMiddleware validate token dari query param
+3. Extract userID & userRole dari token claims
+4. Receive real-time messages: `{type, action, entityId, entityType, data, timestamp}`
+
+### WebSocket Message Format
+
+```json
+{
+  "type": "status_change",
+  "action": "UPDATE",
+  "entityId": "PD20240407123456",
+  "entityType": "permintaan_darah",
+  "data": {
+    "permintaanDarahId": "PD20240407123456",
+    "namaPasien": "Budi Santoso",
+    "status": "diproses",
+    "createdAt": "2026-04-07T10:30:45Z",
+    "updatedAt": "2026-04-07T11:00:12Z"
+  },
+  "timestamp": "2026-04-07T11:00:12Z"
+}
+```
+
+### Supported Message Types
+
+- `status_change` - Permintaan status berubah
+- `update_permintaan` - Permintaan dibuat atau diupdate
+
+### Connection Features
+
+- **Timeout:** 24 jam (tetap connected selama admin session)
+- **Heartbeat:** Ping every 30 seconds untuk prevent network timeout
+- **Auto Response:** Browser otomatis respond dengan pong
+
+---
+
+## Rate Limiting
+
+Berbagai endpoint memiliki rate limiting untuk prevent abuse:
+
+| Endpoint        | Limit           | Window  |
+| --------------- | --------------- | ------- |
+| Login endpoints | 5 requests      | 1 menit |
+| Protected API   | 100 requests    | 1 menit |
+| Strict endpoints| 30 requests     | 1 menit |
+
+Response header saat rate limit exceeded:
+
+```
+HTTP/1.1 429 Too Many Requests
+Retry-After: 45
+X-RateLimit-Limit: 5
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1712481234
+```
+
+---
+
 ## Dokumentasi Files
 
 Setiap endpoint diorganisir per modul:
 
-- `01_AUTH.md` - Authentication endpoints
-- `02_ADMIN.md` - Admin management
-- `03_RUMAH_SAKIT.md` - Rumah Sakit management
-- `04_KOMPONEN_DARAH.md` - Blood component management
-- `05_PERMINTAAN_DARAH.md` - Blood request management
-- `06_DETAIL_PERMINTAAN_DARAH.md` - Blood request details
-- `07_LOGS.md` - Audit logs
-- `08_DASHBOARD.md` - Dashboard/reporting
+- `01_AUTH.md` - Authentication endpoints (Login)
+- `02_ADMIN.md` - Admin management (CRUD)
+- `03_RUMAH_SAKIT.md` - Rumah Sakit management (CRUD)
+- `04_KOMPONEN_DARAH.md` - Blood component management (CRUD)
+- `05_PERMINTAAN_DARAH.md` - Blood request management (CRUD + Status)
+- `06_DETAIL_PERMINTAAN_DARAH.md` - Blood request details (CRUD)
+- `07_LOGS.md` - Status & system access logs
+- `08_DASHBOARD.md` - Dashboard & analytics
 - `GENERAL.md` - This file (General guidelines)
 
 ---
 
-**Last Updated:** 2026-04-06  
+## Access Control Summary
+
+| Role        | Can Access                                                        |
+| ----------- | ----------------------------------------------------------------- |
+| Superadmin  | Admin CRUD, hospital CRUD, components, all permintaan, all logs  |
+| Admin       | Hospital view/update, components, all permintaan, all logs       |
+| Rumah Sakit | Own profile, own permintaan, details, shared dashboard           |
+
+---
+
+**Last Updated:** 2026-04-07  
 **API Version:** 1.0.0

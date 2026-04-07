@@ -1,4 +1,4 @@
-# API Documentation - Rumah Sakit
+# API Documentation - Rumah Sakit (Hospital Management)
 
 **Base URL:** `http://localhost:8080/api`
 
@@ -8,21 +8,27 @@
 Authorization: Bearer {token}
 ```
 
+**Access Control:**
+- `/rumah-sakit` (CRUD operations) - **Admin Only**
+- `/rumah-sakit/me` (Self Profile) - **Rumah Sakit Only**
+
 ---
 
-## Create Rumah Sakit
+## Create Rumah Sakit (Admin Only)
 
 **POST** `/rumah-sakit`
+
+**Access:** Admin or Superadmin only
 
 **Request:**
 
 ```json
 {
-  "rsNama": "Rumah Sakit Harapan",
+  "rsNama": "Rumah Sakit Pusat",
   "rsNoTelp": "021-1234567",
   "rsAlamat": "Jl. Merdeka No. 10, Jakarta",
-  "rsEmail": "rs@example.com",
-  "rsUsername": "rs_harapan",
+  "rsEmail": "info@rspusat.com",
+  "rsUsername": "rspusat",
   "rsPassword": "password123"
 }
 ```
@@ -32,25 +38,27 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Rumah Sakit created successfully",
+  "message": "Hospital created successfully",
   "data": {
     "rsId": "RS001",
-    "rsNama": "Rumah Sakit Harapan",
+    "rsNama": "Rumah Sakit Pusat",
     "rsNoTelp": "021-1234567",
     "rsAlamat": "Jl. Merdeka No. 10, Jakarta",
-    "rsEmail": "rs@example.com",
-    "rsUsername": "rs_harapan",
-    "createdAt": "2026-04-06T08:33:32Z",
-    "updatedAt": "2026-04-06T08:33:32Z"
+    "rsEmail": "info@rspusat.com",
+    "rsUsername": "rspusat",
+    "createdAt": "2026-04-07T10:30:45Z",
+    "updatedAt": "2026-04-07T10:30:45Z"
   }
 }
 ```
 
 ---
 
-## Get All Rumah Sakit
+## Get All Rumah Sakit (Admin Only)
 
 **GET** `/rumah-sakit?limit=20&offset=0`
+
+**Access:** Admin or Superadmin only
 
 **Query Parameters:**
 
@@ -62,17 +70,17 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Data retrieved successfully",
+  "message": "Hospitals retrieved successfully",
   "data": [
     {
       "rsId": "RS001",
-      "rsNama": "Rumah Sakit Harapan",
+      "rsNama": "Rumah Sakit Pusat",
       "rsNoTelp": "021-1234567",
       "rsAlamat": "Jl. Merdeka No. 10, Jakarta",
-      "rsEmail": "rs@example.com",
-      "rsUsername": "rs_harapan",
-      "createdAt": "2026-04-06T08:33:32Z",
-      "updatedAt": "2026-04-06T08:33:32Z"
+      "rsEmail": "info@rspusat.com",
+      "rsUsername": "rspusat",
+      "createdAt": "2026-04-01T10:00:00Z",
+      "updatedAt": "2026-04-07T10:30:45Z"
     }
   ],
   "pagination": {
@@ -86,52 +94,48 @@ Authorization: Bearer {token}
 
 ---
 
-## Get Rumah Sakit by ID
+## Get Rumah Sakit by ID (Admin Only)
 
 **GET** `/rumah-sakit/{id}`
 
-**Path Parameters:**
-
-- `id` (required): Rumah Sakit ID
+**Access:** Admin or Superadmin only
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Rumah Sakit retrieved successfully",
+  "message": "Hospital retrieved successfully",
   "data": {
     "rsId": "RS001",
-    "rsNama": "Rumah Sakit Harapan",
+    "rsNama": "Rumah Sakit Pusat",
     "rsNoTelp": "021-1234567",
     "rsAlamat": "Jl. Merdeka No. 10, Jakarta",
-    "rsEmail": "rs@example.com",
-    "rsUsername": "rs_harapan",
-    "createdAt": "2026-04-06T08:33:32Z",
-    "updatedAt": "2026-04-06T08:33:32Z"
+    "rsEmail": "info@rspusat.com",
+    "rsUsername": "rspusat",
+    "createdAt": "2026-04-01T10:00:00Z",
+    "updatedAt": "2026-04-07T10:30:45Z"
   }
 }
 ```
 
 ---
 
-## Update Rumah Sakit
+## Update Rumah Sakit (Admin Only)
 
 **PUT** `/rumah-sakit/{id}`
 
-**Path Parameters:**
-
-- `id` (required): Rumah Sakit ID
+**Access:** Admin or Superadmin only
 
 **Request:**
 
 ```json
 {
-  "rsNama": "Rumah Sakit Harapan Baru",
-  "rsNoTelp": "021-7654321",
-  "rsAlamat": "Jl. Merdeka No. 20, Jakarta",
-  "rsEmail": "rs_baru@example.com",
-  "rsUsername": "rs_harapan_baru",
+  "rsNama": "Rumah Sakit Pusat - Updated",
+  "rsNoTelp": "021-9876543",
+  "rsAlamat": "Jl. Merdeka No. 10, Jakarta Pusat",
+  "rsEmail": "updated@rspusat.com",
+  "rsUsername": "rspusat_updated",
   "rsPassword": "newpassword123"
 }
 ```
@@ -141,91 +145,145 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Rumah Sakit updated successfully",
+  "message": "Hospital updated successfully",
   "data": {
     "rsId": "RS001",
-    "rsNama": "Rumah Sakit Harapan Baru",
-    "rsNoTelp": "021-7654321",
-    "rsAlamat": "Jl. Merdeka No. 20, Jakarta",
-    "rsEmail": "rs_baru@example.com",
-    "rsUsername": "rs_harapan_baru",
-    "createdAt": "2026-04-06T08:33:32Z",
-    "updatedAt": "2026-04-06T09:00:00Z"
+    "rsNama": "Rumah Sakit Pusat - Updated",
+    "rsNoTelp": "021-9876543",
+    "rsAlamat": "Jl. Merdeka No. 10, Jakarta Pusat",
+    "rsEmail": "updated@rspusat.com",
+    "rsUsername": "rspusat_updated",
+    "createdAt": "2026-04-01T10:00:00Z",
+    "updatedAt": "2026-04-07T11:00:00Z"
   }
 }
 ```
 
 ---
 
-## Delete Rumah Sakit (Soft Delete)
+## Delete Rumah Sakit (Admin Only)
 
 **DELETE** `/rumah-sakit/{id}`
 
-**Path Parameters:**
-
-- `id` (required): Rumah Sakit ID
+**Access:** Admin or Superadmin only
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Rumah Sakit deleted successfully",
+  "message": "Hospital deleted successfully",
   "data": null
 }
 ```
 
 ---
 
-## Restore Rumah Sakit
+## Restore Rumah Sakit (Admin Only)
 
 **PUT** `/rumah-sakit/restore/{id}`
 
-**Path Parameters:**
-
-- `id` (required): Rumah Sakit ID
+**Access:** Admin or Superadmin only
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Rumah Sakit restored successfully",
+  "message": "Hospital restored successfully",
   "data": null
 }
 ```
 
 ---
 
-## Get Distinct Rumah Sakit Names
+## Get Own Profile (Rumah Sakit Only)
 
-**GET** `/filter/rumah-sakit/`
+**GET** `/rumah-sakit/me`
+
+**Access:** Only rumah_sakit role
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Data retrieved successfully",
+  "message": "Profile retrieved successfully",
+  "data": {
+    "rsId": "RS001",
+    "rsNama": "Rumah Sakit Pusat",
+    "rsNoTelp": "021-1234567",
+    "rsAlamat": "Jl. Merdeka No. 10, Jakarta",
+    "rsEmail": "info@rspusat.com",
+    "rsUsername": "rspusat",
+    "createdAt": "2026-04-01T10:00:00Z",
+    "updatedAt": "2026-04-07T10:30:45Z"
+  }
+}
+```
+
+---
+
+## Update Own Profile (Rumah Sakit Only)
+
+**PUT** `/rumah-sakit/me`
+
+**Access:** Only rumah_sakit role
+
+**Request:**
+
+```json
+{
+  "rsNoTelp": "021-9876543",
+  "rsAlamat": "Jl. Merdeka No. 10, Jakarta Selatan",
+  "rsEmail": "newemail@rspusat.com",
+  "rsPassword": "newpassword123"
+}
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "message": "Profile updated successfully",
+  "data": {
+    "rsId": "RS001",
+    "rsNama": "Rumah Sakit Pusat",
+    "rsNoTelp": "021-9876543",
+    "rsAlamat": "Jl. Merdeka No. 10, Jakarta Selatan",
+    "rsEmail": "newemail@rspusat.com",
+    "rsUsername": "rspusat",
+    "createdAt": "2026-04-01T10:00:00Z",
+    "updatedAt": "2026-04-07T11:30:00Z"
+  }
+}
+```
+
+---
+
+## Get Distinct Rumah Sakit Names (Admin Only)
+
+**GET** `/filter/rumah-sakit/`
+
+**Access:** Admin or Superadmin only
+
+**Purpose:** Get list of all unique hospital names for filtering
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "message": "Hospital names retrieved successfully",
   "data": [
-    {
-      "rsId": "RS001",
-      "rsNama": "Rumah Sakit Harapan"
-    },
-    {
-      "rsId": "RS002",
-      "rsNama": "Rumah Sakit Medika"
-    }
+    "Rumah Sakit Pusat",
+    "Rumah Sakit Cabang",
+    "Rumah Sakit Satelit"
   ]
 }
 ```
 
 ---
 
-## Error Codes
-
-- `400` - Bad Request (Invalid input)
-- `401` - Unauthorized (Missing/invalid token)
-- `403` - Forbidden (No permission)
-- `404` - Not Found
-- `500` - Internal Server Error
+**Last Updated:** 2026-04-07

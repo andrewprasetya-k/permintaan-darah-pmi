@@ -8,22 +8,26 @@
 Authorization: Bearer {token}
 ```
 
+**Access Control:** All endpoints - **Rumah Sakit Only**
+
 ---
 
-## Create Detail Permintaan Darah
+## Create Detail
 
 **POST** `/detail-permintaan-darah`
+
+**Access:** Rumah Sakit only
 
 **Request:**
 
 ```json
 {
-  "dpdPdId": "PD0406082826001",
-  "dpdKomId": 1,
-  "dpdGolonganDarah": "O",
-  "dpdRhesus": "+",
-  "dpdJmlKantong": 2,
-  "dpdTglDiperlukan": "2026-04-08T10:00:00Z"
+  "pdId": "PD04071430001",
+  "komId": 2,
+  "golonganDarah": "O",
+  "rhesusDarah": "+",
+  "jumlahKantong": 3,
+  "tanggalDiperlukan": "2026-04-10T15:00:00Z"
 }
 ```
 
@@ -32,51 +36,44 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Created successfully",
+  "message": "Detail created successfully",
   "data": {
-    "dpdId": 1,
-    "dpdPdId": "PD0406082826001",
-    "komponenNama": "Packed Red Cell (PRC)",
+    "dpdId": 2,
+    "pdId": "PD04071430001",
+    "komId": 2,
+    "komNama": "Packed Red Cell (PRC)",
     "golonganDarah": "O",
     "rhesusDarah": "+",
-    "jmlKantong": 2,
-    "tglDiperlukan": "2026-04-08T10:00:00Z",
-    "createdAt": "2026-04-06T08:33:32Z"
+    "jumlahKantong": 3,
+    "tanggalDiperlukan": "2026-04-10T15:00:00Z",
+    "createdAt": "2026-04-07T14:35:00Z"
   }
 }
 ```
 
 ---
 
-## Get All Detail Permintaan Darah
+## Get All Details
 
-**GET** `/detail-permintaan-darah?limit=20&offset=0`
+**GET** `/detail-permintaan-darah?limit=20&offset=0&pdId={pdId}`
+
+**Access:** Rumah Sakit only
 
 **Query Parameters:**
 
 - `limit` (optional): default 20, max 100
 - `offset` (optional): default 0
+- `pdId` (optional): filter by blood request ID
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Data retrieved successfully",
-  "data": [
-    {
-      "dpdId": 1,
-      "dpdPdId": "PD0406082826001",
-      "komponenNama": "Packed Red Cell (PRC)",
-      "golonganDarah": "O",
-      "rhesusDarah": "+",
-      "jmlKantong": 2,
-      "tglDiperlukan": "2026-04-08T10:00:00Z",
-      "createdAt": "2026-04-06T08:33:32Z"
-    }
-  ],
+  "message": "Details retrieved successfully",
+  "data": [...],
   "pagination": {
-    "total": 1,
+    "total": 5,
     "page": 1,
     "limit": 20,
     "offset": 0
@@ -86,53 +83,46 @@ Authorization: Bearer {token}
 
 ---
 
-## Get Detail Permintaan Darah by ID
+## Get Detail by ID
 
 **GET** `/detail-permintaan-darah/{id}`
 
-**Path Parameters:**
-
-- `id` (required): Detail Permintaan Darah ID
+**Access:** Rumah Sakit only
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Operation successful",
+  "message": "Detail retrieved successfully",
   "data": {
     "dpdId": 1,
-    "dpdPdId": "PD0406082826001",
-    "komponenNama": "Packed Red Cell (PRC)",
+    "pdId": "PD04071430001",
+    "komId": 1,
+    "komNama": "Whole Blood",
     "golonganDarah": "O",
     "rhesusDarah": "+",
-    "jmlKantong": 2,
-    "tglDiperlukan": "2026-04-08T10:00:00Z",
-    "createdAt": "2026-04-06T08:33:32Z"
+    "jumlahKantong": 2,
+    "tanggalDiperlukan": "2026-04-10T10:00:00Z",
+    "createdAt": "2026-04-07T14:30:45Z"
   }
 }
 ```
 
 ---
 
-## Update Detail Permintaan Darah
+## Update Detail
 
 **PUT** `/detail-permintaan-darah/{id}`
 
-**Path Parameters:**
-
-- `id` (required): Detail Permintaan Darah ID
+**Access:** Rumah Sakit only
 
 **Request:**
 
 ```json
 {
-  "dpdPdId": "PD0406082826001",
-  "dpdKomId": 2,
-  "dpdGolonganDarah": "A",
-  "dpdRhesus": "-",
-  "dpdJmlKantong": 3,
-  "dpdTglDiperlukan": "2026-04-09T10:00:00Z"
+  "jumlahKantong": 4,
+  "tanggalDiperlukan": "2026-04-11T10:00:00Z"
 }
 ```
 
@@ -141,60 +131,38 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Operation successful",
-  "data": {
-    "dpdId": 1,
-    "dpdPdId": "PD0406082826001",
-    "komponenNama": "Fresh Frozen Plasma (FFP)",
-    "golonganDarah": "A",
-    "rhesusDarah": "-",
-    "jmlKantong": 3,
-    "tglDiperlukan": "2026-04-09T10:00:00Z",
-    "createdAt": "2026-04-06T08:33:32Z"
-  }
+  "message": "Detail updated successfully",
+  "data": {...}
 }
 ```
 
 ---
 
-## Delete Detail Permintaan Darah
+## Delete Detail
 
 **DELETE** `/detail-permintaan-darah/{id}`
 
-**Path Parameters:**
-
-- `id` (required): Detail Permintaan Darah ID
+**Access:** Rumah Sakit only
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Operation successful",
+  "message": "Detail deleted successfully",
   "data": null
 }
 ```
 
 ---
 
-## Golongan Darah Values
+## Notes
 
-- `A`
-- `B`
-- `AB`
-- `O`
-
-## Rhesus Values
-
-- `+` - Positive
-- `-` - Negative
+- Each detail specifies one blood component with quantity and needed date
+- One request (permintaan_darah) can have multiple details
+- Used when rumah sakit needs multiple components for one patient
+- Component must be active (isActive: true)
 
 ---
 
-## Error Codes
-
-- `400` - Bad Request (Invalid input)
-- `401` - Unauthorized (Missing/invalid token)
-- `403` - Forbidden (No permission)
-- `404` - Not Found
-- `500` - Internal Server Error
+**Last Updated:** 2026-04-07
