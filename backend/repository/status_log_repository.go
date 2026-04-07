@@ -54,6 +54,6 @@ func (r *statusLogRepository) GetAll(limit, offset int) ([]models.StatusLog, err
 
 func (r *statusLogRepository) Count() (int64, error) {
 	var count int64
-	err := r.db.Model(&models.StatusLog{}).Where("is_deleted = ?", false).Count(&count).Error
+	err := r.db.Model(&models.StatusLog{}).Count(&count).Error
 	return count, err
 }
