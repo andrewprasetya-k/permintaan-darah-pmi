@@ -2,6 +2,7 @@ package routes
 
 import (
 	"backend/controllers"
+	"backend/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,11 +29,14 @@ func RegisterAPIRoutes(
 	filter.GET("/rumah-sakit/", rumahSakitController.GetDistinctRSNama)
 
 	auth := api.Group("/auth")
+	auth.Use(middleware.AdminOnly())
 	auth.POST("/login/admin", authController.AdminLogin)
+	auth.Use(middleware.RumahSakitOnly())
 	auth.POST("/login/rumah-sakit", authController.RumahSakitLogin)
 
 	//main endpoints
 	admins := api.Group("/admin")
+	admins.Use(middleware.SuperAdminOnly())
 	admins.POST("", adminController.Create)
 	admins.GET("", adminController.GetAll)
 	admins.GET("/:id", adminController.GetByID)
@@ -41,6 +45,7 @@ func RegisterAPIRoutes(
 	admins.PUT("/restore/:id", adminController.Restore)
 
 	rumahSakit := api.Group("/rumah-sakit")
+	rumahSakit.Use(middleware.AdminOrRumahSakit())
 	rumahSakit.POST("", rumahSakitController.Create)
 	rumahSakit.GET("", rumahSakitController.GetAll)
 	rumahSakit.GET("/:id", rumahSakitController.GetByID)
@@ -49,6 +54,7 @@ func RegisterAPIRoutes(
 	rumahSakit.PUT("/restore/:id", rumahSakitController.Restore)
 
 	komponen := api.Group("/komponen-darah")
+	komponen.Use(middleware.AdminOnly())
 	komponen.POST("", komponenController.Create)
 	komponen.GET("", komponenController.GetAll)
 	komponen.GET("/:id", komponenController.GetByID)
@@ -56,8 +62,9 @@ func RegisterAPIRoutes(
 	komponen.DELETE("/:id", komponenController.Delete)
 	komponen.PUT("/activate/:id", komponenController.Activate)
 	komponen.PUT("/deactivate/:id", komponenController.Deactivate)
-
+	
 	permintaan := api.Group("/permintaan-darah")
+	permintaan.Use(middleware.AdminOnly())
 	permintaan.POST("", permintaanController.Create)
 	permintaan.GET("", permintaanController.GetAll)
 	permintaan.GET("/:id", permintaanController.GetByID)
@@ -68,6 +75,7 @@ func RegisterAPIRoutes(
 	permintaan.PUT("/update/:id", permintaanController.UpdateStatus)
 
 	detail := api.Group("/detail-permintaan-darah")
+	detail.Use(middleware.AdminOrRumahSakit())
 	detail.POST("", detailController.Create)
 	detail.GET("", detailController.GetAll)
 	detail.GET("/:id", detailController.GetByID)
@@ -75,9 +83,11 @@ func RegisterAPIRoutes(
 	detail.DELETE("/:id", detailController.Delete)
 
 	statusLogs := api.Group("/status-logs")
+	statusLogs.Use(middleware.AdminOnly())
 	statusLogs.GET("", statusLogController.GetAll)
 
 	systemLogs := api.Group("/system-logs")
+	systemLogs.Use(middleware.AdminOnly())
 	systemLogs.GET("", systemAccessLogController.GetAll)
 	systemLogs.GET("/:id", systemAccessLogController.GetByID)
 	systemLogs.GET("/user/:userId", systemAccessLogController.GetByUserID)
