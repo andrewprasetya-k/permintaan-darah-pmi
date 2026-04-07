@@ -19,6 +19,7 @@ func RegisterAPIRoutes(
 	systemAccessLogController *controllers.SystemAccessLogController,
 	dashboardController *controllers.DashboardController,
 	authController *controllers.AuthController,
+	websocketController *controllers.WebSocketController,
 ) {
 	api := r.Group("/api")
 
@@ -117,4 +118,9 @@ func RegisterAPIRoutes(
 	dashboard := protected.Group("/dashboard")
 	dashboard.Use(middleware.AdminOrRumahSakit())
 	dashboard.GET("/status-summary/:rumahSakitID", dashboardController.StatusSummary)
+
+	// WebSocket routes
+	ws := protected.Group("/ws")
+	ws.GET("/connect", websocketController.Connect)
+	ws.GET("/status", websocketController.GetConnectionStatus)
 }

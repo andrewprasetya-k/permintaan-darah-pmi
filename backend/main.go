@@ -76,6 +76,11 @@ func main() {
 	systemAccessLogCtl := controllers.NewSystemAccessLogController(systemAccessLogSvc)
 	dashboardCtl := controllers.NewDashboardController(dashboardSvc)
 
+	// Initialize WebSocket hub
+	wsHub := services.NewHub()
+	go wsHub.Run()
+	wsCtl := controllers.NewWebSocketController(wsHub)
+
 	routes.RegisterAPIRoutes(
 		r,
 		adminCtl,
@@ -87,6 +92,7 @@ func main() {
 		systemAccessLogCtl,
 		dashboardCtl,
 		authCtl,
+		wsCtl,
 	)
 
 	r.GET("/health", func(c *gin.Context) {
