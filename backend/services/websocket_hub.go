@@ -13,7 +13,7 @@ type WebSocketMessage struct {
 	Action     string      `json:"action"`
 	EntityID   string      `json:"entityId"`
 	EntityType string      `json:"entityType"`
-	Data       interface{} `json:"data"`
+	Data       any 			`json:"data"`
 	Timestamp  string      `json:"timestamp"`
 }
 
