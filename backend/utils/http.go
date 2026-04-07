@@ -66,9 +66,9 @@ func ExtractUserFromJWT(c *gin.Context) (*string, string, string) {
 	username, _ := c.Get("username")
 	userRole, _ := c.Get("userRole")
 
-	userIDStr := ""
+	var userIDStr *string
 	if id, ok := userID.(string); ok {
-		userIDStr = id
+		userIDStr = &id
 	}
 
 	usernameStr := "Unknown User"
@@ -81,5 +81,5 @@ func ExtractUserFromJWT(c *gin.Context) (*string, string, string) {
 		roleStr = role
 	}
 
-	return &userIDStr, usernameStr, roleStr
+	return userIDStr, usernameStr, roleStr
 }

@@ -82,6 +82,28 @@ func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
 }
 
+func (ctl *PermintaanDarahController) GetMyRequests(c *gin.Context) {
+	userID, _, userRole := utils.ExtractUserFromJWT(c)
+
+	if userRole != "rumah_sakit" {
+		utils.SendError(c, http.StatusForbidden, "Only rumah sakit can access this endpoint")
+		return
+	}
+
+	if userID == nil || *userID == "" {
+		utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+		return
+	}
+
+	limit, offset := utils.ParsePagination(c)
+	resp, total, err := ctl.service.GetByRsID(*userID, limit, offset)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
+}
+
 func (ctl *PermintaanDarahController) Update(c *gin.Context) {
 	var req dto.UpdatePermintaanDarahRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

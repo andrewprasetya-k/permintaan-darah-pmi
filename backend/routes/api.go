@@ -80,6 +80,7 @@ func RegisterAPIRoutes(
 	permintaan.Use(middleware.AdminOrRumahSakit())
 	permintaan.POST("", permintaanController.Create)
 	permintaan.GET("", permintaanController.GetAll)
+	permintaan.GET("/my-requests", permintaanController.GetMyRequests)
 	permintaan.GET("/:id", permintaanController.GetByID)
 	permintaan.PUT("/:id", permintaanController.Update)
 	permintaan.DELETE("/:id", permintaanController.Delete)
