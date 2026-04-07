@@ -18,10 +18,11 @@ type WebSocketMessage struct {
 }
 
 // Client represents a WebSocket client connection
+// ID is set to the authenticated user's ID (from JWT)
 type Client struct {
-	ID   string
-	Conn *websocket.Conn
-	Send chan *WebSocketMessage
+	ID   string                        // userID of authenticated user
+	Conn *websocket.Conn              // WebSocket connection
+	Send chan *WebSocketMessage       // Buffered channel for outgoing messages
 }
 
 // Hub maintains active client connections and broadcasts messages

@@ -59,6 +59,14 @@ func ValidateJWT(tokenString string) (*dto.TokenPayload, error) {
 	return payload, nil
 }
 
+// JWTMiddleware validates JWT tokens from Authorization header or query parameter
+// 
+// Supported token sources (in order):
+// 1. Authorization header: "Authorization: Bearer <token>"
+// 2. Query parameter: "?token=<token>" (fallback for WebSocket, which doesn't support custom headers)
+//
+// After validation, extracts userID, username, and role from token claims
+// and stores them in context for use by handlers
 func JWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var tokenString string
@@ -76,6 +84,7 @@ func JWTMiddleware() gin.HandlerFunc {
 			}
 		} else {
 			// Fallback to query parameter (for WebSocket)
+			// WebSocket upgrade doesn't allow custom headers per HTTP spec
 			tokenString = c.Query("token")
 			if tokenString == "" {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})

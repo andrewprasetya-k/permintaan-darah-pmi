@@ -26,6 +26,9 @@ var upgrader = websocket.Upgrader{
 }
 
 // Connect handles WebSocket connection
+// Token must be provided as query parameter (?token=JWT_TOKEN) because
+// HTTP protocol doesn't allow custom headers during WebSocket upgrade.
+// The JWTMiddleware (applied to this route) validates the token and extracts userID
 func (ctrl *WebSocketController) Connect(c *gin.Context) {
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -33,12 +36,18 @@ func (ctrl *WebSocketController) Connect(c *gin.Context) {
 		return
 	}
 
+	// userID is set by JWTMiddleware after validating the token from query param
 	userID, exists := c.Get("userID")
-	clientID := "anonymous"
-	if exists && userID != nil {
-		if id, ok := userID.(string); ok {
-			clientID = id
-		}
+	if !exists || userID == nil {
+		// This shouldn't happen because JWTMiddleware would have rejected the request
+		ws.Close()
+		return
+	}
+
+	clientID, ok := userID.(string)
+	if !ok {
+		ws.Close()
+		return
 	}
 
 	client := &services.Client{
