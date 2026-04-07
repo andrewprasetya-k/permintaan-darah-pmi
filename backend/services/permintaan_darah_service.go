@@ -11,8 +11,8 @@ import (
 type PermintaanDarahService interface {
 	Create(req dto.CreatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
 	GetByID(id string) (*dto.PermintaanDarahResponse, error)
-	GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]dto.PermintaanDarahResponse, int, error)
-	GetByRsID(rsID string, limit, offset int) ([]dto.PermintaanDarahResponse, int, error)
+	GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]dto.PermintaanDarahGetAllResponse, int, error)
+	GetByRsID(rsID string, limit, offset int) ([]dto.PermintaanDarahGetAllResponse, int, error)
 	Update(id string, req dto.UpdatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
 	UpdateMyRequest(id string, rsID string, req dto.UpdatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
 	Delete(id string, userID *string, userName string, userRole string, userAgent *string) error
@@ -80,7 +80,7 @@ func (s *permintaanDarahService) GetByID(id string) (*dto.PermintaanDarahRespons
 	return &resp, nil
 }
 
-func (s *permintaanDarahService) GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]dto.PermintaanDarahResponse, int, error) {
+func (s *permintaanDarahService) GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]dto.PermintaanDarahGetAllResponse, int, error) {
 	list, err := s.repo.GetAll(filters, limit, offset)
 	if err != nil {
 		return nil, 0, err
@@ -89,21 +89,21 @@ func (s *permintaanDarahService) GetAll(filters *dto.PermintaanDarahFilters, lim
 	if err != nil {
 		return nil, 0, err
 	}
-	result := make([]dto.PermintaanDarahResponse, 0, len(list))
+	result := make([]dto.PermintaanDarahGetAllResponse, 0, len(list))
 	for _, item := range list {
-		result = append(result, mapPermintaanToResponse(item))
+		result = append(result, mapPermintaanToGetAllResponse(item))
 	}
 	return result, int(total), nil
 }
 
-func (s *permintaanDarahService) GetByRsID(rsID string, limit, offset int) ([]dto.PermintaanDarahResponse, int, error) {
+func (s *permintaanDarahService) GetByRsID(rsID string, limit, offset int) ([]dto.PermintaanDarahGetAllResponse, int, error) {
 	list, total, err := s.repo.GetByRsID(rsID, limit, offset)
 	if err != nil {
 		return nil, 0, err
 	}
-	result := make([]dto.PermintaanDarahResponse, 0, len(list))
+	result := make([]dto.PermintaanDarahGetAllResponse, 0, len(list))
 	for _, item := range list {
-		result = append(result, mapPermintaanToResponse(item))
+		result = append(result, mapPermintaanToGetAllResponse(item))
 	}
 	return result, int(total), nil
 }
@@ -326,6 +326,24 @@ func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.Perm
 
 	resp := mapPermintaanToResponse(*data)
 	return &resp, nil
+}
+
+func mapPermintaanToGetAllResponse(data models.PermintaanDarah) dto.PermintaanDarahGetAllResponse {
+	return dto.PermintaanDarahGetAllResponse{
+	PDID:	   data.PDID,
+
+	// Data Pasien
+	PDNamaPasien: data.PDNamaPasien,
+	PDGender:	 data.PDGender,
+	PDGolDarah:   data.PDGolDarah,
+	PDRhesus:	 data.PDRhesus,
+
+	// Status
+	PDStatus: data.PDStatus,
+	CreatedAt: data.CreatedAt,     
+	UpdatedAt: data.UpdatedAt,
+	DeletedAt: data.DeletedAt,
+	}
 }
 
 func mapPermintaanToResponse(data models.PermintaanDarah) dto.PermintaanDarahResponse {
