@@ -27,10 +27,11 @@ type permintaanDarahService struct {
 	repo                   repository.PermintaanDarahRepository
 	statusLogRepo          repository.StatusLogRepository
 	systemAccessLogService SystemAccessLogService
+	wsHub                  *Hub
 }
 
-func NewPermintaanDarahService(repo repository.PermintaanDarahRepository, statusLogRepo repository.StatusLogRepository, systemAccessLogService SystemAccessLogService) PermintaanDarahService {
-	return &permintaanDarahService{repo: repo, statusLogRepo: statusLogRepo, systemAccessLogService: systemAccessLogService}
+func NewPermintaanDarahService(repo repository.PermintaanDarahRepository, statusLogRepo repository.StatusLogRepository, systemAccessLogService SystemAccessLogService, wsHub *Hub) PermintaanDarahService {
+	return &permintaanDarahService{repo: repo, statusLogRepo: statusLogRepo, systemAccessLogService: systemAccessLogService, wsHub: wsHub}
 }
 
 func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error) {
@@ -173,6 +174,12 @@ func (s *permintaanDarahService) Update(id string, req dto.UpdatePermintaanDarah
 	}
 
 	resp := mapPermintaanToResponse(*data)
+
+	// Broadcast WebSocket event
+	if s.wsHub != nil {
+		msg := NewWebSocketMessage("update_permintaan", "UPDATE", data.PDID, "permintaan_darah", resp)
+		s.wsHub.Broadcast(msg)
+	}
 	return &resp, nil
 }
 
@@ -337,6 +344,17 @@ func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.Perm
 	)
 
 	resp := mapPermintaanToResponse(*data)
+	// Broadcast WebSocket event
+	if s.wsHub != nil {
+		msg := NewWebSocketMessage("status_change", "UPDATE", data.PDID, "permintaan_darah", resp)
+		s.wsHub.Broadcast(msg)
+	}
+
+	// Broadcast WebSocket event
+	if s.wsHub != nil {
+		msg := NewWebSocketMessage("update_status", "UPDATE", pdID, "permintaan_darah", resp)
+		s.wsHub.Broadcast(msg)
+	}
 	return &resp, nil
 }
 

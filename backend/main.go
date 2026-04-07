@@ -60,7 +60,12 @@ func main() {
 	adminSvc := services.NewAdminService(adminRepo, systemAccessLogSvc)
 	rumahSakitSvc := services.NewRumahSakitService(rumahSakitRepo, systemAccessLogSvc)
 	komponenSvc := services.NewKomponenDarahService(komponenRepo, systemAccessLogSvc)
-	permintaanSvc := services.NewPermintaanDarahService(permintaanRepo, statusLogRepo, systemAccessLogSvc)
+	
+	// Initialize WebSocket hub
+	wsHub := services.NewHub()
+	go wsHub.Run()
+	
+	permintaanSvc := services.NewPermintaanDarahService(permintaanRepo, statusLogRepo, systemAccessLogSvc, wsHub)
 	detailSvc := services.NewDetailPermintaanDarahService(detailRepo, systemAccessLogSvc, permintaanSvc)
 	statusLogSvc := services.NewStatusLogService(statusLogRepo)
 	dashboardSvc := services.NewDashboardService(dashboardRepo)
@@ -76,9 +81,6 @@ func main() {
 	systemAccessLogCtl := controllers.NewSystemAccessLogController(systemAccessLogSvc)
 	dashboardCtl := controllers.NewDashboardController(dashboardSvc)
 
-	// Initialize WebSocket hub
-	wsHub := services.NewHub()
-	go wsHub.Run()
 	wsCtl := controllers.NewWebSocketController(wsHub)
 
 	routes.RegisterAPIRoutes(
