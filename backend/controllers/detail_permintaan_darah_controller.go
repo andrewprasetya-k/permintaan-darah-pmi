@@ -73,7 +73,7 @@ func (ctl *DetailPermintaanDarahController) Update(c *gin.Context) {
 
 	userID, userName, userRole := utils.ExtractUserFromJWT(c)
 
-	resp, err := ctl.service.Update(id, req, userID, userName, userRole)
+	resp, err := ctl.service.UpdateWithOwnershipCheck(id, req, userID, userName, userRole)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
@@ -90,7 +90,7 @@ func (ctl *DetailPermintaanDarahController) Delete(c *gin.Context) {
 
 	userID, userName, userRole := utils.ExtractUserFromJWT(c)
 
-	if err := ctl.service.Delete(id, userID, userName, userRole); err != nil {
+	if err := ctl.service.DeleteWithOwnershipCheck(id, userID, userName, userRole); err != nil {
 		utils.HandleError(c, err)
 		return
 	}

@@ -96,7 +96,6 @@ func RegisterAPIRoutes(
 	permintaan.GET("/:id", permintaanController.GetByID)
 	permintaan.PUT("/:id", permintaanController.Update)
 	permintaan.DELETE("/:id", permintaanController.Delete)
-	permintaan.PUT("/restore/:id", permintaanController.Restore)
 	permintaan.PUT("/update/:id", permintaanController.UpdateStatus)
 
 	detail := protected.Group("/detail-permintaan-darah")

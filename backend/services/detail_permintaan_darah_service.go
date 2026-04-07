@@ -4,6 +4,7 @@ import (
 	"backend/dto"
 	"backend/models"
 	"backend/repository"
+	"errors"
 	"fmt"
 )
 
@@ -12,16 +13,19 @@ type DetailPermintaanDarahService interface {
 	GetByID(id int) (*dto.DetailPermintaanDarahResponse, error)
 	GetAll(limit, offset int) ([]dto.DetailPermintaanDarahResponse, int, error)
 	Update(id int, req dto.UpdateDetailPermintaanDarahRequest, userID *string, userName, userRole string) (*dto.DetailPermintaanDarahResponse, error)
+	UpdateWithOwnershipCheck(id int, req dto.UpdateDetailPermintaanDarahRequest, userID *string, userName, userRole string) (*dto.DetailPermintaanDarahResponse, error)
 	Delete(id int, userID *string, userName, userRole string) error
+	DeleteWithOwnershipCheck(id int, userID *string, userName, userRole string) error
 }
 
 type detailPermintaanDarahService struct {
-	repo   repository.DetailPermintaanDarahRepository
-	logSvc SystemAccessLogService
+	repo                   repository.DetailPermintaanDarahRepository
+	logSvc                 SystemAccessLogService
+	permintaanSvc          PermintaanDarahService
 }
 
-func NewDetailPermintaanDarahService(repo repository.DetailPermintaanDarahRepository, logSvc SystemAccessLogService) DetailPermintaanDarahService {
-	return &detailPermintaanDarahService{repo: repo, logSvc: logSvc}
+func NewDetailPermintaanDarahService(repo repository.DetailPermintaanDarahRepository, logSvc SystemAccessLogService, permintaanSvc PermintaanDarahService) DetailPermintaanDarahService {
+	return &detailPermintaanDarahService{repo: repo, logSvc: logSvc, permintaanSvc: permintaanSvc}
 }
 
 func (s *detailPermintaanDarahService) Create(req dto.CreateDetailPermintaanDarahRequest, userID *string, userName, userRole string) (*dto.DetailPermintaanDarahResponse, error) {
@@ -124,4 +128,70 @@ func mapDetailPermintaanToResponse(data models.DetailPermintaanDarah) dto.Detail
 		DPDTglDiperlukan: data.DPDTglDiperlukan,
 		CreatedAt:        data.CreatedAt,
 	}
+}
+
+func (s *detailPermintaanDarahService) UpdateWithOwnershipCheck(id int, req dto.UpdateDetailPermintaanDarahRequest, userID *string, userName, userRole string) (*dto.DetailPermintaanDarahResponse, error) {
+	data, err := s.repo.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	// Ownership check: rumah sakit can only update if they own the parent permintaan
+	if userRole == "rumah_sakit" {
+		if userID == nil || *userID == "" {
+			return nil, errors.New("invalid user ID in token")
+		}
+		permintaan, err := s.permintaanSvc.GetByID(data.DPDPDID)
+		if err != nil {
+			return nil, err
+		}
+		if permintaan.PDRsID != *userID {
+			return nil, errors.New("not authorized to update this detail")
+		}
+	}
+
+	oldData := fmt.Sprintf("PDID: %s, KomID: %d, JmlKantong: %d", data.DPDPDID, data.DPDKomID, data.DPDJmlKantong)
+
+	data.DPDPDID = req.DPDPDID
+	data.DPDKomID = req.DPDKomID
+	data.DPDGolonganDarah = req.DPDGolonganDarah
+	data.DPDRhesus = req.DPDRhesus
+	data.DPDJmlKantong = req.DPDJmlKantong
+	data.DPDTglDiperlukan = req.DPDTglDiperlukan
+
+	if err := s.repo.Update(data); err != nil {
+		return nil, err
+	}
+
+	newData := fmt.Sprintf("PDID: %s, KomID: %d, JmlKantong: %d", data.DPDPDID, data.DPDKomID, data.DPDJmlKantong)
+	s.logSvc.LogAction(userID, userName, userRole, "UPDATE", stringPtr("detail_permintaan_darah"), stringPtr(fmt.Sprintf("%d", id)), fmt.Sprintf("Updated detail from [%s] to [%s]", oldData, newData), nil)
+
+	resp := mapDetailPermintaanToResponse(*data)
+	return &resp, nil
+}
+
+func (s *detailPermintaanDarahService) DeleteWithOwnershipCheck(id int, userID *string, userName, userRole string) error {
+	data, err := s.repo.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	// Ownership check: rumah sakit can only delete if they own the parent permintaan
+	if userRole == "rumah_sakit" {
+		if userID == nil || *userID == "" {
+			return errors.New("invalid user ID in token")
+		}
+		permintaan, err := s.permintaanSvc.GetByID(data.DPDPDID)
+		if err != nil {
+			return err
+		}
+		if permintaan.PDRsID != *userID {
+			return errors.New("not authorized to delete this detail")
+		}
+	}
+
+	deleteInfo := fmt.Sprintf("Deleted detail permintaan darah ID %d for permintaan %s", id, data.DPDPDID)
+	s.logSvc.LogAction(userID, userName, userRole, "DELETE", stringPtr("detail_permintaan_darah"), stringPtr(fmt.Sprintf("%d", id)), deleteInfo, nil)
+
+	return s.repo.Delete(data)
 }

@@ -126,18 +126,12 @@ func (ctl *PermintaanDarahController) Delete(c *gin.Context) {
 	userID, userName, userRole := utils.ExtractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
-	if err := ctl.service.Delete(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
-		utils.HandleError(c, err)
+	if userRole != "admin" && userRole != "superadmin" {
+		utils.SendError(c, http.StatusForbidden, "Only admin can delete permintaan darah")
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", nil)
-}
 
-func (ctl *PermintaanDarahController) Restore(c *gin.Context) {
-	userID, userName, userRole := utils.ExtractUserFromJWT(c)
-	userAgent := c.GetHeader("User-Agent")
-
-	if err := ctl.service.Restore(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
+	if err := ctl.service.Delete(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
 		utils.HandleError(c, err)
 		return
 	}
@@ -157,12 +151,12 @@ func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
 	userID, userName, userRole := utils.ExtractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
-	resp, err := ctl.service.UpdateStatus(c.Param("id"), models.PermintaanStatusEnum(req.Status), req.Reason, userID, userName, userRole, &userAgent)
+	resp, err := ctl.service.UpdateStatusWithOwnershipCheck(c.Param("id"), models.PermintaanStatusEnum(req.Status), req.Reason, userID, userName, userRole, &userAgent)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Status updated successfully", resp)
 }
 
 func (ctl *PermintaanDarahController) UpdateMyRequest(c *gin.Context) {

@@ -19,6 +19,7 @@ type PermintaanDarahService interface {
 	Restore(id string, userID *string, userName string, userRole string, userAgent *string) error
 
 	UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
+	UpdateStatusWithOwnershipCheck(pdID string, newStatus models.PermintaanStatusEnum, reason *string, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
 }
 
 type permintaanDarahService struct {
@@ -365,4 +366,69 @@ func mapPermintaanToResponse(data models.PermintaanDarah) dto.PermintaanDarahRes
 		DeletedAt:           data.DeletedAt,
 		Details:             details,
 	}
+}
+
+func (s *permintaanDarahService) UpdateStatusWithOwnershipCheck(pdID string, newStatus models.PermintaanStatusEnum, reason *string, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error) {
+	data, err := s.repo.GetByID(pdID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Ownership check: rumah sakit can only update status of their own request
+	if userRole == "rumah_sakit" && (userID == nil || *userID != data.PDRsID) {
+		return nil, errors.New("not authorized to update status of this request")
+	}
+
+	if data.PDStatus == "selesai" || data.PDStatus == "dibatalkan" {
+		return nil, errors.New("cannot update status of a completed or cancelled request")
+	}
+
+	oldStatus := data.PDStatus
+	data.PDStatus = newStatus
+	if newStatus == "dibatalkan" && reason == nil {
+		return nil, errors.New("reason is required")
+	} else if newStatus == "dibatalkan" && reason != nil {
+		data.PDCancelReason = reason
+	}
+
+	if err := s.repo.Update(data); err != nil {
+		return nil, err
+	}
+
+	// Auto-create status log
+	notes := fmt.Sprintf("Status berubah dari %s menjadi %s", oldStatus, newStatus)
+	if reason != nil {
+		notes = fmt.Sprintf("%s. Alasan: %s", notes, *reason)
+	}
+
+	log := models.StatusLog{
+		LogPdID:    pdID,
+		LogAdminID: userID,
+
+		LogStatusFrom: &oldStatus,
+		LogStatusTo:   newStatus,
+		LogNotes:      &notes,
+	}
+
+	if err := s.statusLogRepo.Create(&log); err != nil {
+		fmt.Printf("Warning: Failed to create status log: %v\n", err)
+	}
+
+	logNotes := fmt.Sprintf("Updated status permintaan darah dari %s → %s", oldStatus, newStatus)
+	if reason != nil {
+		logNotes += fmt.Sprintf(" (reason: %s)", *reason)
+	}
+	_, _ = s.systemAccessLogService.LogAction(
+		userID,
+		userName,
+		userRole,
+		"UPDATE_STATUS",
+		stringPtr("permintaan_darah"),
+		stringPtr(pdID),
+		logNotes,
+		userAgent,
+	)
+
+	resp := mapPermintaanToResponse(*data)
+	return &resp, nil
 }
