@@ -51,6 +51,12 @@ func RegisterAPIRoutes(
 	rumahSakit.DELETE("/:id", rumahSakitController.Delete)
 	rumahSakit.PUT("/restore/:id", rumahSakitController.Restore)
 
+	// rumah sakit - self profile (no AdminOnly)
+	rsProfile := protected.Group("/rumah-sakit")
+	rsProfile.Use(middleware.RumahSakitOnly())
+	rsProfile.GET("/me", rumahSakitController.GetMe)
+	rsProfile.PUT("/me", rumahSakitController.UpdateMe)
+
 	komponen := protected.Group("/komponen-darah")
 	komponen.Use(middleware.AdminOnly())
 	komponen.POST("", komponenController.Create)
