@@ -95,6 +95,6 @@ func (r *komponenDarahRepository) DeactivateKomponenDarah(komID int) (*models.Ko
 
 func (r *komponenDarahRepository) Count() (int64, error) {
 var count int64
-err := r.db.Model(&models.KomponenDarah{}).Where("is_deleted = ?", false).Count(&count).Error
+err := r.db.Model(&models.KomponenDarah{}).Count(&count).Error
 return count, err
 }
