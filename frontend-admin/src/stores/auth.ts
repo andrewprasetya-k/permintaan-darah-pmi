@@ -11,28 +11,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed(() => !!token.value && !!user.value)
 
-  const loginAdmin = async (email: string, password: string) => {
+  const loginAdmin = async (username: string, password: string) => {
     isLoading.value = true
     error.value = null
     try {
-      const response = await authAPI.loginAdmin({ email, password })
-      token.value = response.data.token
-      user.value = response.data.user
-      localStorage.setItem('authToken', response.data.token)
-      localStorage.setItem('authUser', JSON.stringify(response.data.user))
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Login failed'
-      throw err
-    } finally {
-      isLoading.value = false
-    }
-  }
-
-  const loginRumahSakit = async (email: string, password: string) => {
-    isLoading.value = true
-    error.value = null
-    try {
-      const response = await authAPI.loginRumahSakit({ email, password })
+      const response = await authAPI.loginAdmin({ username, password })
       token.value = response.data.token
       user.value = response.data.user
       localStorage.setItem('authToken', response.data.token)
@@ -67,7 +50,6 @@ export const useAuthStore = defineStore('auth', () => {
     error,
     isAuthenticated,
     loginAdmin,
-    loginRumahSakit,
     logout,
     initializeFromStorage,
   }

@@ -2,7 +2,7 @@ import { apiClient } from './client'
 import type { ApiResponse, User } from '@/types/models'
 
 export interface LoginRequest {
-  email: string
+  username: string
   password: string
 }
 
@@ -14,12 +14,6 @@ export interface LoginResponse {
 export const authAPI = {
   loginAdmin(credentials: LoginRequest) {
     return apiClient.post<LoginResponse>('/auth/login/admin', credentials, { includeAuth: false })
-  },
-
-  loginRumahSakit(credentials: LoginRequest) {
-    return apiClient.post<LoginResponse>('/auth/login/rumah-sakit', credentials, {
-      includeAuth: false,
-    })
   },
 
   logout() {
