@@ -32,7 +32,15 @@ onMounted(async () => {
             <td class="p-2 border">{{ req.namaPasien }}</td>
             <td class="p-2 border">{{ req.golonganDarah }} {{ req.rhesusDarah }}</td>
             <td class="p-2 border">{{ req.status }}</td>
-            <td class="p-2 border">{{ req.tanggalPermintaan }}</td>
+            <td class="p-2 border">
+              {{
+                new Date(req.createdAt).toLocaleDateString('id-ID', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })
+              }}
+            </td>
           </tr>
         </tbody>
       </table>
