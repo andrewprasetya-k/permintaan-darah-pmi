@@ -6,12 +6,9 @@ export interface ApiResponse<T> {
 }
 
 export interface User {
-  id: string
-  name: string
-  email: string
-  role: 'admin' | 'user'
-  createdAt: string
-  updatedAt: string
+  userId: string
+  username: string
+  role: string
 }
 
 export interface BloodRequest {
