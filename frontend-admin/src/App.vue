@@ -1,7 +1,17 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { useRoute } from 'vue-router'
+import MainLayout from './components/layout/MainLayout.vue'
+
+const route = useRoute()
+
+// Pages yang ga perlu MainLayout (seperti login)
+const noLayoutPages = ['login']
+const shouldShowLayout = !noLayoutPages.includes(route.name as string)
 </script>
 
 <template>
-  <RouterView />
+  <MainLayout v-if="shouldShowLayout">
+    <RouterView />
+  </MainLayout>
+  <RouterView v-else />
 </template>
