@@ -4,16 +4,13 @@ import { useAuthStore } from '@/stores/auth'
 import { computed, ref, watch } from 'vue'
 import {
   LayoutDashboard,
-  Users,
   Droplets,
-  MapPin,
-  LogOut,
-  Calendar,
-  ClipboardList,
+  Users,
+  Hospital,
+  FlaskConical,
   ChevronLeft,
   ChevronRight,
-  Building2,
-  Shield,
+  LogOut,
   Menu,
   X,
 } from '@lucide/vue'
@@ -33,29 +30,21 @@ watch(
   },
 )
 
-const isSuperAdmin = computed(() => authStore.user?.role === 'superadmin')
+const isAdmin = computed(
+  () => authStore.user?.role === 'superadmin' || authStore.user?.role === 'admin',
+)
 const isActive = (path: string) => route.path === path
 
 const menuGroups = computed(() => [
   {
-    items: [{ name: 'Dashboard', to: '/dashboard', icon: LayoutDashboard }],
+    items: [
+      { name: 'Dashboard', to: '/', icon: LayoutDashboard },
+      { name: 'Permintaan Darah', to: '/permintaan', icon: Droplets },
+      { name: 'Manajemen Admin', to: '/admin', icon: Users },
+      { name: 'Manajemen Rumah Sakit', to: '/rumah-sakit', icon: Hospital },
+      { name: 'Komponen Darah', to: '/komponen', icon: FlaskConical },
+    ],
   },
-  {
-    title: 'PERMINTAAN PRODUK DARAH',
-    items: [{ name: 'Permintaan Darah', to: '/permintaan-darah', icon: ClipboardList }],
-  },
-  {
-    title: 'RUMAH SAKIT',
-    items: [{ name: 'Daftar Rumah Sakit', to: '/rumah-sakit', icon: Building2 }],
-  },
-  ...(isSuperAdmin.value
-    ? [
-        {
-          title: 'ADMIN',
-          items: [{ name: 'Manajemen Admin', to: '/admin-management', icon: Shield }],
-        },
-      ]
-    : []),
 ])
 
 const logout = () => {
@@ -85,75 +74,72 @@ const logout = () => {
   <div
     class="bg-white h-screen flex flex-col transition-all duration-500 ease-in-out fixed lg:relative z-40"
     :class="[
-      isCollapsed ? 'lg:w-20' : 'lg:w-72',
-      isMobileOpen ? 'translate-x-0 w-72' : '-translate-x-full lg:translate-x-0',
+      isCollapsed ? 'lg:w-20' : 'lg:w-64',
+      isMobileOpen ? 'translate-x-0 w-full' : '-translate-x-full lg:translate-x-0',
     ]"
   >
     <!-- Header -->
     <div class="transition-all duration-500" :class="isCollapsed ? 'px-3 py-6' : 'px-6 py-6'">
       <div class="flex items-center justify-between">
-        <div v-if="!isCollapsed" class="flex items-center space-x-2">
-          <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-            <span class="text-red-600 font-bold text-sm">PMI</span>
+        <div v-if="!isCollapsed" class="flex items-center gap-2">
+          <div class="w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center shrink-0">
+            <span class="text-red-600 font-bold text-xs">PMI</span>
           </div>
           <div>
-            <h2 class="text-lg font-bold leading-tight">
-              <span class="text-black">PMI </span>
-              <span class="text-red-500">Salatiga</span>
+            <h2 class="text-base font-bold leading-tight text-gray-900">
+              PMI <span class="text-red-500">Admin</span>
             </h2>
-            <p class="text-xs font-semibold text-gray-500">Portal Admin</p>
+            <p class="text-xs text-gray-400">Permintaan Darah</p>
           </div>
         </div>
 
         <button
           @click="isCollapsed = !isCollapsed"
-          class="hidden lg:block p-2.5 rounded-lg hover:bg-blue-100 text-blue-700 transition-colors"
+          class="hidden lg:block p-2 rounded-lg hover:bg-blue-50 text-blue-700 transition-colors"
           :class="{ 'mx-auto': isCollapsed }"
         >
-          <ChevronLeft v-if="!isCollapsed" :size="20" />
-          <ChevronRight v-else :size="20" />
+          <ChevronLeft v-if="!isCollapsed" :size="18" />
+          <ChevronRight v-else :size="18" />
         </button>
       </div>
     </div>
 
     <!-- Nav -->
     <nav
-      class="flex-1 py-6 space-y-4 overflow-y-auto transition-all duration-500"
-      :class="isCollapsed ? 'px-2' : 'px-4'"
+      class="flex-1 py-4 space-y-4 overflow-y-auto transition-all duration-500"
+      :class="isCollapsed ? 'px-2' : 'px-3'"
     >
       <div v-for="(group, gi) in menuGroups" :key="gi" class="space-y-1">
-        <h3
-          v-if="group.title && !isCollapsed"
-          class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider"
-        >
-          {{ group.title }}
-        </h3>
-
         <router-link
           v-for="item in group.items"
           :key="item.to"
           :to="item.to"
-          class="flex items-center px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-300"
+          class="flex items-center px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
           :class="
             isActive(item.to)
-              ? 'bg-blue-600 text-white shadow-md translate-x-1'
-              : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+              ? 'bg-blue-600 text-white shadow-sm translate-x-0.5'
+              : 'text-gray-600 hover:bg-blue-50 hover:text-blue-700'
           "
+          :title="isCollapsed ? item.name : undefined"
         >
-          <component :is="item.icon" :size="20" class="shrink-0" />
-          <span v-if="!isCollapsed" class="ml-4">{{ item.name }}</span>
+          <component :is="item.icon" :size="18" class="shrink-0" />
+          <span v-if="!isCollapsed" class="ml-3 truncate">{{ item.name }}</span>
         </router-link>
       </div>
     </nav>
 
     <!-- Logout -->
-    <div class="py-6 transition-all duration-500" :class="isCollapsed ? 'px-2' : 'px-4'">
+    <div
+      class="py-4 transition-all duration-500 border-t border-gray-100"
+      :class="isCollapsed ? 'px-2' : 'px-3'"
+    >
       <button
         @click="logout"
-        class="flex items-center w-full px-4 py-3.5 text-sm font-medium text-gray-700 rounded-xl hover:bg-red-50 hover:text-red-700 transition-colors"
+        class="flex items-center w-full px-3 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors"
+        :title="isCollapsed ? 'Logout' : undefined"
       >
-        <LogOut :size="20" class="shrink-0" />
-        <span v-if="!isCollapsed" class="ml-4">Logout</span>
+        <LogOut :size="18" class="shrink-0" />
+        <span v-if="!isCollapsed" class="ml-3">Logout</span>
       </button>
     </div>
   </div>

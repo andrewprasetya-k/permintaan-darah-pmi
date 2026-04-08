@@ -11,7 +11,7 @@ const isMobileOpen = ref(false)
 <template>
   <div class="flex min-h-screen bg-gray-50">
     <Sidebar />
-    <div class="flex flex-col flex-1 lg:ml-72 min-h-screen transition-all duration-500">
+    <div class="flex flex-col flex-1 min-h-screen transition-all duration-500">
       <Topbar :title="title" :subtitle="subtitle" :on-menu-click="() => (isMobileOpen = true)" />
       <main class="flex-1 p-6 overflow-y-auto">
         <slot />
