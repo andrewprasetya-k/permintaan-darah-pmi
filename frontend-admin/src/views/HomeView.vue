@@ -12,15 +12,17 @@ const logout = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100">
-    <nav class="bg-white shadow">
-      <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <h1 class="text-2xl font-bold">Admin Dashboard</h1>
-        <div class="flex items-center gap-4">
-          <span class="text-gray-700">{{ authStore.user?.name }}</span>
+  <div style="min-height: 100vh; background-color: #f3f4f6;">
+    <nav style="background-color: white; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
+      <div style="max-width: 80rem; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <h1 style="font-size: 1.5rem; font-weight: bold;">Admin Dashboard</h1>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <span style="color: #374151;">{{ authStore.user?.username || 'Loading...' }}</span>
           <button
             @click="logout"
-            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            style="padding: 0.5rem 1rem; background-color: #dc2626; color: white; border-radius: 0.375rem; border: none; cursor: pointer; font-weight: 500;"
+            @mouseenter="($event.target as HTMLElement).style.backgroundColor = '#b91c1c'"
+            @mouseleave="($event.target as HTMLElement).style.backgroundColor = '#dc2626'"
           >
             Logout
           </button>
@@ -28,42 +30,51 @@ const logout = () => {
       </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto p-6">
-      <div class="bg-white p-6 rounded shadow">
-        <h2 class="text-2xl font-bold mb-4">Selamat Datang!</h2>
-        <p class="text-gray-600">
-          Halo {{ authStore.user?.name }}, selamat datang di Admin Dashboard Permintaan Darah PMI
+    <div style="max-width: 80rem; margin: 0 auto; padding: 1.5rem;">
+      <div style="background-color: white; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
+        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Selamat Datang!</h2>
+        <p style="color: #4b5563;">
+          Halo {{ authStore.user?.username || '(username)' }}, selamat datang di Admin Dashboard Permintaan Darah PMI
         </p>
+        <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.5rem;">Role: {{ authStore.user?.role || '(role)' }}</p>
 
-        <div class="mt-8 grid grid-cols-2 gap-4">
+        <div style="margin-top: 2rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
           <router-link
             to="/permintaan"
-            class="p-4 bg-blue-100 rounded hover:bg-blue-200 transition"
+            style="padding: 1rem; background-color: #dbeafe; border-radius: 0.375rem; text-decoration: none; color: inherit; transition: background-color 0.2s;"
+            @mouseenter="($event.target as HTMLElement).style.backgroundColor = '#bfdbfe'"
+            @mouseleave="($event.target as HTMLElement).style.backgroundColor = '#dbeafe'"
           >
-            <h3 class="font-semibold text-blue-900">Permintaan Darah</h3>
+            <h3 style="font-weight: 600; color: #1e3a8a;">Permintaan Darah</h3>
           </router-link>
 
           <router-link
             to="/dashboard"
-            class="p-4 bg-green-100 rounded hover:bg-green-200 transition"
+            style="padding: 1rem; background-color: #dcfce7; border-radius: 0.375rem; text-decoration: none; color: inherit; transition: background-color 0.2s;"
+            @mouseenter="($event.target as HTMLElement).style.backgroundColor = '#bbf7d0'"
+            @mouseleave="($event.target as HTMLElement).style.backgroundColor = '#dcfce7'"
           >
-            <h3 class="font-semibold text-green-900">Dashboard</h3>
+            <h3 style="font-weight: 600; color: #166534;">Dashboard</h3>
           </router-link>
 
           <router-link
-            v-if="authStore.user?.role === 'admin'"
+            v-if="authStore.user?.role === 'superadmin' || authStore.user?.role === 'admin'"
             to="/admin"
-            class="p-4 bg-purple-100 rounded hover:bg-purple-200 transition"
+            style="padding: 1rem; background-color: #e9d5ff; border-radius: 0.375rem; text-decoration: none; color: inherit; transition: background-color 0.2s;"
+            @mouseenter="($event.target as HTMLElement).style.backgroundColor = '#d8b4fe'"
+            @mouseleave="($event.target as HTMLElement).style.backgroundColor = '#e9d5ff'"
           >
-            <h3 class="font-semibold text-purple-900">Manajemen Admin</h3>
+            <h3 style="font-weight: 600; color: #581c87;">Manajemen Admin</h3>
           </router-link>
 
           <router-link
-            v-if="authStore.user?.role === 'admin'"
+            v-if="authStore.user?.role === 'superadmin' || authStore.user?.role === 'admin'"
             to="/rumah-sakit"
-            class="p-4 bg-orange-100 rounded hover:bg-orange-200 transition"
+            style="padding: 1rem; background-color: #fed7aa; border-radius: 0.375rem; text-decoration: none; color: inherit; transition: background-color 0.2s;"
+            @mouseenter="($event.target as HTMLElement).style.backgroundColor = '#fdba74'"
+            @mouseleave="($event.target as HTMLElement).style.backgroundColor = '#fed7aa'"
           >
-            <h3 class="font-semibold text-orange-900">Manajemen Rumah Sakit</h3>
+            <h3 style="font-weight: 600; color: #92400e;">Manajemen Rumah Sakit</h3>
           </router-link>
         </div>
       </div>

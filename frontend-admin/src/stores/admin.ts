@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { adminAPI, type CreateAdminRequest, type UpdateAdminRequest } from '@/api/admin'
-import type { User } from '@/types/models'
+import type { Admin } from '@/types/models'
 
 export const useAdminStore = defineStore('admin', () => {
-  const admins = ref<User[]>([])
-  const selectedAdmin = ref<User | null>(null)
+  const admins = ref<Admin[]>([])
+  const selectedAdmin = ref<Admin | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -55,7 +55,7 @@ export const useAdminStore = defineStore('admin', () => {
     error.value = null
     try {
       const response = await adminAPI.update(id, data)
-      const index = admins.value.findIndex((a) => a.id === id)
+      const index = admins.value.findIndex((a) => a.adminId === id)
       if (index !== -1) {
         admins.value[index] = response.data
       }
@@ -73,7 +73,7 @@ export const useAdminStore = defineStore('admin', () => {
     error.value = null
     try {
       await adminAPI.delete(id)
-      admins.value = admins.value.filter((a) => a.id !== id)
+      admins.value = admins.value.filter((a) => a.adminId !== id)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to delete admin'
       throw err

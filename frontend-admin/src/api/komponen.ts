@@ -1,48 +1,44 @@
 import { apiClient } from './client'
-import type { ApiResponse } from '@/types/models'
-
-export interface Komponen {
-  id: string
-  nama: string
-  deskripsi: string
-  status: 'active' | 'inactive'
-  createdAt: string
-  updatedAt: string
-}
+import type { KomponenDarah } from '@/types/models'
 
 export interface CreateKomponenRequest {
-  nama: string
-  deskripsi: string
+  komponenDarah: string
+  komponenKode: string
+  isActive?: boolean
 }
 
-export interface UpdateKomponenRequest extends Partial<CreateKomponenRequest> {}
+export interface UpdateKomponenRequest {
+  komponenDarah: string
+  komponenKode: string
+  isActive?: boolean
+}
 
 export const komponenAPI = {
   create(data: CreateKomponenRequest) {
-    return apiClient.post<Komponen>('/komponen-darah', data)
+    return apiClient.post<KomponenDarah>('/komponen-darah', data)
   },
 
   getAll(params?: Record<string, any>) {
-    return apiClient.get<Komponen[]>('/komponen-darah', { params })
+    return apiClient.get<KomponenDarah[]>('/komponen-darah', { params })
   },
 
-  getById(id: string) {
-    return apiClient.get<Komponen>(`/komponen-darah/${id}`)
+  getById(id: number) {
+    return apiClient.get<KomponenDarah>(`/komponen-darah/${id}`)
   },
 
-  update(id: string, data: UpdateKomponenRequest) {
-    return apiClient.put<Komponen>(`/komponen-darah/${id}`, data)
+  update(id: number, data: UpdateKomponenRequest) {
+    return apiClient.put<KomponenDarah>(`/komponen-darah/${id}`, data)
   },
 
-  delete(id: string) {
+  delete(id: number) {
     return apiClient.delete<void>(`/komponen-darah/${id}`)
   },
 
-  activate(id: string) {
-    return apiClient.put<Komponen>(`/komponen-darah/activate/${id}`, {})
+  activate(id: number) {
+    return apiClient.put<KomponenDarah>(`/komponen-darah/activate/${id}`, {})
   },
 
-  deactivate(id: string) {
-    return apiClient.put<Komponen>(`/komponen-darah/deactivate/${id}`, {})
+  deactivate(id: number) {
+    return apiClient.put<KomponenDarah>(`/komponen-darah/deactivate/${id}`, {})
   },
 }

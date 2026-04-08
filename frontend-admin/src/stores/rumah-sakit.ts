@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { rumahSakitAPI, type RumahSakit } from '@/api/rumah-sakit'
-import type { CreateRumahSakitRequest, UpdateRumahSakitRequest } from '@/api/rumah-sakit'
+import { rumahSakitAPI, type CreateRumahSakitRequest, type UpdateRumahSakitRequest } from '@/api/rumah-sakit'
+import type { RumahSakit } from '@/types/models'
 
 export const useRumahSakitStore = defineStore('rumahSakit', () => {
   const hospitals = ref<RumahSakit[]>([])
@@ -55,7 +55,7 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
     error.value = null
     try {
       const response = await rumahSakitAPI.update(id, data)
-      const index = hospitals.value.findIndex((h) => h.id === id)
+      const index = hospitals.value.findIndex((h) => h.rumahSakitId === id)
       if (index !== -1) {
         hospitals.value[index] = response.data
       }
@@ -73,7 +73,7 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
     error.value = null
     try {
       await rumahSakitAPI.delete(id)
-      hospitals.value = hospitals.value.filter((h) => h.id !== id)
+      hospitals.value = hospitals.value.filter((h) => h.rumahSakitId !== id)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to delete hospital'
       throw err

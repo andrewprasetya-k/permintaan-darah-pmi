@@ -23,16 +23,16 @@ onMounted(async () => {
           <tr>
             <th class="p-2 border text-left">Pasien</th>
             <th class="p-2 border text-left">Tipe Darah</th>
-            <th class="p-2 border text-left">Jumlah</th>
             <th class="p-2 border text-left">Status</th>
+            <th class="p-2 border text-left">Tanggal</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="req in permintaanStore.requests" :key="req.id">
-            <td class="p-2 border">{{ req.patientName }}</td>
-            <td class="p-2 border">{{ req.bloodType }}</td>
-            <td class="p-2 border">{{ req.quantity }}</td>
+          <tr v-for="req in permintaanStore.requests" :key="req.permintaanDarahId">
+            <td class="p-2 border">{{ req.namaPasien }}</td>
+            <td class="p-2 border">{{ req.golonganDarah }} {{ req.rhesusDarah }}</td>
             <td class="p-2 border">{{ req.status }}</td>
+            <td class="p-2 border">{{ req.tanggalPermintaan }}</td>
           </tr>
         </tbody>
       </table>

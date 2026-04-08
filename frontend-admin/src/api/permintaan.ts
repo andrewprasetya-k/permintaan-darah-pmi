@@ -1,16 +1,31 @@
 import { apiClient } from './client'
-import type { ApiResponse, BloodRequest } from '@/types/models'
+import type { BloodRequest } from '@/types/models'
 
 export interface CreatePermintaanRequest {
-  patientName: string
-  bloodType: string
-  quantity: number
-  hospital: string
-  urgency: 'urgent' | 'normal'
+  rumahSakitId?: string
+  namaPasien: string
+  noRM?: string
+  tempatLahir: string
+  tanggalLahir: string
+  jenisKelamin: 'L' | 'P'
+  golonganDarah?: 'A' | 'B' | 'AB' | 'O'
+  rhesusDarah?: '+' | '-'
+  hemoglobin?: number
+  ruangBagianKelas?: string
+  pernahTransfusi: boolean
+  indikasiTransfusi?: string
+  pernahHamil?: string
+  status: 'dibuat' | 'diproses' | 'bisa_diambil' | 'selesai' | 'dibatalkan'
+  cancelReason?: string
+  tanggalPermintaan: string
 }
 
-export interface UpdatePermintaanRequest extends Partial<CreatePermintaanRequest> {
-  status?: BloodRequest['status']
+export interface UpdatePermintaanRequest extends CreatePermintaanRequest {
+  rumahSakitId: string
+}
+
+export interface UpdateStatusRequest {
+  status: 'dibuat' | 'diproses' | 'bisa_diambil' | 'selesai' | 'dibatalkan'
 }
 
 export const permintaanAPI = {
@@ -38,8 +53,8 @@ export const permintaanAPI = {
     return apiClient.put<BloodRequest>(`/permintaan-darah/my-requests/${id}`, data)
   },
 
-  updateStatus(id: string, status: BloodRequest['status']) {
-    return apiClient.put<BloodRequest>(`/permintaan-darah/update/${id}`, { status })
+  updateStatus(id: string, data: UpdateStatusRequest) {
+    return apiClient.put<BloodRequest>(`/permintaan-darah/update/${id}`, data)
   },
 
   delete(id: string) {

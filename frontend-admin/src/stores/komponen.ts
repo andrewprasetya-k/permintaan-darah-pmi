@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { komponenAPI, type Komponen, type CreateKomponenRequest, type UpdateKomponenRequest } from '@/api/komponen'
+import { komponenAPI, type CreateKomponenRequest, type UpdateKomponenRequest } from '@/api/komponen'
+import type { KomponenDarah } from '@/types/models'
 
 export const useKomponenStore = defineStore('komponen', () => {
-  const komponens = ref<Komponen[]>([])
-  const selectedKomponen = ref<Komponen | null>(null)
+  const komponens = ref<KomponenDarah[]>([])
+  const selectedKomponen = ref<KomponenDarah | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -21,7 +22,7 @@ export const useKomponenStore = defineStore('komponen', () => {
     }
   }
 
-  const fetchById = async (id: string) => {
+  const fetchById = async (id: number) => {
     isLoading.value = true
     error.value = null
     try {
@@ -49,12 +50,12 @@ export const useKomponenStore = defineStore('komponen', () => {
     }
   }
 
-  const update = async (id: string, data: UpdateKomponenRequest) => {
+  const update = async (id: number, data: UpdateKomponenRequest) => {
     isLoading.value = true
     error.value = null
     try {
       const response = await komponenAPI.update(id, data)
-      const index = komponens.value.findIndex((k) => k.id === id)
+      const index = komponens.value.findIndex((k) => k.komponenId === id)
       if (index !== -1) {
         komponens.value[index] = response.data
       }
@@ -67,12 +68,12 @@ export const useKomponenStore = defineStore('komponen', () => {
     }
   }
 
-  const deleteKomponen = async (id: string) => {
+  const deleteKomponen = async (id: number) => {
     isLoading.value = true
     error.value = null
     try {
       await komponenAPI.delete(id)
-      komponens.value = komponens.value.filter((k) => k.id !== id)
+      komponens.value = komponens.value.filter((k) => k.komponenId !== id)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to delete component'
       throw err
@@ -81,12 +82,12 @@ export const useKomponenStore = defineStore('komponen', () => {
     }
   }
 
-  const activate = async (id: string) => {
+  const activate = async (id: number) => {
     isLoading.value = true
     error.value = null
     try {
       const response = await komponenAPI.activate(id)
-      const index = komponens.value.findIndex((k) => k.id === id)
+      const index = komponens.value.findIndex((k) => k.komponenId === id)
       if (index !== -1) {
         komponens.value[index] = response.data
       }
@@ -99,12 +100,12 @@ export const useKomponenStore = defineStore('komponen', () => {
     }
   }
 
-  const deactivate = async (id: string) => {
+  const deactivate = async (id: number) => {
     isLoading.value = true
     error.value = null
     try {
       const response = await komponenAPI.deactivate(id)
-      const index = komponens.value.findIndex((k) => k.id === id)
+      const index = komponens.value.findIndex((k) => k.komponenId === id)
       if (index !== -1) {
         komponens.value[index] = response.data
       }

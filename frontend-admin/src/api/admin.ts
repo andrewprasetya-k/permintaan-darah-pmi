@@ -1,30 +1,37 @@
 import { apiClient } from './client'
-import type { ApiResponse, User } from '@/types/models'
+import type { Admin } from '@/types/models'
 
 export interface CreateAdminRequest {
-  name: string
-  email: string
-  password: string
-  role: 'admin' | 'user'
+  adminUsername: string
+  adminPassword: string
+  adminName: string
+  adminEmail: string
+  adminRole: 'superadmin' | 'admin'
 }
 
-export interface UpdateAdminRequest extends Partial<CreateAdminRequest> {}
+export interface UpdateAdminRequest {
+  adminUsername: string
+  adminPassword: string
+  adminName: string
+  adminEmail: string
+  adminRole: 'superadmin' | 'admin'
+}
 
 export const adminAPI = {
   create(data: CreateAdminRequest) {
-    return apiClient.post<User>('/admin', data)
+    return apiClient.post<Admin>('/admin', data)
   },
 
   getAll(params?: Record<string, any>) {
-    return apiClient.get<User[]>('/admin', { params })
+    return apiClient.get<Admin[]>('/admin', { params })
   },
 
   getById(id: string) {
-    return apiClient.get<User>(`/admin/${id}`)
+    return apiClient.get<Admin>(`/admin/${id}`)
   },
 
   update(id: string, data: UpdateAdminRequest) {
-    return apiClient.put<User>(`/admin/${id}`, data)
+    return apiClient.put<Admin>(`/admin/${id}`, data)
   },
 
   delete(id: string) {
@@ -32,6 +39,6 @@ export const adminAPI = {
   },
 
   restore(id: string) {
-    return apiClient.put<User>(`/admin/restore/${id}`, {})
+    return apiClient.put<Admin>(`/admin/restore/${id}`, {})
   },
 }

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { permintaanAPI, type CreatePermintaanRequest, type UpdatePermintaanRequest } from '@/api/permintaan'
 import type { BloodRequest } from '@/types/models'
 
@@ -69,7 +69,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     error.value = null
     try {
       const response = await permintaanAPI.update(id, data)
-      const index = requests.value.findIndex((r) => r.id === id)
+      const index = requests.value.findIndex((r) => r.permintaanDarahId === id)
       if (index !== -1) {
         requests.value[index] = response.data
       }
@@ -87,7 +87,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     error.value = null
     try {
       const response = await permintaanAPI.updateMyRequest(id, data)
-      const index = myRequests.value.findIndex((r) => r.id === id)
+      const index = myRequests.value.findIndex((r) => r.permintaanDarahId === id)
       if (index !== -1) {
         myRequests.value[index] = response.data
       }
@@ -104,8 +104,8 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     isLoading.value = true
     error.value = null
     try {
-      const response = await permintaanAPI.updateStatus(id, status)
-      const index = requests.value.findIndex((r) => r.id === id)
+      const response = await permintaanAPI.updateStatus(id, { status })
+      const index = requests.value.findIndex((r) => r.permintaanDarahId === id)
       if (index !== -1) {
         requests.value[index] = response.data
       }
@@ -123,7 +123,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     error.value = null
     try {
       await permintaanAPI.delete(id)
-      requests.value = requests.value.filter((r) => r.id !== id)
+      requests.value = requests.value.filter((r) => r.permintaanDarahId !== id)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to delete request'
       throw err

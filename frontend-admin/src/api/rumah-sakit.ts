@@ -1,28 +1,22 @@
 import { apiClient } from './client'
-import type { ApiResponse } from '@/types/models'
-
-export interface RumahSakit {
-  id: string
-  nama: string
-  alamat: string
-  kota: string
-  provinsi: string
-  telepon: string
-  email: string
-  createdAt: string
-  updatedAt: string
-}
+import type { RumahSakit } from '@/types/models'
 
 export interface CreateRumahSakitRequest {
   nama: string
+  nomorTelepon: string
   alamat: string
-  kota: string
-  provinsi: string
-  telepon: string
-  email: string
+  email?: string
+  username: string
+  password: string
 }
 
-export interface UpdateRumahSakitRequest extends Partial<CreateRumahSakitRequest> {}
+export interface UpdateRumahSakitRequest {
+  nama: string
+  nomorTelepon: string
+  alamat: string
+  email?: string
+  password?: string
+}
 
 export const rumahSakitAPI = {
   create(data: CreateRumahSakitRequest) {
@@ -47,17 +41,5 @@ export const rumahSakitAPI = {
 
   restore(id: string) {
     return apiClient.put<RumahSakit>(`/rumah-sakit/restore/${id}`, {})
-  },
-
-  getMe() {
-    return apiClient.get<RumahSakit>('/rumah-sakit/me')
-  },
-
-  updateProfile(data: UpdateRumahSakitRequest) {
-    return apiClient.put<RumahSakit>('/rumah-sakit/me', data)
-  },
-
-  getDistinctNama() {
-    return apiClient.get<string[]>('/filter/rumah-sakit/')
   },
 }
