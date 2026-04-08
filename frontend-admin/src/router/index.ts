@@ -12,12 +12,6 @@ const router = createRouter({
     },
     {
       path: '/',
-      name: 'home',
-      component: () => import('../views/HomeView.vue'),
-      meta: { requiresAuth: true, roles: ['admin', 'superadmin'] },
-    },
-    {
-      path: '/dashboard',
       name: 'dashboard',
       component: () => import('../views/DashboardView.vue'),
       meta: { requiresAuth: true, roles: ['admin', 'superadmin'] },
