@@ -51,9 +51,18 @@ dist-ssr/
 # Vite
 .vite/
 .viteignore
+vite-env.d.ts
 
 # TypeScript
 *.tsbuildinfo
+dist-ssr/
+tsconfig.tsbuildinfo
+
+# Vue/Frontend specific
+.nuxt/
+.cache/
+pnpm-lock.yaml
+package-lock.json
 
 # Playwright
 .auth/
