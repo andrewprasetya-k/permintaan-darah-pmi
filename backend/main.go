@@ -23,7 +23,7 @@ func main() {
 		origin := c.GetHeader("Origin")
 		allowedOrigin := os.Getenv("CORS_ALLOWED_ORIGIN")
 		if allowedOrigin == "" {
-			allowedOrigin = "http://localhost:3000"
+			allowedOrigin = "http://localhost:5173"
 		}
 
 		if origin == allowedOrigin || allowedOrigin == "*" {
