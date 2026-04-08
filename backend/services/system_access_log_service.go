@@ -30,10 +30,11 @@ type SystemAccessLogService interface {
 
 type systemAccessLogService struct {
 	repo repository.SystemAccessLogRepository
+	wsHub *Hub
 }
 
-func NewSystemAccessLogService(repo repository.SystemAccessLogRepository) SystemAccessLogService {
-	return &systemAccessLogService{repo: repo}
+func NewSystemAccessLogService(repo repository.SystemAccessLogRepository, wsHub *Hub) SystemAccessLogService {
+	return &systemAccessLogService{repo: repo, wsHub: wsHub}
 }
 
 func (s *systemAccessLogService) Create(req dto.CreateSystemAccessLogRequest) (*dto.SystemAccessLogResponse, error) {
@@ -51,7 +52,10 @@ func (s *systemAccessLogService) Create(req dto.CreateSystemAccessLogRequest) (*
 	if err := s.repo.Create(&log); err != nil {
 		return nil, err
 	}
-
+	if s.wsHub != nil {
+		msg := NewWebSocketMessage("new_activity", "CREATE", *req.SysUserID, "system_access_log", log)
+		s.wsHub.Broadcast(msg)
+	}
 	return mapToResponse(&log), nil
 }
 

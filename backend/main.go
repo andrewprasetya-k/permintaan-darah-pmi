@@ -54,21 +54,22 @@ func main() {
 	systemAccessLogRepo := repository.NewSystemAccessLogRepository(db)
 	dashboardRepo := repository.NewDashboardRepository(db)
 
-	// service initialization
-	systemAccessLogSvc := services.NewSystemAccessLogService(systemAccessLogRepo)
-	authSvc := services.NewAuthService(adminRepo, rumahSakitRepo, systemAccessLogSvc)
-	adminSvc := services.NewAdminService(adminRepo, systemAccessLogSvc)
-	rumahSakitSvc := services.NewRumahSakitService(rumahSakitRepo, systemAccessLogSvc)
-	komponenSvc := services.NewKomponenDarahService(komponenRepo, systemAccessLogSvc)
 	
 	// Initialize WebSocket hub
 	wsHub := services.NewHub()
 	go wsHub.Run()
 	
+	systemAccessLogSvc := services.NewSystemAccessLogService(systemAccessLogRepo, wsHub)
 	permintaanSvc := services.NewPermintaanDarahService(permintaanRepo, statusLogRepo, systemAccessLogSvc, wsHub)
 	detailSvc := services.NewDetailPermintaanDarahService(detailRepo, systemAccessLogSvc, permintaanSvc)
 	statusLogSvc := services.NewStatusLogService(statusLogRepo)
 	dashboardSvc := services.NewDashboardService(dashboardRepo)
+	
+	// service initialization
+	authSvc := services.NewAuthService(adminRepo, rumahSakitRepo, systemAccessLogSvc)
+	adminSvc := services.NewAdminService(adminRepo, systemAccessLogSvc)
+	rumahSakitSvc := services.NewRumahSakitService(rumahSakitRepo, systemAccessLogSvc)
+	komponenSvc := services.NewKomponenDarahService(komponenRepo, systemAccessLogSvc)
 
 	// controller initialization
 	authCtl := controllers.NewAuthController(&authSvc)
