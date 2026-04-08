@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { authAPI, type LoginResponse } from '@/api/auth'
+import { authAPI, type LoginRequest } from '@/api/auth'
 import type { User } from '@/types/models'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -17,9 +17,13 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await authAPI.loginAdmin({ username, password })
       token.value = response.data.token
-      user.value = response.data.user
+      user.value = {
+        userId: response.data.id,
+        username: response.data.username,
+        role: response.data.role,
+      }
       localStorage.setItem('authToken', response.data.token)
-      localStorage.setItem('authUser', JSON.stringify(response.data.user))
+      localStorage.setItem('authUser', JSON.stringify(user.value))
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Login failed'
       throw err
@@ -37,9 +41,13 @@ export const useAuthStore = defineStore('auth', () => {
   const initializeFromStorage = () => {
     const savedToken = localStorage.getItem('authToken')
     const savedUser = localStorage.getItem('authUser')
-    if (savedToken && savedUser) {
+    if (savedToken && savedUser && savedUser !== 'undefined') {
       token.value = savedToken
-      user.value = JSON.parse(savedUser)
+      try {
+        user.value = JSON.parse(savedUser)
+      } catch (e) {
+        localStorage.removeItem('authUser')
+      }
     }
   }
 
