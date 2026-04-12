@@ -37,13 +37,13 @@ const router = createRouter({
     {
       path: '/rumah-sakit',
       name: 'rumah-sakit-list',
-      component: () => import('../views/rumah-sakit/RumahSakitListView.vue'),
+      component: () => import('../views/rumah-sakit/RumahSakit.vue'),
       meta: { requiresAuth: true, roles: ['admin', 'superadmin'] },
     },
     {
       path: '/komponen',
       name: 'komponen-list',
-      component: () => import('../views/komponen-darah/KomponenListView.vue'),
+      component: () => import('../views/komponen-darah/KomponenDarah.vue'),
       meta: { requiresAuth: true, roles: ['admin', 'superadmin'] },
     },
     {
