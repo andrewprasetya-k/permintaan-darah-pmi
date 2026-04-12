@@ -1,5 +1,5 @@
 import { apiClient } from './client'
-import type { BloodRequest } from '@/types/models'
+import type { PermintaanDarah } from '@/types/models'
 
 export interface CreatePermintaanRequest {
   rumahSakitId?: string
@@ -30,31 +30,31 @@ export interface UpdateStatusRequest {
 
 export const permintaanAPI = {
   create(data: CreatePermintaanRequest) {
-    return apiClient.post<BloodRequest>('/permintaan-darah', data)
+    return apiClient.post<PermintaanDarah>('/permintaan-darah', data)
   },
 
   getAll(params?: Record<string, any>) {
-    return apiClient.get<BloodRequest[]>('/permintaan-darah', { params })
+    return apiClient.get<PermintaanDarah[]>('/permintaan-darah', { params })
   },
 
   getMyRequests(params?: Record<string, any>) {
-    return apiClient.get<BloodRequest[]>('/permintaan-darah/my-requests', { params })
+    return apiClient.get<PermintaanDarah[]>('/permintaan-darah/my-requests', { params })
   },
 
   getById(id: string) {
-    return apiClient.get<BloodRequest>(`/permintaan-darah/${id}`)
+    return apiClient.get<PermintaanDarah>(`/permintaan-darah/${id}`)
   },
 
   update(id: string, data: UpdatePermintaanRequest) {
-    return apiClient.put<BloodRequest>(`/permintaan-darah/${id}`, data)
+    return apiClient.put<PermintaanDarah>(`/permintaan-darah/${id}`, data)
   },
 
   updateMyRequest(id: string, data: UpdatePermintaanRequest) {
-    return apiClient.put<BloodRequest>(`/permintaan-darah/my-requests/${id}`, data)
+    return apiClient.put<PermintaanDarah>(`/permintaan-darah/my-requests/${id}`, data)
   },
 
   updateStatus(id: string, data: UpdateStatusRequest) {
-    return apiClient.put<BloodRequest>(`/permintaan-darah/update/${id}`, data)
+    return apiClient.put<PermintaanDarah>(`/permintaan-darah/update/${id}`, data)
   },
 
   delete(id: string) {

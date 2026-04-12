@@ -41,7 +41,7 @@ export interface KomponenDarah {
   isActive: boolean
 }
 
-export interface BloodRequest {
+export interface PermintaanDarah {
   permintaanDarahId: string
   rumahSakitId: string
   namaPasien: string

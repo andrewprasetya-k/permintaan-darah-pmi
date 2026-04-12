@@ -5,12 +5,11 @@ import {
   type CreatePermintaanRequest,
   type UpdatePermintaanRequest,
 } from '@/api/permintaan'
-import type { BloodRequest } from '@/types/models'
+import type { PermintaanDarah } from '@/types/models'
 
 export const usePermintaanStore = defineStore('permintaan', () => {
-  const requests = ref<BloodRequest[]>([])
-  const myRequests = ref<BloodRequest[]>([])
-  const selectedRequest = ref<BloodRequest | null>(null)
+  const requests = ref<PermintaanDarah[]>([])
+  const selectedRequest = ref<PermintaanDarah | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -22,19 +21,6 @@ export const usePermintaanStore = defineStore('permintaan', () => {
       requests.value = response.data
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch requests'
-    } finally {
-      isLoading.value = false
-    }
-  }
-
-  const fetchMyRequests = async (params?: Record<string, any>) => {
-    isLoading.value = true
-    error.value = null
-    try {
-      const response = await permintaanAPI.getMyRequests(params)
-      myRequests.value = response.data
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch my requests'
     } finally {
       isLoading.value = false
     }
@@ -86,25 +72,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     }
   }
 
-  const updateMyRequest = async (id: string, data: UpdatePermintaanRequest) => {
-    isLoading.value = true
-    error.value = null
-    try {
-      const response = await permintaanAPI.updateMyRequest(id, data)
-      const index = myRequests.value.findIndex((r) => r.permintaanDarahId === id)
-      if (index !== -1) {
-        myRequests.value[index] = response.data
-      }
-      return response.data
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update my request'
-      throw err
-    } finally {
-      isLoading.value = false
-    }
-  }
-
-  const updateStatus = async (id: string, status: BloodRequest['status']) => {
+  const updateStatus = async (id: string, status: PermintaanDarah['status']) => {
     isLoading.value = true
     error.value = null
     try {
@@ -138,16 +106,13 @@ export const usePermintaanStore = defineStore('permintaan', () => {
 
   return {
     requests,
-    myRequests,
     selectedRequest,
     isLoading,
     error,
     fetchAll,
-    fetchMyRequests,
     fetchById,
     create,
     update,
-    updateMyRequest,
     updateStatus,
     deleteRequest,
   }
