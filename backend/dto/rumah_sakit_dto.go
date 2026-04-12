@@ -6,7 +6,7 @@ type CreateRumahSakitRequest struct {
 	RSNama     string  `json:"nama" binding:"required"`
 	RSNoTelp   string  `json:"nomorTelepon" binding:"required"`
 	RSAlamat   string  `json:"alamat" binding:"required"`
-	RSEmail    *string `json:"email,omitempty" binding:"omitempty,email"`
+	RSEmail    *string `json:"email,omitempty" binding:"omitempty"`
 	RSUsername string  `json:"username" binding:"required"`
 	RSPassword string  `json:"password" binding:"required"`
 }

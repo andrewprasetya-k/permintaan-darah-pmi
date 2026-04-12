@@ -149,7 +149,6 @@ const handleSubmit = async () => {
               <input
                 v-model="formData.email"
                 type="email"
-                required
                 class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               />
             </div>
