@@ -26,9 +26,7 @@ Authorization: Bearer {token}
   "komId": 2,
   "golonganDarah": "O",
   "rhesusDarah": "+",
-  "jumlahKantong": 3,
-  "tanggalDiperlukan": "2026-04-10T15:00:00Z"
-}
+  "jumlahKantong": 3
 ```
 
 **Response (201 Created):**
@@ -45,7 +43,6 @@ Authorization: Bearer {token}
     "golonganDarah": "O",
     "rhesusDarah": "+",
     "jumlahKantong": 3,
-    "tanggalDiperlukan": "2026-04-10T15:00:00Z",
     "createdAt": "2026-04-07T14:35:00Z"
   }
 }
