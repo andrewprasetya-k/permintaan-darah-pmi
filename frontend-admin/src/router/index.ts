@@ -18,7 +18,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'dashboard',
-      component: () => import('../views/dashboard/DashboardView.vue'),
+      component: () => import('../views/dashboard/Dashboard.vue'),
       meta: {
         requiresAuth: true,
         roles: ['admin', 'superadmin'],
@@ -46,7 +46,7 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin-list',
-      component: () => import('../views/admin/AdminListView.vue'),
+      component: () => import('../views/admin/Admin.vue'),
       meta: {
         requiresAuth: true,
         roles: ['admin', 'superadmin'],

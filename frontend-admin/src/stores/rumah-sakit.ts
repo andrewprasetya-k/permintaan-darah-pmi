@@ -1,11 +1,16 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { rumahSakitAPI, type CreateRumahSakitRequest, type UpdateRumahSakitRequest } from '@/api/rumah-sakit'
+import {
+  rumahSakitAPI,
+  type CreateRumahSakitRequest,
+  type UpdateRumahSakitRequest,
+} from '@/api/rumah-sakit'
 import type { RumahSakit } from '@/types/models'
 
 export const useRumahSakitStore = defineStore('rumahSakit', () => {
   const hospitals = ref<RumahSakit[]>([])
   const selectedHospital = ref<RumahSakit | null>(null)
+  const selectedRumahSakit = ref<RumahSakit | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -100,6 +105,7 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
   return {
     hospitals,
     selectedHospital,
+    selectedRumahSakit,
     isLoading,
     error,
     fetchAll,

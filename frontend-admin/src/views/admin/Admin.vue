@@ -1,40 +1,40 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRumahSakitStore } from '@/stores/rumah-sakit'
-import { Plus, Pencil, Trash2, Eye, AlertCircle, Hospital } from '@lucide/vue'
-import RumahSakitCreateDrawer from './RumahSakitCreateDrawer.vue'
-import RumahSakitEditDrawer from './RumahSakitEditDrawer.vue'
-import RumahSakitDetailDrawer from './RumahSakitDetailDrawer.vue'
+import { useAdminStore } from '@/stores/admin'
+import { Plus, Pencil, Trash2, Eye, AlertCircle, Users, Shield } from '@lucide/vue'
+import AdminCreateDrawer from './AdminCreateDrawer.vue'
+import AdminEditDrawer from './AdminEditDrawer.vue'
+import AdminDetailDrawer from './AdminDetailDrawer.vue'
 
-const rumahSakitStore = useRumahSakitStore()
+const adminStore = useAdminStore()
 const showCreateDrawer = ref(false)
 const showEditDrawer = ref(false)
 const showDetailDrawer = ref(false)
 
-onMounted(async () => await rumahSakitStore.fetchAll())
+onMounted(async () => await adminStore.fetchAll())
 
 const openCreateDrawer = () => {
   showCreateDrawer.value = true
 }
 
-const openEditDrawer = (rumahSakit: any) => {
-  rumahSakitStore.selectedRumahSakit = rumahSakit
+const openEditDrawer = (admin: any) => {
+  adminStore.selectedAdmin = admin
   showEditDrawer.value = true
 }
 
-const openDetailDrawer = (rumahSakit: any) => {
-  rumahSakitStore.selectedRumahSakit = rumahSakit
+const openDetailDrawer = (admin: any) => {
+  adminStore.selectedAdmin = admin
   showDetailDrawer.value = true
 }
 
-const deleteHospital = async (id: string) => {
-  if (confirm('Yakin ingin menghapus rumah sakit ini?')) {
-    await rumahSakitStore.deleteHospital(id)
+const deleteAdmin = async (id: string) => {
+  if (confirm('Yakin ingin menghapus admin ini?')) {
+    await adminStore.deleteAdmin(id)
   }
 }
 
 const handleSubmit = () => {
-  rumahSakitStore.fetchAll()
+  adminStore.fetchAll()
 }
 </script>
 
@@ -47,26 +47,26 @@ const handleSubmit = () => {
         class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors"
       >
         <Plus :size="16" />
-        Tambah Rumah Sakit
+        Tambah Admin
       </button>
     </div>
 
     <!-- Drawers -->
-    <RumahSakitCreateDrawer
+    <AdminCreateDrawer
       :is-open="showCreateDrawer"
       @close="showCreateDrawer = false"
       @submit="handleSubmit"
     />
-    <RumahSakitEditDrawer
+    <AdminEditDrawer
       :is-open="showEditDrawer"
       @close="showEditDrawer = false"
       @submit="handleSubmit"
     />
-    <RumahSakitDetailDrawer :is-open="showDetailDrawer" @close="showDetailDrawer = false" />
+    <AdminDetailDrawer :is-open="showDetailDrawer" @close="showDetailDrawer = false" />
 
     <!-- Loading -->
     <div
-      v-if="rumahSakitStore.isLoading"
+      v-if="adminStore.isLoading"
       class="flex items-center justify-center py-16 text-sm text-gray-400"
     >
       <span
@@ -77,11 +77,11 @@ const handleSubmit = () => {
 
     <!-- Error -->
     <div
-      v-else-if="rumahSakitStore.error"
+      v-else-if="adminStore.error"
       class="flex items-center gap-2 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm"
     >
       <AlertCircle :size="16" />
-      {{ rumahSakitStore.error }}
+      {{ adminStore.error }}
     </div>
 
     <!-- Table -->
@@ -97,7 +97,7 @@ const handleSubmit = () => {
             <th
               class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
             >
-              Telepon
+              Username
             </th>
             <th
               class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
@@ -107,7 +107,7 @@ const handleSubmit = () => {
             <th
               class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
             >
-              Username
+              Role
             </th>
             <th
               class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
@@ -118,30 +118,42 @@ const handleSubmit = () => {
         </thead>
         <tbody class="divide-y divide-gray-50">
           <tr
-            v-for="rs in rumahSakitStore.hospitals"
-            :key="rs.rumahSakitId"
+            v-for="admin in adminStore.admins"
+            :key="admin.adminId"
             class="hover:bg-gray-50 transition-colors"
           >
-            <td class="px-5 py-4 font-medium text-gray-800">{{ rs.nama }}</td>
-            <td class="px-5 py-4 text-gray-500">{{ rs.nomorTelepon }}</td>
-            <td class="px-5 py-4 text-gray-500">{{ rs.email || '—' }}</td>
-            <td class="px-5 py-4 text-gray-500">{{ rs.username }}</td>
+            <td class="px-5 py-4 font-medium text-gray-800">{{ admin.adminName }}</td>
+            <td class="px-5 py-4 text-gray-500">{{ admin.adminUsername }}</td>
+            <td class="px-5 py-4 text-gray-500">{{ admin.adminEmail }}</td>
+            <td class="px-5 py-4">
+              <span
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium"
+                :class="
+                  admin.adminRole === 'superadmin'
+                    ? 'bg-purple-50 text-purple-600'
+                    : 'bg-blue-50 text-blue-600'
+                "
+              >
+                <Shield v-if="admin.adminRole === 'superadmin'" :size="10" />
+                {{ admin.adminRole === 'superadmin' ? 'Superadmin' : 'Admin' }}
+              </span>
+            </td>
             <td class="px-5 py-4">
               <div class="flex items-center justify-center gap-2">
                 <button
-                  @click="openDetailDrawer(rs)"
+                  @click="openDetailDrawer(admin)"
                   class="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
                 >
                   <Eye :size="12" /> Lihat
                 </button>
                 <button
-                  @click="openEditDrawer(rs)"
+                  @click="openEditDrawer(admin)"
                   class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
                 >
                   <Pencil :size="12" /> Edit
                 </button>
                 <button
-                  @click="deleteHospital(rs.rumahSakitId)"
+                  @click="deleteAdmin(admin.adminId)"
                   class="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
                 >
                   <Trash2 :size="12" /> Hapus
@@ -153,11 +165,11 @@ const handleSubmit = () => {
       </table>
 
       <div
-        v-if="rumahSakitStore.hospitals.length === 0"
+        v-if="adminStore.admins.length === 0"
         class="flex flex-col items-center justify-center py-16 text-gray-300"
       >
-        <Hospital :size="40" class="mb-3" />
-        <p class="text-sm">Belum ada data rumah sakit</p>
+        <Users :size="40" class="mb-3" />
+        <p class="text-sm">Belum ada data admin</p>
       </div>
     </div>
   </div>
