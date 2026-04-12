@@ -74,7 +74,7 @@ const handleSubmit = async () => {
         class="fixed top-0 right-0 h-full bg-white shadow-2xl z-50 flex flex-col w-full lg:w-4/5 lg:rounded-tl-3xl lg:rounded-bl-3xl"
       >
         <!-- Header -->
-        <div class="flex items-center justify-between px-10 py-8 border-b border-gray-100">
+        <div class="flex items-center justify-between px-10 py-8 border-b border-gray-200">
           <div>
             <h2 class="text-xl font-semibold text-gray-900">Tambah Admin</h2>
             <p class="text-sm text-gray-400 mt-0.5">Buat admin baru untuk sistem</p>
@@ -88,7 +88,7 @@ const handleSubmit = async () => {
         </div>
 
         <!-- Content -->
-        <div class="flex-1 overflow-y-auto px-10 py-8 ">
+        <div class="flex-1 overflow-y-auto px-10 py-8">
           <form @submit.prevent="handleSubmit" class="space-y-5 max-w-full">
             <div
               v-for="field in [

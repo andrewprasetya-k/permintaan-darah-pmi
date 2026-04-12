@@ -41,11 +41,11 @@ const menuGroups = computed(() => [
     items: [
       { name: 'Dashboard', to: '/', icon: LayoutDashboard },
       { name: 'Permintaan Darah', to: '/permintaan', icon: Droplets },
+      { name: 'Manajemen Rumah Sakit', to: '/rumah-sakit', icon: Hospital },
+      { name: 'Komponen Darah', to: '/komponen', icon: FlaskConical },
       ...(userRole.value === 'superadmin'
         ? [{ name: 'Manajemen Admin', to: '/admin', icon: Users }]
         : []),
-      { name: 'Manajemen Rumah Sakit', to: '/rumah-sakit', icon: Hospital },
-      { name: 'Komponen Darah', to: '/komponen', icon: FlaskConical },
     ],
   },
 ])

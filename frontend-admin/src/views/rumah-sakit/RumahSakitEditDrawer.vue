@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRumahSakitStore } from '@/stores/rumah-sakit'
-import { X, AlertCircle } from '@lucide/vue'
+import { X, AlertCircle, Eye, EyeOff } from '@lucide/vue'
 
 interface RumahSakitData {
   nama: string
@@ -22,6 +22,8 @@ const emit = defineEmits<{
 }>()
 
 const rumahSakitStore = useRumahSakitStore()
+const showPassword = ref(false)
+const isSubmitting = ref(false)
 const formData = ref<RumahSakitData>({
   nama: '',
   nomorTelepon: '',
@@ -30,8 +32,6 @@ const formData = ref<RumahSakitData>({
   username: '',
   password: '',
 })
-
-const isSubmitting = ref(false)
 
 const subtitle = computed(() => 'Perbarui informasi rumah sakit')
 
@@ -48,8 +48,13 @@ watch(
         password: '',
       }
     }
-  }
+  },
 )
+
+const handleClose = () => {
+  showPassword.value = false
+  emit('close')
+}
 
 const handleSubmit = async () => {
   isSubmitting.value = true
@@ -63,33 +68,40 @@ const handleSubmit = async () => {
     isSubmitting.value = false
   }
 }
-
-const handleClose = () => {
-  emit('close')
-}
 </script>
 
 <template>
   <Teleport to="body">
-    <div v-if="isOpen" class="fixed inset-0 z-50 overflow-hidden">
-      <div class="absolute inset-0 bg-black/50" @click="handleClose" />
+    <Transition name="backdrop">
+      <div
+        v-if="isOpen"
+        class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+        @click="handleClose"
+      />
+    </Transition>
 
-      <div class="fixed inset-y-0 right-0 flex items-center justify-end pointer-events-none">
-        <div class="pointer-events-auto w-full max-w-lg max-h-screen overflow-y-auto bg-white shadow-2xl">
-          <div class="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white">
-            <div>
-              <h2 class="text-lg font-semibold text-gray-900">Edit Rumah Sakit</h2>
-              <p v-if="subtitle" class="text-sm text-gray-500 mt-1">{{ subtitle }}</p>
-            </div>
-            <button
-              @click="handleClose"
-              class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"
-            >
-              <X :size="20" />
-            </button>
+    <Transition name="drawer">
+      <div
+        v-if="isOpen"
+        class="fixed top-0 right-0 h-full bg-white shadow-2xl z-50 flex flex-col w-full lg:w-4/5 lg:rounded-tl-3xl lg:rounded-bl-3xl"
+      >
+        <!-- Header -->
+        <div class="flex items-center justify-between px-10 py-8 border-b border-gray-200">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900">Edit Rumah Sakit</h2>
+            <p class="text-sm text-gray-400 mt-0.5">{{ subtitle }}</p>
           </div>
+          <button
+            @click="handleClose"
+            class="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"
+          >
+            <X :size="20" />
+          </button>
+        </div>
 
-          <form @submit.prevent="handleSubmit" class="px-6 py-5 space-y-5">
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto px-10 py-8">
+          <form @submit.prevent="handleSubmit" class="space-y-5 max-w-full">
             <div>
               <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
                 Nama Rumah Sakit
@@ -110,31 +122,41 @@ const handleClose = () => {
                 v-model="formData.username"
                 type="text"
                 required
-                disabled
                 class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 disabled:opacity-50"
               />
             </div>
 
+            <!-- Password -->
             <div>
               <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
                 Password
                 <span class="normal-case text-gray-300 ml-1">(kosongkan jika tidak diubah)</span>
               </label>
-              <input
-                v-model="formData.password"
-                type="password"
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-              />
+              <div class="relative">
+                <input
+                  v-model="formData.password"
+                  :type="showPassword ? 'text' : 'password'"
+                  class="w-full px-3.5 py-2.5 pr-10 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                />
+                <button
+                  type="button"
+                  @click="showPassword = !showPassword"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <Eye v-if="!showPassword" :size="16" />
+                  <EyeOff v-else :size="16" />
+                </button>
+              </div>
             </div>
 
             <div>
               <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
                 Email
+                <span class="normal-case text-gray-300 ml-1">(kosongkan jika tidak diubah)</span>
               </label>
               <input
                 v-model="formData.email"
                 type="email"
-                required
                 class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               />
             </div>
@@ -163,12 +185,17 @@ const handleClose = () => {
               />
             </div>
 
-            <div v-if="rumahSakitStore.error" class="flex items-center gap-2 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs">
+            <!-- Error -->
+            <div
+              v-if="rumahSakitStore.error"
+              class="flex items-center gap-2 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs"
+            >
               <AlertCircle :size="14" class="shrink-0" />
               {{ rumahSakitStore.error }}
             </div>
 
-            <div class="flex gap-3 pt-1">
+            <!-- Actions -->
+            <div class="flex gap-3 pt-2">
               <button
                 type="submit"
                 :disabled="isSubmitting"
@@ -187,6 +214,26 @@ const handleClose = () => {
           </form>
         </div>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>
+
+<style scoped>
+.backdrop-enter-active,
+.backdrop-leave-active {
+  transition: opacity 0.3s ease;
+}
+.backdrop-enter-from,
+.backdrop-leave-to {
+  opacity: 0;
+}
+
+.drawer-enter-active,
+.drawer-leave-active {
+  transition: transform 0.3s ease;
+}
+.drawer-enter-from,
+.drawer-leave-to {
+  transform: translateX(100%);
+}
+</style>

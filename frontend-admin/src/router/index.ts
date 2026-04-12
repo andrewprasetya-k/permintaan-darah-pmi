@@ -40,7 +40,7 @@ const router = createRouter({
     {
       path: '/permintaan/:id',
       name: 'permintaan-detail',
-      component: () => import('../views/permintaan-darah/PermintaanDetailView.vue'),
+      component: () => import('../views/permintaan-darah/PermintaanDetailDrawer.vue'),
       meta: { requiresAuth: true, roles: ['admin', 'superadmin'], title: 'Detail Permintaan' },
     },
     {
