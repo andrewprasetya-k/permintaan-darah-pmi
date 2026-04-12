@@ -266,16 +266,47 @@ const updateStatus = async (newStatus: string) => {
                 <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
                   Status
                 </label>
-                <div class="flex items-center gap-2">
-                  <span
-                    class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium capitalize"
-                    :class="
-                      statusStyle[permintaanStore.selectedRequest.status] ??
-                      'bg-gray-50 text-gray-600'
-                    "
+                <div class="relative">
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium capitalize"
+                      :class="
+                        statusStyle[permintaanStore.selectedRequest.status] ??
+                        'bg-gray-50 text-gray-600'
+                      "
+                    >
+                      {{ permintaanStore.selectedRequest.status }}
+                    </span>
+                    <button
+                      v-if="validNextStatuses.length > 0"
+                      @click="showStatusDropdown = !showStatusDropdown"
+                      :disabled="isUpdatingStatus"
+                      class="px-3 py-1.5 text-xs text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      Ubah
+                    </button>
+                  </div>
+                  
+                  <!-- Status Dropdown Menu -->
+                  <div
+                    v-if="showStatusDropdown && validNextStatuses.length > 0"
+                    class="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-max"
                   >
-                    {{ permintaanStore.selectedRequest.status }}
-                  </span>
+                    <div
+                      v-for="status in validNextStatuses"
+                      :key="status"
+                      @click="updateStatus(status)"
+                      class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors first:rounded-t-lg last:rounded-b-lg"
+                    >
+                      {{
+                        status === 'dibatalkan'
+                          ? 'Batalkan'
+                          : status === 'bisa_diambil'
+                            ? 'Bisa Diambil'
+                            : status.charAt(0).toUpperCase() + status.slice(1)
+                      }}
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Status Error -->
@@ -366,26 +397,25 @@ const updateStatus = async (newStatus: string) => {
               >
                 Tutup
               </button>
-              <div class="relative">
+              <div class="relative flex-1">
                 <button
                   v-if="validNextStatuses.length > 0"
                   @click="showStatusDropdown = !showStatusDropdown"
                   :disabled="isUpdatingStatus"
-                  class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-gray-100 text-sm font-medium rounded-xl transition-colors"
+                  class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
                 >
-                  Ubah
+                  Ubah Status
                 </button>
-                <!-- Status Dropdown Menu -->
+                <!-- Status Dropdown Menu - Muncul ke atas -->
                 <div
                   v-if="showStatusDropdown && validNextStatuses.length > 0"
-                  class="mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10"
+                  class="absolute bottom-full left-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg z-20 w-full"
                 >
                   <div
                     v-for="status in validNextStatuses"
                     :key="status"
                     @click="updateStatus(status)"
-                    :disabled="isUpdatingStatus"
-                    class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors disabled:opacity-50"
+                    class="px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 cursor-pointer transition-colors first:rounded-t-lg last:rounded-b-lg"
                   >
                     {{
                       status === 'dibatalkan'
