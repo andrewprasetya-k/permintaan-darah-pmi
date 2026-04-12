@@ -1,6 +1,13 @@
 import { apiClient } from './client'
 import type { PermintaanDarah } from '@/types/models'
 
+export interface CreateDetailRequestPayload {
+  komId: number
+  golonganDarah: 'A' | 'B' | 'AB' | 'O'
+  rhesusDarah: '+' | '-'
+  jumlahKantong: number
+}
+
 export interface CreatePermintaanRequest {
   rumahSakitId?: string
   namaPasien: string
@@ -18,6 +25,7 @@ export interface CreatePermintaanRequest {
   status: 'dibuat' | 'diproses' | 'bisa_diambil' | 'selesai' | 'dibatalkan'
   cancelReason?: string
   tanggalPermintaan: string
+  details?: CreateDetailRequestPayload[]
 }
 
 export interface UpdatePermintaanRequest extends CreatePermintaanRequest {

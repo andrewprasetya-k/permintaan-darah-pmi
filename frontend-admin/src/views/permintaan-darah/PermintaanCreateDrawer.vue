@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { usePermintaanStore } from '@/stores/permintaan'
-import type { CreatePermintaanRequest } from '@/api/permintaan'
-import { X, AlertCircle } from '@lucide/vue'
+import { useKomponenStore } from '@/stores/komponen'
+import type { CreatePermintaanRequest, CreateDetailRequestPayload } from '@/api/permintaan'
+import { X, AlertCircle, Plus, Trash2 } from '@lucide/vue'
 
 defineProps<{ isOpen: boolean }>()
 
@@ -12,6 +13,7 @@ const emit = defineEmits<{
 }>()
 
 const permintaanStore = usePermintaanStore()
+const komponenStore = useKomponenStore()
 const isSubmitting = ref(false)
 const formData = ref<CreatePermintaanRequest>({
   namaPasien: '',
@@ -21,7 +23,15 @@ const formData = ref<CreatePermintaanRequest>({
   pernahTransfusi: false,
   status: 'dibuat',
   tanggalPermintaan: new Date().toISOString().split('T')[0],
+  details: [],
 } as CreatePermintaanRequest)
+
+const newDetail = ref<CreateDetailRequestPayload>({
+  komId: 0,
+  golonganDarah: 'A',
+  rhesusDarah: '+',
+  jumlahKantong: 1,
+})
 
 const resetForm = () => {
   formData.value = {
@@ -32,7 +42,30 @@ const resetForm = () => {
     pernahTransfusi: false,
     status: 'dibuat',
     tanggalPermintaan: new Date().toISOString().split('T')[0],
+    details: [],
   } as CreatePermintaanRequest
+  newDetail.value = {
+    komId: 0,
+    golonganDarah: 'A',
+    rhesusDarah: '+',
+    jumlahKantong: 1,
+  }
+}
+
+const addDetail = () => {
+  if (newDetail.value.komId > 0) {
+    formData.value.details?.push({ ...newDetail.value })
+    newDetail.value = {
+      komId: 0,
+      golonganDarah: 'A',
+      rhesusDarah: '+',
+      jumlahKantong: 1,
+    }
+  }
+}
+
+const removeDetail = (index: number) => {
+  formData.value.details?.splice(index, 1)
 }
 
 const handleClose = () => {
@@ -247,6 +280,102 @@ const handleSubmit = async () => {
                 rows="3"
                 class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               />
+            </div>
+
+            <hr class="my-4 border-gray-200" />
+
+            <!-- Detail Permintaan Darah Section -->
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-semibold text-gray-900">Komponen Darah yang Diminta</h3>
+                <span class="text-xs text-gray-500">{{ formData.details?.length || 0 }} item</span>
+              </div>
+
+              <!-- Detail List -->
+              <div v-if="formData.details && formData.details.length > 0" class="space-y-2 mb-4">
+                <div
+                  v-for="(detail, idx) in formData.details"
+                  :key="idx"
+                  class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                >
+                  <div class="text-sm">
+                    <p class="font-medium text-gray-900">
+                      {{ komponenStore.komponens.find((k: any) => k.komponenId === detail.komId)?.komponenDarah || `Komponen #${detail.komId}` }}
+                    </p>
+                    <p class="text-xs text-gray-500">
+                      {{ detail.golonganDarah }}{{ detail.rhesusDarah }} • {{ detail.jumlahKantong }} kantong
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    @click="removeDetail(idx)"
+                    class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                  >
+                    <Trash2 :size="16" />
+                  </button>
+                </div>
+              </div>
+
+              <!-- Add Detail Form -->
+              <div class="space-y-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Komponen</label>
+                    <select
+                      v-model.number="newDetail.komId"
+                      class="w-full px-2 py-1.5 text-xs text-gray-900 bg-white border border-gray-200 rounded outline-none focus:border-blue-400"
+                    >
+                      <option :value="0">Pilih komponen...</option>
+                      <option v-for="kom in komponenStore.komponens" :key="kom.komponenId" :value="kom.komponenId">
+                        {{ kom.komponenDarah }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Jumlah</label>
+                    <input
+                      v-model.number="newDetail.jumlahKantong"
+                      type="number"
+                      min="1"
+                      class="w-full px-2 py-1.5 text-xs text-gray-900 bg-white border border-gray-200 rounded outline-none focus:border-blue-400"
+                    />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Golongan</label>
+                    <select
+                      v-model="newDetail.golonganDarah"
+                      class="w-full px-2 py-1.5 text-xs text-gray-900 bg-white border border-gray-200 rounded outline-none focus:border-blue-400"
+                    >
+                      <option value="A">A</option>
+                      <option value="B">B</option>
+                      <option value="AB">AB</option>
+                      <option value="O">O</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Rhesus</label>
+                    <select
+                      v-model="newDetail.rhesusDarah"
+                      class="w-full px-2 py-1.5 text-xs text-gray-900 bg-white border border-gray-200 rounded outline-none focus:border-blue-400"
+                    >
+                      <option value="+">Positif (+)</option>
+                      <option value="-">Negatif (-)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  @click="addDetail"
+                  class="w-full flex items-center justify-center gap-2 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition-colors"
+                >
+                  <Plus :size="14" />
+                  Tambah Komponen
+                </button>
+              </div>
             </div>
 
             <!-- Error -->

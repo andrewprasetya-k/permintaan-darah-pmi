@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { usePermintaanStore } from '@/stores/permintaan'
-import { X } from '@lucide/vue'
+import { X, AlertCircle } from '@lucide/vue'
+import { permintaanAPI } from '@/api/permintaan'
 
 const props = defineProps<{
   isOpen: boolean
@@ -9,17 +10,56 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: []
+  updated: []
 }>()
 
 const permintaanStore = usePermintaanStore()
+const isUpdatingStatus = ref(false)
+const statusError = ref<string | null>(null)
+const showStatusDropdown = ref(false)
 
 const subtitle = computed(() => permintaanStore.selectedRequest?.namaPasien)
+
 const statusStyle: Record<string, string> = {
   dibuat: 'bg-amber-50 text-amber-600',
   diproses: 'bg-blue-50 text-blue-600',
   bisa_diambil: 'bg-violet-50 text-violet-600',
   selesai: 'bg-green-50 text-green-600',
   dibatalkan: 'bg-red-50 text-red-600',
+}
+
+// Valid status transitions
+const validNextStatuses = computed(() => {
+  const current = permintaanStore.selectedRequest?.status
+  const transitions: Record<string, string[]> = {
+    dibuat: ['diproses', 'dibatalkan'],
+    diproses: ['bisa_diambil', 'dibatalkan'],
+    bisa_diambil: ['selesai', 'dibatalkan'],
+    selesai: [],
+    dibatalkan: [],
+  }
+  return transitions[current || 'dibuat'] || []
+})
+
+const updateStatus = async (newStatus: string) => {
+  if (!permintaanStore.selectedRequest) return
+
+  isUpdatingStatus.value = true
+  statusError.value = null
+
+  try {
+    const response = await permintaanAPI.updateStatus(
+      permintaanStore.selectedRequest.permintaanDarahId,
+      { status: newStatus as any },
+    )
+    permintaanStore.selectedRequest = response.data
+    showStatusDropdown.value = false
+    emit('updated')
+  } catch (error: any) {
+    statusError.value = error?.response?.data?.message || 'Gagal mengubah status'
+  } finally {
+    isUpdatingStatus.value = false
+  }
 }
 </script>
 
@@ -226,15 +266,26 @@ const statusStyle: Record<string, string> = {
                 <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
                   Status
                 </label>
-                <span
-                  class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium capitalize"
-                  :class="
-                    statusStyle[permintaanStore.selectedRequest.status] ??
-                    'bg-gray-50 text-gray-600'
-                  "
+                <div class="flex items-center gap-2">
+                  <span
+                    class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium capitalize"
+                    :class="
+                      statusStyle[permintaanStore.selectedRequest.status] ??
+                      'bg-gray-50 text-gray-600'
+                    "
+                  >
+                    {{ permintaanStore.selectedRequest.status }}
+                  </span>
+                </div>
+
+                <!-- Status Error -->
+                <div
+                  v-if="statusError"
+                  class="mt-2 flex items-center gap-2 p-2 bg-red-50 border border-red-100 text-red-600 rounded-lg text-xs"
                 >
-                  {{ permintaanStore.selectedRequest.status }}
-                </span>
+                  <AlertCircle :size="14" class="shrink-0" />
+                  {{ statusError }}
+                </div>
               </div>
 
               <!-- Cancel Reason (jika ada) -->
@@ -315,6 +366,37 @@ const statusStyle: Record<string, string> = {
               >
                 Tutup
               </button>
+              <div class="relative">
+                <button
+                  v-if="validNextStatuses.length > 0"
+                  @click="showStatusDropdown = !showStatusDropdown"
+                  :disabled="isUpdatingStatus"
+                  class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-gray-100 text-sm font-medium rounded-xl transition-colors"
+                >
+                  Ubah
+                </button>
+                <!-- Status Dropdown Menu -->
+                <div
+                  v-if="showStatusDropdown && validNextStatuses.length > 0"
+                  class="mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10"
+                >
+                  <div
+                    v-for="status in validNextStatuses"
+                    :key="status"
+                    @click="updateStatus(status)"
+                    :disabled="isUpdatingStatus"
+                    class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors disabled:opacity-50"
+                  >
+                    {{
+                      status === 'dibatalkan'
+                        ? 'Batalkan'
+                        : status === 'bisa_diambil'
+                          ? 'Bisa Diambil'
+                          : status.charAt(0).toUpperCase() + status.slice(1)
+                    }}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
