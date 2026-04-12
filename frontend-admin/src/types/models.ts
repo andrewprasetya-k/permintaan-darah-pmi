@@ -68,17 +68,11 @@ export interface BloodRequest {
 export interface DetailPermintaanDarah {
   detailId: number
   permintaanDarahId: string
-  komponenDarahId: number
+  komponenNama: string
   golonganDarah: 'A' | 'B' | 'AB' | 'O'
   rhesusDarah: '+' | '-'
   jumlahKantong: number
   tanggalDiperlukan: string
-  komponenDarah?: {
-    komponenId: number
-    komponenDarah: string
-    komponenKode: string
-    isActive: boolean
-  }
   createdAt: string
 }
 

@@ -292,22 +292,10 @@ const statusStyle: Record<string, string> = {
                   >
                     <div>
                       <p class="text-xs font-medium text-gray-600">
-                        {{ detail.komponenDarah?.komponenNama || 'Komponen' }}
+                        {{ detail.komponenNama || 'Komponen' }}
                       </p>
                       <p class="text-xs text-gray-500">
                         {{ detail.golonganDarah }}{{ detail.rhesusDarah }}
-                      </p>
-                      <p class="text-xs text-gray-500">
-                        {{
-                          new Date(detail.tanggalDiperlukan).toLocaleDateString('id-ID', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })
-                        }}
                       </p>
                     </div>
                     <div class="text-right">
