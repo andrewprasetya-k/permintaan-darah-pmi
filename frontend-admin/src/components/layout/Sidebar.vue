@@ -87,7 +87,7 @@ const logout = () => {
           </div>
           <div>
             <h2 class="text-base font-bold leading-tight text-gray-900">
-              PMI <span class="text-red-500">Admin</span>
+              PMI <span class="text-red-500">Salatiga</span>
             </h2>
             <p class="text-xs text-gray-400">Permintaan Darah</p>
           </div>
