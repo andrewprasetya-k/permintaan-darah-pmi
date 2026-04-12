@@ -15,7 +15,7 @@ type UpdateRumahSakitRequest struct {
 	RSNama     string  `json:"nama" binding:"required"`
 	RSNoTelp   string  `json:"nomorTelepon" binding:"required"`
 	RSAlamat   string  `json:"alamat" binding:"required"`
-	RSEmail    *string `json:"email,omitempty" binding:"omitempty,email"`
+	RSEmail    *string `json:"email,omitempty" binding:"omitempty"`
 	RSPassword *string `json:"password,omitempty"`
 }
 
