@@ -33,8 +33,8 @@ const openEditDrawer = (request: any) => {
   showEditDrawer.value = true
 }
 
-const openDetailDrawer = (request: any) => {
-  permintaanStore.selectedRequest = request
+const openDetailDrawer = async (request: any) => {
+  await permintaanStore.fetchById(request.permintaanDarahId)
   showDetailDrawer.value = true
 }
 

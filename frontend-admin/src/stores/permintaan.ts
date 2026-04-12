@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { permintaanAPI, type CreatePermintaanRequest, type UpdatePermintaanRequest } from '@/api/permintaan'
+import {
+  permintaanAPI,
+  type CreatePermintaanRequest,
+  type UpdatePermintaanRequest,
+} from '@/api/permintaan'
 import type { BloodRequest } from '@/types/models'
 
 export const usePermintaanStore = defineStore('permintaan', () => {

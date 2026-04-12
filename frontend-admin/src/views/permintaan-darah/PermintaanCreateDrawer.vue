@@ -55,27 +55,7 @@ const handleSubmit = async () => {
 
 <template>
   <Teleport to="body">
-    <Transition name="backdrop"
-      >{ "success": true, "message": "Data retrieved successfully", "data": { "permintaanDarahId":
-      "PD0204260309002", "rumahSakitId": "RS-021", "namaPasien": "Budi awikwok", "noRM":
-      "RM-992831", "tempatLahir": "Salatiga", "tanggalLahir": "1995-05-20T00:00:00Z",
-      "jenisKelamin": "L", "golonganDarah": "A", "rhesusDarah": "+", "hemoglobin": 11.5,
-      "ruangBagianKelas": "Bangsal Melati - Kelas 2", "pernahTransfusi": false, "indikasiTransfusi":
-      "Anemia berat", "pernahHamil": "Tidak", "status": "dibuat", "tanggalPermintaan":
-      "2026-06-02T10:00:00Z", "createdAt": "2026-04-02T03:09:47.447422Z", "updatedAt":
-      "2026-04-08T07:49:07.738238Z", "detailPermintaanDarah": [ { "detailId": 3,
-      "permintaanDarahId": "PD0204260309002", "komponenNama": "Packed Red Cell (PRC)",
-      "golonganDarah": "O", "rhesusDarah": "+", "jumlahKantong": 2, "tanggalDiperlukan":
-      "2026-04-03T08:00:00Z", "createdAt": "2026-04-02T08:55:15.337021Z" }, { "detailId": 4,
-      "permintaanDarahId": "PD0204260309002", "komponenNama": "Fresh Frozen Plasma (FFP)",
-      "golonganDarah": "O", "rhesusDarah": "+", "jumlahKantong": 2, "tanggalDiperlukan":
-      "2026-04-03T08:00:00Z", "createdAt": "2026-04-02T09:00:56.538337Z" }, { "detailId": 5,
-      "permintaanDarahId": "PD0204260309002", "komponenNama": "Fresh Frozen Plasma (FFP)",
-      "golonganDarah": "O", "rhesusDarah": "+", "jumlahKantong": 2, "tanggalDiperlukan":
-      "2026-04-03T08:00:00Z", "createdAt": "2026-04-02T09:01:41.694244Z" }, { "detailId": 6,
-      "permintaanDarahId": "PD0204260309002", "komponenNama": "Whole Blood", "golonganDarah": "O",
-      "rhesusDarah": "+", "jumlahKantong": 2, "tanggalDiperlukan": "2026-04-03T08:00:00Z",
-      "createdAt": "2026-04-02T09:01:42.500653Z" } ] } }
+    <Transition name="backdrop">
       <div
         v-if="isOpen"
         class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"

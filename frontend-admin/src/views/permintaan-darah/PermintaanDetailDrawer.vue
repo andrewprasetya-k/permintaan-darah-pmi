@@ -14,7 +14,6 @@ const emit = defineEmits<{
 const permintaanStore = usePermintaanStore()
 
 const subtitle = computed(() => permintaanStore.selectedRequest?.namaPasien)
-
 const statusStyle: Record<string, string> = {
   dibuat: 'bg-amber-50 text-amber-600',
   diproses: 'bg-blue-50 text-blue-600',
@@ -115,9 +114,17 @@ const statusStyle: Record<string, string> = {
                   </label>
                   <p class="text-base text-gray-900 font-medium">
                     {{
-                      new Date(permintaanStore.selectedRequest.tanggalLahir).toLocaleDateString(
-                        'id-ID',
-                      )
+                      permintaanStore.selectedRequest.tanggalLahir
+                        ? new Date(permintaanStore.selectedRequest.tanggalLahir).toLocaleDateString(
+                            'id-ID',
+                            {
+                              weekday: 'short',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            },
+                          )
+                        : '-'
                     }}
                   </p>
                 </div>
@@ -180,7 +187,40 @@ const statusStyle: Record<string, string> = {
                 </p>
               </div>
 
+              <!-- Pernah Hamil -->
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  Pernah Hamil
+                </label>
+                <p class="text-base text-gray-900 font-medium">
+                  {{ permintaanStore.selectedRequest.pernahHamil || '-' }}
+                </p>
+              </div>
+
               <hr class="my-4 border-gray-100" />
+
+              <!-- Tanggal Permintaan -->
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  Tanggal Permintaan
+                </label>
+                <p class="text-sm text-gray-600">
+                  {{
+                    permintaanStore.selectedRequest.tanggalPermintaan
+                      ? new Date(
+                          permintaanStore.selectedRequest.tanggalPermintaan,
+                        ).toLocaleDateString('id-ID', {
+                          weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : '-'
+                  }}
+                </p>
+              </div>
 
               <!-- Status -->
               <div>
@@ -196,6 +236,16 @@ const statusStyle: Record<string, string> = {
                 >
                   {{ permintaanStore.selectedRequest.status }}
                 </span>
+              </div>
+
+              <!-- Cancel Reason (jika ada) -->
+              <div v-if="permintaanStore.selectedRequest.cancelReason">
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  Alasan Pembatalan
+                </label>
+                <p class="text-base text-red-600 font-medium">
+                  {{ permintaanStore.selectedRequest.cancelReason }}
+                </p>
               </div>
 
               <!-- Tanggal -->
@@ -243,6 +293,39 @@ const statusStyle: Record<string, string> = {
                       )
                     }}
                   </p>
+                </div>
+              </div>
+
+              <!-- Detail Permintaan Darah (Komponen yang Diminta) -->
+              <div
+                v-if="
+                  permintaanStore.selectedRequest.detailPermintaanDarah &&
+                  permintaanStore.selectedRequest.detailPermintaanDarah.length > 0
+                "
+                class="border-t pt-4 mt-4"
+              >
+                <h3 class="text-sm font-semibold text-gray-900 mb-3">
+                  Komponen Darah yang Diminta
+                </h3>
+                <div class="space-y-2">
+                  <div
+                    v-for="detail in permintaanStore.selectedRequest.detailPermintaanDarah"
+                    :key="detail.detailId"
+                    class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
+                    <div>
+                      <p class="text-xs font-medium text-gray-600">
+                        {{ detail.komponenDarah?.komponenDarah || 'Komponen' }}
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        {{ detail.golonganDarah }}{{ detail.rhesusDarah }}
+                      </p>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-sm font-semibold text-gray-900">{{ detail.jumlahKantong }}</p>
+                      <p class="text-xs text-gray-500">kantong</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
