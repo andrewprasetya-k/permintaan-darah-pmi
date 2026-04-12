@@ -42,7 +42,6 @@ func (s *detailPermintaanDarahService) Create(req dto.CreateDetailPermintaanDara
 		DPDGolonganDarah: req.DPDGolonganDarah,
 		DPDRhesus:        req.DPDRhesus,
 		DPDJmlKantong:    req.DPDJmlKantong,
-		DPDTglDiperlukan: req.DPDTglDiperlukan,
 	}
 	if err := s.repo.Create(&data); err != nil {
 		return nil, err
