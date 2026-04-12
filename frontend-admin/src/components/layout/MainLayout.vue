@@ -10,13 +10,14 @@ const route = useRoute()
 const isMobileOpen = ref(false)
 
 const pageTitle = computed(() => (route.meta.title as string) || 'Dashboard')
+const pageSubtitle = computed(() => (route.meta.subtitle as string) || '')
 </script>
 
 <template>
   <div class="flex min-h-screen bg-gray-50">
     <Sidebar />
     <div class="flex flex-col flex-1 min-h-screen transition-all duration-500">
-      <Topbar :title="pageTitle" :subtitle="subtitle" :on-menu-click="() => (isMobileOpen = true)" />
+      <Topbar :title="pageTitle" :subtitle="pageSubtitle" :on-menu-click="() => (isMobileOpen = true)" />
       <main class="flex-1 p-6 overflow-y-auto">
         <slot />
       </main>
