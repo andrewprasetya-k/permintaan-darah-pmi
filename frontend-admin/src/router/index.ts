@@ -49,7 +49,7 @@ const router = createRouter({
       component: () => import('../views/admin/Admin.vue'),
       meta: {
         requiresAuth: true,
-        roles: ['admin', 'superadmin'],
+        roles: ['superadmin'],
         title: 'Kelola Admin',
         subtitle: 'Kelola akun admin yang terdaftar',
       },

@@ -18,6 +18,7 @@ import {
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const userRole = computed(() => authStore.user?.role)
 
 const isCollapsed = ref(JSON.parse(localStorage.getItem('sidebarCollapsed') || 'false'))
 const isMobileOpen = ref(false)
@@ -40,7 +41,9 @@ const menuGroups = computed(() => [
     items: [
       { name: 'Dashboard', to: '/', icon: LayoutDashboard },
       { name: 'Permintaan Darah', to: '/permintaan', icon: Droplets },
-      { name: 'Manajemen Admin', to: '/admin', icon: Users },
+      ...(userRole.value === 'superadmin'
+        ? [{ name: 'Manajemen Admin', to: '/admin', icon: Users }]
+        : []),
       { name: 'Manajemen Rumah Sakit', to: '/rumah-sakit', icon: Hospital },
       { name: 'Komponen Darah', to: '/komponen', icon: FlaskConical },
     ],
@@ -74,7 +77,7 @@ const logout = () => {
   <div
     class="bg-white h-screen flex flex-col transition-all duration-500 ease-in-out fixed lg:relative z-40"
     :class="[
-      isCollapsed ? 'lg:w-20' : 'lg:w-64',
+      isCollapsed ? 'lg:w-20' : 'lg:w-1/5',
       isMobileOpen ? 'translate-x-0 w-full' : '-translate-x-full lg:translate-x-0',
     ]"
   >
