@@ -2,11 +2,7 @@
 import { ref } from 'vue'
 import { useKomponenStore } from '@/stores/komponen'
 import { X, AlertCircle } from '@lucide/vue'
-
-interface KomponenData {
-  komponenDarah: string
-  komponenKode: string
-}
+import type { CreateKomponenRequest } from '@/api'
 
 const props = defineProps<{
   isOpen: boolean
@@ -18,9 +14,10 @@ const emit = defineEmits<{
 }>()
 
 const komponenStore = useKomponenStore()
-const formData = ref<KomponenData>({
+const formData = ref<CreateKomponenRequest>({
   komponenDarah: '',
   komponenKode: '',
+  isActive: true,
 })
 
 const isSubmitting = ref(false)
@@ -29,6 +26,7 @@ const resetForm = () => {
   formData.value = {
     komponenDarah: '',
     komponenKode: '',
+    isActive: true,
   }
 }
 
@@ -108,7 +106,23 @@ const handleClose = () => {
               />
             </div>
 
-            <div v-if="komponenStore.error" class="flex items-center gap-2 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                Status Komponen
+              </label>
+              <select
+                v-model="formData.isActive"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              >
+                <option :value="true">Aktif</option>
+                <option :value="false">Tidak Aktif</option>
+              </select>
+            </div>
+
+            <div
+              v-if="komponenStore.error"
+              class="flex items-center gap-2 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs"
+            >
               <AlertCircle :size="14" class="shrink-0" />
               {{ komponenStore.error }}
             </div>

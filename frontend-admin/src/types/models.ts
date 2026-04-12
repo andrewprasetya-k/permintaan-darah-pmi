@@ -76,25 +76,6 @@ export interface DetailPermintaanDarah {
   createdAt: string
 }
 
-export interface BloodInventory {
-  id: string
-  bloodType: string
-  quantity: number
-  expiredAt: string
-}
-
-export interface Donation {
-  id: string
-  donorName: string
-  bloodType: string
-  quantity: number
-  location: string
-  donationDate: string
-  status: 'pending' | 'completed' | 'rejected'
-  createdAt: string
-  updatedAt: string
-}
-
 export interface StatusLog {
   id: string
   permintaanDarahId: string
