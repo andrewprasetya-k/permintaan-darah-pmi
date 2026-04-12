@@ -62,7 +62,6 @@ const handleSubmit = () => {
       </button>
     </div>
 
-    
     <!-- Drawers -->
     <PermintaanCreateDrawer
       :is-open="showCreateDrawer"
@@ -109,11 +108,6 @@ const handleSubmit = () => {
             <th
               class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
             >
-              No. RM
-            </th>
-            <th
-              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
               Golongan Darah
             </th>
             <th
@@ -124,7 +118,7 @@ const handleSubmit = () => {
             <th
               class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
             >
-              Tanggal
+              Tanggal Masuk
             </th>
             <th
               class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
@@ -140,7 +134,6 @@ const handleSubmit = () => {
             class="hover:bg-gray-50 transition-colors"
           >
             <td class="px-5 py-4 font-medium text-gray-800">{{ req.namaPasien }}</td>
-            <td class="px-5 py-4 text-gray-500">{{ req.noRM || '-' }}</td>
             <td class="px-5 py-4">
               <span
                 class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-lg"

@@ -253,33 +253,11 @@ const statusStyle: Record<string, string> = {
                   <label
                     class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
                   >
-                    Dibuat
+                    Tanggal Permintaan Dibuat
                   </label>
                   <p class="text-sm text-gray-600">
                     {{
                       new Date(permintaanStore.selectedRequest.createdAt).toLocaleDateString(
-                        'id-ID',
-                        {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        },
-                      )
-                    }}
-                  </p>
-                </div>
-                <div>
-                  <label
-                    class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
-                  >
-                    Diperbarui
-                  </label>
-                  <p class="text-sm text-gray-600">
-                    {{
-                      new Date(permintaanStore.selectedRequest.updatedAt).toLocaleDateString(
                         'id-ID',
                         {
                           weekday: 'long',
