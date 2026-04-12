@@ -11,10 +11,11 @@ const formatDate = (date: string) =>
   new Date(date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })
 
 const statusStyle: Record<string, string> = {
-  pending: 'bg-amber-50 text-amber-600',
-  diproses: 'bg-blue-50 text-blue-600',
-  selesai: 'bg-green-50 text-green-600',
-  ditolak: 'bg-red-50 text-red-600',
+  dibuat: 'bg-amber-50 text-amber-600 ',
+  diproses: 'bg-blue-50 text-blue-600 ',
+  bisa_diambil: 'bg-violet-50 text-violet-600 ',
+  selesai: 'bg-green-50 text-green-600 ',
+  ditolak: 'bg-red-50 text-red-600 ',
 }
 </script>
 
