@@ -142,21 +142,21 @@ const handleSubmit = () => {
               <div class="flex items-center justify-center gap-2">
                 <button
                   @click="openDetailDrawer(admin)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
+                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
                 >
-                  <Eye :size="12" /> Lihat
+                  Detail
                 </button>
                 <button
                   @click="openEditDrawer(admin)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
+                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
                 >
-                  <Pencil :size="12" /> Edit
+                  Edit
                 </button>
                 <button
                   @click="deleteAdmin(admin.adminId)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
+                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
                 >
-                  <Trash2 :size="12" /> Hapus
+                  Hapus
                 </button>
               </div>
             </td>

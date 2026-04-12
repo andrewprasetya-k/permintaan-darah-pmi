@@ -62,17 +62,16 @@ const handleSubmit = () => {
       @close="showEditDrawer = false"
       @submit="handleSubmit"
     />
-    <KomponenDetailDrawer
-      :is-open="showDetailDrawer"
-      @close="showDetailDrawer = false"
-    />
+    <KomponenDetailDrawer :is-open="showDetailDrawer" @close="showDetailDrawer = false" />
 
     <!-- Loading -->
     <div
       v-if="komponenStore.isLoading"
       class="flex items-center justify-center py-16 text-sm text-gray-400"
     >
-      <span class="w-5 h-5 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin mr-3" />
+      <span
+        class="w-5 h-5 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin mr-3"
+      />
       Memuat data...
     </div>
 
@@ -90,16 +89,24 @@ const handleSubmit = () => {
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-gray-100">
-            <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide">
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
               Nama Komponen
             </th>
-            <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide">
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
               Kode
             </th>
-            <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide">
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
               Status
             </th>
-            <th class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide">
+            <th
+              class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
               Aksi
             </th>
           </tr>
@@ -115,11 +122,7 @@ const handleSubmit = () => {
             <td class="px-5 py-4">
               <span
                 class="inline-flex px-2.5 py-1 rounded-lg text-xs font-medium"
-                :class="
-                  kom.isActive
-                    ? 'bg-green-50 text-green-600'
-                    : 'bg-gray-50 text-gray-600'
-                "
+                :class="kom.isActive ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600'"
               >
                 {{ kom.isActive ? 'Aktif' : 'Nonaktif' }}
               </span>
@@ -128,21 +131,21 @@ const handleSubmit = () => {
               <div class="flex items-center justify-center gap-2">
                 <button
                   @click="openDetailDrawer(kom)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
+                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
                 >
-                  <Eye :size="12" /> Lihat
+                  Detail
                 </button>
                 <button
                   @click="openEditDrawer(kom)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
+                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
                 >
-                  <Pencil :size="12" /> Edit
+                  Edit
                 </button>
                 <button
                   @click="deleteKomponen(kom.komponenId)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
+                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
                 >
-                  <Trash2 :size="12" /> Hapus
+                  Hapus
                 </button>
               </div>
             </td>
@@ -150,11 +153,13 @@ const handleSubmit = () => {
         </tbody>
       </table>
 
-      <div v-if="komponenStore.komponens.length === 0" class="flex flex-col items-center justify-center py-16 text-gray-300">
+      <div
+        v-if="komponenStore.komponens.length === 0"
+        class="flex flex-col items-center justify-center py-16 text-gray-300"
+      >
         <Droplets :size="40" class="mb-3" />
         <p class="text-sm">Belum ada data komponen darah</p>
       </div>
     </div>
   </div>
 </template>
-
