@@ -20,12 +20,6 @@ const statusStyle: Record<string, string> = {
 
 <template>
   <div>
-    <!-- Header -->
-    <div class="mb-6">
-      <h1 class="text-xl font-semibold text-gray-900">Permintaan Darah</h1>
-      <p class="text-xs text-gray-400 mt-0.5">Daftar seluruh permintaan darah masuk</p>
-    </div>
-
     <!-- Loading -->
     <div
       v-if="permintaanStore.isLoading"

@@ -61,10 +61,6 @@ const deleteAdmin = async (id: string) => {
   <div>
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-      <div>
-        <h1 class="text-xl font-semibold text-gray-900">Manajemen Admin</h1>
-        <p class="text-xs text-gray-400 mt-0.5">Kelola akun admin yang terdaftar</p>
-      </div>
       <button
         @click="showForm = true"
         class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors"

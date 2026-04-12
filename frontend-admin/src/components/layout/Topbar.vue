@@ -36,7 +36,7 @@ const getInitials = (name: string) => {
 
     <!-- Title -->
     <div class="flex items-center flex-1 lg:flex-none">
-      <div class="lg:pl-5">
+      <div class="lg:pl-0">
         <h1 class="text-xl lg:text-2xl font-semibold text-gray-900 truncate">
           {{ title || 'Dashboard' }}
         </h1>

@@ -11,6 +11,7 @@ const username = ref('')
 const password = ref('')
 const errorMsg = ref('')
 const isLoading = ref(false)
+const showPassword = ref(false)
 
 const handleLogin = async () => {
   if (!username.value || !password.value) {
@@ -71,13 +72,23 @@ const handleLogin = async () => {
             <label class="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
               Password
             </label>
-            <input
-              v-model="password"
-              type="password"
-              autocomplete="current-password"
-              placeholder="••••••••"
-              class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
-            />
+            <div class="relative">
+              <input
+                v-model="password"
+                :type="showPassword ? 'text' : 'password'"
+                autocomplete="current-password"
+                placeholder="••••••••"
+                class="w-full px-3.5 py-2.5 pr-10 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
+              />
+              <button
+                type="button"
+                @click="showPassword = !showPassword"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-900 hover:text-gray-600 transition-colors"
+              >
+                <Eye v-if="!showPassword" :size="16" />
+                <EyeOff v-else :size="16" />
+              </button>
+            </div>
           </div>
 
           <!-- Error -->
