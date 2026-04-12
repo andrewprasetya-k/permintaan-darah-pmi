@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useAdminStore } from '@/stores/admin'
+import { Plus, Pencil, Trash2, X, AlertCircle, Users, Shield } from '@lucide/vue'
 
 const adminStore = useAdminStore()
 const showForm = ref(false)
@@ -13,9 +14,7 @@ const formData = ref({
   adminRole: 'admin' as 'admin' | 'superadmin',
 })
 
-onMounted(async () => {
-  await adminStore.fetchAll()
-})
+onMounted(async () => await adminStore.fetchAll())
 
 const resetForm = () => {
   formData.value = {
@@ -31,21 +30,9 @@ const resetForm = () => {
 
 const handleSubmit = async () => {
   if (isEditing.value && adminStore.selectedAdmin) {
-    await adminStore.update(adminStore.selectedAdmin.adminId, {
-      adminUsername: formData.value.adminUsername,
-      adminPassword: formData.value.adminPassword,
-      adminName: formData.value.adminName,
-      adminEmail: formData.value.adminEmail,
-      adminRole: formData.value.adminRole,
-    })
+    await adminStore.update(adminStore.selectedAdmin.adminId, { ...formData.value })
   } else {
-    await adminStore.create({
-      adminUsername: formData.value.adminUsername,
-      adminPassword: formData.value.adminPassword,
-      adminName: formData.value.adminName,
-      adminEmail: formData.value.adminEmail,
-      adminRole: formData.value.adminRole,
-    })
+    await adminStore.create({ ...formData.value })
   }
   resetForm()
 }
@@ -71,143 +58,220 @@ const deleteAdmin = async (id: string) => {
 </script>
 
 <template>
-  <div style="padding: 1.5rem;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-      <h1 style="font-size: 1.875rem; font-weight: bold;">Manajemen Admin</h1>
+  <div>
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-xl font-semibold text-gray-900">Manajemen Admin</h1>
+        <p class="text-xs text-gray-400 mt-0.5">Kelola akun admin yang terdaftar</p>
+      </div>
       <button
         @click="showForm = true"
-        style="padding: 0.5rem 1rem; background-color: #059669; color: white; border-radius: 0.375rem; border: none; cursor: pointer; font-weight: 500;"
+        class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors"
       >
-        + Tambah Admin
+        <Plus :size="16" />
+        Tambah Admin
       </button>
     </div>
 
-    <!-- Form Modal -->
-    <div v-if="showForm" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
-      <div style="background-color: white; padding: 2rem; border-radius: 0.5rem; width: 90%; max-width: 28rem;">
-        <h2 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem;">
-          {{ isEditing ? 'Edit Admin' : 'Tambah Admin' }}
-        </h2>
-
-        <form @submit.prevent="handleSubmit" style="display: flex; flex-direction: column; gap: 1rem;">
-          <div>
-            <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Username</label>
-            <input
-              v-model="formData.adminUsername"
-              type="text"
-              required
-              style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem;"
-            />
-          </div>
-
-          <div>
-            <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Nama</label>
-            <input
-              v-model="formData.adminName"
-              type="text"
-              required
-              style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem;"
-            />
-          </div>
-
-          <div>
-            <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Email</label>
-            <input
-              v-model="formData.adminEmail"
-              type="email"
-              required
-              style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem;"
-            />
-          </div>
-
-          <div>
-            <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">
-              Password {{ isEditing ? '(kosongkan jika tidak ingin mengubah)' : '' }}
-            </label>
-            <input
-              v-model="formData.adminPassword"
-              type="password"
-              :required="!isEditing"
-              style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem;"
-            />
-          </div>
-
-          <div>
-            <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Role</label>
-            <select
-              v-model="formData.adminRole"
-              style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem;"
-            >
-              <option value="admin">Admin</option>
-              <option value="superadmin">Superadmin</option>
-            </select>
-          </div>
-
-          <div v-if="adminStore.error" style="padding: 0.75rem; background-color: #fee2e2; color: #991b1b; border-radius: 0.375rem;">
-            {{ adminStore.error }}
-          </div>
-
-          <div style="display: flex; gap: 1rem;">
+    <!-- Modal -->
+    <Teleport to="body">
+      <div
+        v-if="showForm"
+        class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+        @click.self="resetForm"
+      >
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <h2 class="text-base font-semibold text-gray-900">
+              {{ isEditing ? 'Edit Admin' : 'Tambah Admin' }}
+            </h2>
             <button
-              type="submit"
-              :disabled="adminStore.isLoading"
-              style="flex: 1; padding: 0.5rem; background-color: #2563eb; color: white; border-radius: 0.375rem; border: none; cursor: pointer; font-weight: 500;"
-            >
-              {{ adminStore.isLoading ? 'Menyimpan...' : 'Simpan' }}
-            </button>
-            <button
-              type="button"
               @click="resetForm"
-              style="flex: 1; padding: 0.5rem; background-color: #6b7280; color: white; border-radius: 0.375rem; border: none; cursor: pointer; font-weight: 500;"
+              class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"
             >
-              Batal
+              <X :size="16" />
             </button>
           </div>
-        </form>
+
+          <form @submit.prevent="handleSubmit" class="px-6 py-5 space-y-4">
+            <div
+              v-for="field in [
+                { key: 'adminUsername', label: 'Username', type: 'text' },
+                { key: 'adminName', label: 'Nama', type: 'text' },
+                { key: 'adminEmail', label: 'Email', type: 'email' },
+              ]"
+              :key="field.key"
+            >
+              <label
+                class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >{{ field.label }}</label
+              >
+              <input
+                v-model="(formData as any)[field.key]"
+                :type="field.type"
+                required
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                Password
+                <span v-if="isEditing" class="normal-case text-gray-300 ml-1"
+                  >(kosongkan jika tidak diubah)</span
+                >
+              </label>
+              <input
+                v-model="formData.adminPassword"
+                type="password"
+                :required="!isEditing"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >Role</label
+              >
+              <select
+                v-model="formData.adminRole"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              >
+                <option value="admin">Admin</option>
+                <option value="superadmin">Superadmin</option>
+              </select>
+            </div>
+
+            <div
+              v-if="adminStore.error"
+              class="flex items-center gap-2 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs"
+            >
+              <AlertCircle :size="14" class="shrink-0" />
+              {{ adminStore.error }}
+            </div>
+
+            <div class="flex gap-3 pt-1">
+              <button
+                type="submit"
+                :disabled="adminStore.isLoading"
+                class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-xl transition-colors"
+              >
+                {{ adminStore.isLoading ? 'Menyimpan...' : 'Simpan' }}
+              </button>
+              <button
+                type="button"
+                @click="resetForm"
+                class="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-xl transition-colors"
+              >
+                Batal
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
+    </Teleport>
+
+    <!-- Loading -->
+    <div
+      v-if="adminStore.isLoading"
+      class="flex items-center justify-center py-16 text-sm text-gray-400"
+    >
+      <span
+        class="w-5 h-5 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin mr-3"
+      />
+      Memuat data...
     </div>
 
-    <!-- List -->
-    <div v-if="adminStore.isLoading" style="padding: 2rem; text-align: center;">Loading...</div>
-    <div v-else-if="adminStore.error" style="padding: 1rem; background-color: #fee2e2; color: #991b1b; border-radius: 0.375rem;">
+    <!-- Error -->
+    <div
+      v-else-if="adminStore.error"
+      class="flex items-center gap-2 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm"
+    >
+      <AlertCircle :size="16" />
       {{ adminStore.error }}
     </div>
-    <div v-else style="background-color: white; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead style="background-color: #f3f4f6;">
-          <tr>
-            <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Nama</th>
-            <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Username</th>
-            <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Email</th>
-            <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Role</th>
-            <th style="padding: 0.75rem; text-align: center; border-bottom: 1px solid #e5e7eb;">Aksi</th>
+
+    <!-- Table -->
+    <div v-else class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-100">
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Nama
+            </th>
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Username
+            </th>
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Email
+            </th>
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Role
+            </th>
+            <th
+              class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Aksi
+            </th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="admin in adminStore.admins" :key="admin.adminId" style="border-bottom: 1px solid #e5e7eb;">
-            <td style="padding: 0.75rem;">{{ admin.adminName }}</td>
-            <td style="padding: 0.75rem;">{{ admin.adminUsername }}</td>
-            <td style="padding: 0.75rem;">{{ admin.adminEmail }}</td>
-            <td style="padding: 0.75rem;">{{ admin.adminRole }}</td>
-            <td style="padding: 0.75rem; text-align: center;">
-              <button
-                @click="editAdmin(admin)"
-                style="padding: 0.25rem 0.75rem; background-color: #3b82f6; color: white; border-radius: 0.25rem; border: none; cursor: pointer; font-size: 0.875rem; margin-right: 0.5rem;"
+        <tbody class="divide-y divide-gray-50">
+          <tr
+            v-for="admin in adminStore.admins"
+            :key="admin.adminId"
+            class="hover:bg-gray-50 transition-colors"
+          >
+            <td class="px-5 py-4 font-medium text-gray-800">{{ admin.adminName }}</td>
+            <td class="px-5 py-4 text-gray-500">{{ admin.adminUsername }}</td>
+            <td class="px-5 py-4 text-gray-500">{{ admin.adminEmail }}</td>
+            <td class="px-5 py-4">
+              <span
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium"
+                :class="
+                  admin.adminRole === 'superadmin'
+                    ? 'bg-purple-50 text-purple-600'
+                    : 'bg-blue-50 text-blue-600'
+                "
               >
-                Edit
-              </button>
-              <button
-                @click="deleteAdmin(admin.adminId)"
-                style="padding: 0.25rem 0.75rem; background-color: #ef4444; color: white; border-radius: 0.25rem; border: none; cursor: pointer; font-size: 0.875rem;"
-              >
-                Hapus
-              </button>
+                <Shield v-if="admin.adminRole === 'superadmin'" :size="10" />
+                {{ admin.adminRole === 'superadmin' ? 'Superadmin' : 'Admin' }}
+              </span>
+            </td>
+            <td class="px-5 py-4">
+              <div class="flex items-center justify-center gap-2">
+                <button
+                  @click="editAdmin(admin)"
+                  class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
+                >
+                  <Pencil :size="12" /> Edit
+                </button>
+                <button
+                  @click="deleteAdmin(admin.adminId)"
+                  class="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
+                >
+                  <Trash2 :size="12" /> Hapus
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
-      <div v-if="adminStore.admins.length === 0" style="padding: 2rem; text-align: center; color: #6b7280;">
-        Belum ada data admin
+
+      <div
+        v-if="adminStore.admins.length === 0"
+        class="flex flex-col items-center justify-center py-16 text-gray-300"
+      >
+        <Users :size="40" class="mb-3" />
+        <p class="text-sm">Belum ada data admin</p>
       </div>
     </div>
   </div>

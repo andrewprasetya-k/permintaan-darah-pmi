@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRumahSakitStore } from '@/stores/rumah-sakit'
+import { Plus, Pencil, Trash2, X, AlertCircle, Hospital } from '@lucide/vue'
 
 const rumahSakitStore = useRumahSakitStore()
 const showForm = ref(false)
@@ -14,19 +15,10 @@ const formData = ref({
   password: '',
 })
 
-onMounted(async () => {
-  await rumahSakitStore.fetchAll()
-})
+onMounted(async () => await rumahSakitStore.fetchAll())
 
 const resetForm = () => {
-  formData.value = {
-    nama: '',
-    nomorTelepon: '',
-    alamat: '',
-    email: '',
-    username: '',
-    password: '',
-  }
+  formData.value = { nama: '', nomorTelepon: '', alamat: '', email: '', username: '', password: '' }
   isEditing.value = false
   showForm.value = false
 }
@@ -75,150 +67,218 @@ const deleteHospital = async (id: string) => {
 </script>
 
 <template>
-  <div style="padding: 1.5rem;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-      <h1 style="font-size: 1.875rem; font-weight: bold;">Manajemen Rumah Sakit</h1>
+  <div>
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-xl font-semibold text-gray-900">Manajemen Rumah Sakit</h1>
+        <p class="text-xs text-gray-400 mt-0.5">Kelola data rumah sakit yang terdaftar</p>
+      </div>
       <button
         @click="showForm = true"
-        style="padding: 0.5rem 1rem; background-color: #059669; color: white; border-radius: 0.375rem; border: none; cursor: pointer; font-weight: 500;"
+        class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors"
       >
-        + Tambah Rumah Sakit
+        <Plus :size="16" />
+        Tambah Rumah Sakit
       </button>
     </div>
 
-    <!-- Form Modal -->
-    <div v-if="showForm" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
-      <div style="background-color: white; padding: 2rem; border-radius: 0.5rem; width: 90%; max-width: 28rem;">
-        <h2 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem;">
-          {{ isEditing ? 'Edit Rumah Sakit' : 'Tambah Rumah Sakit' }}
-        </h2>
-
-        <form @submit.prevent="handleSubmit" style="display: flex; flex-direction: column; gap: 1rem;">
-          <div>
-            <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Nama</label>
-            <input
-              v-model="formData.nama"
-              type="text"
-              required
-              style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem;"
-            />
-          </div>
-
-          <div>
-            <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Nomor Telepon</label>
-            <input
-              v-model="formData.nomorTelepon"
-              type="text"
-              required
-              style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem;"
-            />
-          </div>
-
-          <div>
-            <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Alamat</label>
-            <textarea
-              v-model="formData.alamat"
-              required
-              style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; min-height: 80px;"
-            />
-          </div>
-
-          <div>
-            <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Email</label>
-            <input
-              v-model="formData.email"
-              type="email"
-              style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem;"
-            />
-          </div>
-
-          <div v-if="!isEditing">
-            <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Username</label>
-            <input
-              v-model="formData.username"
-              type="text"
-              required
-              style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem;"
-            />
-          </div>
-
-          <div>
-            <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">
-              Password {{ isEditing ? '(kosongkan jika tidak ingin mengubah)' : '' }}
-            </label>
-            <input
-              v-model="formData.password"
-              type="password"
-              :required="!isEditing"
-              style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem;"
-            />
-          </div>
-
-          <div v-if="rumahSakitStore.error" style="padding: 0.75rem; background-color: #fee2e2; color: #991b1b; border-radius: 0.375rem;">
-            {{ rumahSakitStore.error }}
-          </div>
-
-          <div style="display: flex; gap: 1rem;">
+    <!-- Modal -->
+    <Teleport to="body">
+      <div
+        v-if="showForm"
+        class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+        @click.self="resetForm"
+      >
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <h2 class="text-base font-semibold text-gray-900">
+              {{ isEditing ? 'Edit Rumah Sakit' : 'Tambah Rumah Sakit' }}
+            </h2>
             <button
-              type="submit"
-              :disabled="rumahSakitStore.isLoading"
-              style="flex: 1; padding: 0.5rem; background-color: #2563eb; color: white; border-radius: 0.375rem; border: none; cursor: pointer; font-weight: 500;"
-            >
-              {{ rumahSakitStore.isLoading ? 'Menyimpan...' : 'Simpan' }}
-            </button>
-            <button
-              type="button"
               @click="resetForm"
-              style="flex: 1; padding: 0.5rem; background-color: #6b7280; color: white; border-radius: 0.375rem; border: none; cursor: pointer; font-weight: 500;"
+              class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"
             >
-              Batal
+              <X :size="16" />
             </button>
           </div>
-        </form>
+
+          <form @submit.prevent="handleSubmit" class="px-6 py-5 space-y-4">
+            <div
+              v-for="field in [
+                { key: 'nama', label: 'Nama', type: 'text', required: true },
+                { key: 'nomorTelepon', label: 'Nomor Telepon', type: 'text', required: true },
+                { key: 'email', label: 'Email', type: 'email', required: false },
+              ]"
+              :key="field.key"
+            >
+              <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                {{ field.label }}
+              </label>
+              <input
+                v-model="(formData as any)[field.key]"
+                :type="field.type"
+                :required="field.required"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >Alamat</label
+              >
+              <textarea
+                v-model="formData.alamat"
+                required
+                rows="3"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 resize-none"
+              />
+            </div>
+
+            <div v-if="!isEditing">
+              <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >Username</label
+              >
+              <input
+                v-model="formData.username"
+                type="text"
+                required
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                Password
+                <span v-if="isEditing" class="normal-case text-gray-300 ml-1"
+                  >(kosongkan jika tidak diubah)</span
+                >
+              </label>
+              <input
+                v-model="formData.password"
+                type="password"
+                :required="!isEditing"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+
+            <div
+              v-if="rumahSakitStore.error"
+              class="flex items-center gap-2 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs"
+            >
+              <AlertCircle :size="14" class="shrink-0" />
+              {{ rumahSakitStore.error }}
+            </div>
+
+            <div class="flex gap-3 pt-1">
+              <button
+                type="submit"
+                :disabled="rumahSakitStore.isLoading"
+                class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-xl transition-colors"
+              >
+                {{ rumahSakitStore.isLoading ? 'Menyimpan...' : 'Simpan' }}
+              </button>
+              <button
+                type="button"
+                @click="resetForm"
+                class="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-xl transition-colors"
+              >
+                Batal
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
+    </Teleport>
+
+    <!-- Loading -->
+    <div
+      v-if="rumahSakitStore.isLoading"
+      class="flex items-center justify-center py-16 text-sm text-gray-400"
+    >
+      <span
+        class="w-5 h-5 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin mr-3"
+      />
+      Memuat data...
     </div>
 
-    <!-- List -->
-    <div v-if="rumahSakitStore.isLoading" style="padding: 2rem; text-align: center;">Loading...</div>
-    <div v-else-if="rumahSakitStore.error" style="padding: 1rem; background-color: #fee2e2; color: #991b1b; border-radius: 0.375rem;">
+    <!-- Error -->
+    <div
+      v-else-if="rumahSakitStore.error"
+      class="flex items-center gap-2 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm"
+    >
+      <AlertCircle :size="16" />
       {{ rumahSakitStore.error }}
     </div>
-    <div v-else style="background-color: white; border-radius: 0.5rem; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead style="background-color: #f3f4f6;">
-          <tr>
-            <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Nama</th>
-            <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Telepon</th>
-            <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Email</th>
-            <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Username</th>
-            <th style="padding: 0.75rem; text-align: center; border-bottom: 1px solid #e5e7eb;">Aksi</th>
+
+    <!-- Table -->
+    <div v-else class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-100">
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Nama
+            </th>
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Telepon
+            </th>
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Email
+            </th>
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Username
+            </th>
+            <th
+              class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Aksi
+            </th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="rs in rumahSakitStore.hospitals" :key="rs.rumahSakitId" style="border-bottom: 1px solid #e5e7eb;">
-            <td style="padding: 0.75rem;">{{ rs.nama }}</td>
-            <td style="padding: 0.75rem;">{{ rs.nomorTelepon }}</td>
-            <td style="padding: 0.75rem;">{{ rs.email || '-' }}</td>
-            <td style="padding: 0.75rem;">{{ rs.username }}</td>
-            <td style="padding: 0.75rem; text-align: center;">
-              <button
-                @click="editHospital(rs)"
-                style="padding: 0.25rem 0.75rem; background-color: #3b82f6; color: white; border-radius: 0.25rem; border: none; cursor: pointer; font-size: 0.875rem; margin-right: 0.5rem;"
-              >
-                Edit
-              </button>
-              <button
-                @click="deleteHospital(rs.rumahSakitId)"
-                style="padding: 0.25rem 0.75rem; background-color: #ef4444; color: white; border-radius: 0.25rem; border: none; cursor: pointer; font-size: 0.875rem;"
-              >
-                Hapus
-              </button>
+        <tbody class="divide-y divide-gray-50">
+          <tr
+            v-for="rs in rumahSakitStore.hospitals"
+            :key="rs.rumahSakitId"
+            class="hover:bg-gray-50 transition-colors"
+          >
+            <td class="px-5 py-4 font-medium text-gray-800">{{ rs.nama }}</td>
+            <td class="px-5 py-4 text-gray-500">{{ rs.nomorTelepon }}</td>
+            <td class="px-5 py-4 text-gray-500">{{ rs.email || '—' }}</td>
+            <td class="px-5 py-4 text-gray-500">{{ rs.username }}</td>
+            <td class="px-5 py-4">
+              <div class="flex items-center justify-center gap-2">
+                <button
+                  @click="editHospital(rs)"
+                  class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
+                >
+                  <Pencil :size="12" /> Edit
+                </button>
+                <button
+                  @click="deleteHospital(rs.rumahSakitId)"
+                  class="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
+                >
+                  <Trash2 :size="12" /> Hapus
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
-      <div v-if="rumahSakitStore.hospitals.length === 0" style="padding: 2rem; text-align: center; color: #6b7280;">
-        Belum ada data rumah sakit
+
+      <div
+        v-if="rumahSakitStore.hospitals.length === 0"
+        class="flex flex-col items-center justify-center py-16 text-gray-300"
+      >
+        <Hospital :size="40" class="mb-3" />
+        <p class="text-sm">Belum ada data rumah sakit</p>
       </div>
     </div>
   </div>

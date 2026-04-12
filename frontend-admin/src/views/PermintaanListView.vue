@@ -1,49 +1,112 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { usePermintaanStore } from '@/stores/permintaan'
+import { AlertCircle, Droplets } from '@lucide/vue'
 
 const permintaanStore = usePermintaanStore()
 
-onMounted(async () => {
-  await permintaanStore.fetchAll()
-})
+onMounted(async () => await permintaanStore.fetchAll())
+
+const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })
+
+const statusStyle: Record<string, string> = {
+  pending: 'bg-amber-50 text-amber-600',
+  diproses: 'bg-blue-50 text-blue-600',
+  selesai: 'bg-green-50 text-green-600',
+  ditolak: 'bg-red-50 text-red-600',
+}
 </script>
 
 <template>
-  <div class="p-6">
-    <h1 class="text-3xl font-bold">Daftar Permintaan Darah</h1>
+  <div>
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 class="text-xl font-semibold text-gray-900">Permintaan Darah</h1>
+      <p class="text-xs text-gray-400 mt-0.5">Daftar seluruh permintaan darah masuk</p>
+    </div>
 
-    <div v-if="permintaanStore.isLoading" class="mt-4">Loading...</div>
-    <div v-else-if="permintaanStore.error" class="mt-4 p-4 bg-red-100 text-red-700">
+    <!-- Loading -->
+    <div
+      v-if="permintaanStore.isLoading"
+      class="flex items-center justify-center py-16 text-sm text-gray-400"
+    >
+      <span
+        class="w-5 h-5 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin mr-3"
+      />
+      Memuat data...
+    </div>
+
+    <!-- Error -->
+    <div
+      v-else-if="permintaanStore.error"
+      class="flex items-center gap-2 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm"
+    >
+      <AlertCircle :size="16" />
       {{ permintaanStore.error }}
     </div>
-    <div v-else class="mt-4">
-      <table class="w-full border">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="p-2 border text-left">Pasien</th>
-            <th class="p-2 border text-left">Tipe Darah</th>
-            <th class="p-2 border text-left">Status</th>
-            <th class="p-2 border text-left">Tanggal</th>
+
+    <!-- Table -->
+    <div v-else class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-100">
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Pasien
+            </th>
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Golongan Darah
+            </th>
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Status
+            </th>
+            <th
+              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+            >
+              Tanggal
+            </th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="req in permintaanStore.requests" :key="req.permintaanDarahId">
-            <td class="p-2 border">{{ req.namaPasien }}</td>
-            <td class="p-2 border">{{ req.golonganDarah }} {{ req.rhesusDarah }}</td>
-            <td class="p-2 border">{{ req.status }}</td>
-            <td class="p-2 border">
-              {{
-                new Date(req.createdAt).toLocaleDateString('id-ID', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })
-              }}
+        <tbody class="divide-y divide-gray-50">
+          <tr
+            v-for="req in permintaanStore.requests"
+            :key="req.permintaanDarahId"
+            class="hover:bg-gray-50 transition-colors"
+          >
+            <td class="px-5 py-4 font-medium text-gray-800">{{ req.namaPasien }}</td>
+            <td class="px-5 py-4">
+              <span
+                class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-lg"
+              >
+                {{ req.golonganDarah }} {{ req.rhesusDarah }}
+              </span>
             </td>
+            <td class="px-5 py-4">
+              <span
+                class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-lg capitalize"
+                :class="statusStyle[req.status] ?? 'bg-gray-50 text-gray-500'"
+              >
+                {{ req.status }}
+              </span>
+            </td>
+            <td class="px-5 py-4 text-gray-500">{{ formatDate(req.createdAt) }}</td>
           </tr>
         </tbody>
       </table>
+
+      <div
+        v-if="permintaanStore.requests.length === 0"
+        class="flex flex-col items-center justify-center py-16 text-gray-300"
+      >
+        <Droplets :size="40" class="mb-3" />
+        <p class="text-sm">Belum ada permintaan darah</p>
+      </div>
     </div>
   </div>
 </template>

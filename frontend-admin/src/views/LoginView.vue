@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { LogIn, AlertCircle } from '@lucide/vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -13,7 +14,7 @@ const isLoading = ref(false)
 
 const handleLogin = async () => {
   if (!username.value || !password.value) {
-    errorMsg.value = 'username dan password harus diisi'
+    errorMsg.value = 'Username dan password harus diisi'
     return
   }
 
@@ -33,43 +34,80 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="max-h-screen flex items-center justify-center bg-gray-50">
-    <div class="max-w-md w-full space-y-8">
-      <h1 class="text-center text-3xl font-bold">Admin Dashboard</h1>
-
-      <form @submit.prevent="handleLogin" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium">Username</label>
-          <input
-            v-model="username"
-            type="text"
-            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
-            placeholder="Masukkan username"
-          />
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div class="w-full max-w-sm">
+      <!-- Brand -->
+      <div class="flex flex-col items-center mb-8">
+        <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4">
+          <span class="text-red-600 font-bold text-sm">PMI</span>
         </div>
+        <h1 class="text-xl font-bold text-gray-900">
+          PMI <span class="text-red-500">Salatiga</span>
+        </h1>
+        <p class="text-sm text-gray-500 mt-1 font-bold">Portal Admin</p>
+      </div>
 
-        <div>
-          <label class="block text-sm font-medium">Password</label>
-          <input
-            v-model="password"
-            type="password"
-            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
-            placeholder="••••••••"
-          />
-        </div>
+      <!-- Card -->
+      <div class="bg-white rounded-2xl border border-gray-200 shadow-md p-8">
+        <h2 class="text-base font-semibold text-gray-800 mb-6">Masuk ke akun Anda</h2>
 
-        <div v-if="errorMsg" class="p-3 bg-red-100 text-red-700 rounded">
-          {{ errorMsg }}
-        </div>
+        <form @submit.prevent="handleLogin" class="space-y-4">
+          <!-- Username -->
+          <div>
+            <label class="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
+              Username
+            </label>
+            <input
+              v-model="username"
+              type="text"
+              autocomplete="username"
+              placeholder="Masukkan username"
+              class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
+            />
+          </div>
 
-        <button
-          type="submit"
-          :disabled="isLoading"
-          class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
-        >
-          {{ isLoading ? 'Loading...' : 'Login' }}
-        </button>
-      </form>
+          <!-- Password -->
+          <div>
+            <label class="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
+              Password
+            </label>
+            <input
+              v-model="password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="••••••••"
+              class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
+            />
+          </div>
+
+          <!-- Error -->
+          <div
+            v-if="errorMsg"
+            class="flex items-center gap-2 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs"
+          >
+            <AlertCircle :size="14" class="shrink-0" />
+            {{ errorMsg }}
+          </div>
+
+          <!-- Submit -->
+          <button
+            type="submit"
+            :disabled="isLoading"
+            class="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-xl transition-colors duration-200 mt-2"
+          >
+            <span
+              v-if="isLoading"
+              class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+            />
+            <LogIn v-else :size="16" />
+            {{ isLoading ? 'Memproses...' : 'Masuk' }}
+          </button>
+        </form>
+      </div>
+
+      <p class="text-center text-xs text-gray-300 mt-6">
+        PMI Salatiga {{ new Date().getFullYear() }}
+      </p>
     </div>
   </div>
 </template>
