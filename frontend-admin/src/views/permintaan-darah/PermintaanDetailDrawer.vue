@@ -1,6 +1,284 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { usePermintaanStore } from '@/stores/permintaan'
+import { X } from '@lucide/vue'
+
+const props = defineProps<{
+  isOpen: boolean
+}>()
+
+const emit = defineEmits<{
+  close: []
+}>()
+
+const permintaanStore = usePermintaanStore()
+
+const subtitle = computed(() => permintaanStore.selectedRequest?.namaPasien)
+
+const statusStyle: Record<string, string> = {
+  dibuat: 'bg-amber-50 text-amber-600',
+  diproses: 'bg-blue-50 text-blue-600',
+  bisa_diambil: 'bg-violet-50 text-violet-600',
+  selesai: 'bg-green-50 text-green-600',
+  dibatalkan: 'bg-red-50 text-red-600',
+}
+</script>
+
 <template>
-  <div class="p-6">
-    <h1 class="text-3xl font-bold">Detail Permintaan</h1>
-    <p class="text-gray-600 mt-2">Coming soon...</p>
-  </div>
+  <Teleport to="body">
+    <Transition name="backdrop">
+      <div
+        v-if="isOpen"
+        class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+        @click="$emit('close')"
+      />
+    </Transition>
+
+    <Transition name="drawer">
+      <div
+        v-if="isOpen"
+        class="fixed top-0 right-0 h-full bg-white shadow-2xl z-50 flex flex-col w-full lg:w-4/5 lg:rounded-tl-3xl lg:rounded-bl-3xl"
+      >
+        <!-- Header -->
+        <div class="flex items-center justify-between px-10 py-8 border-b border-gray-200">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900">Detail Permintaan Darah</h2>
+            <p class="text-sm text-gray-400 mt-0.5">{{ subtitle }}</p>
+          </div>
+          <button
+            @click="$emit('close')"
+            class="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"
+          >
+            <X :size="20" />
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div v-if="permintaanStore.selectedRequest" class="flex-1 overflow-y-auto px-10 py-8">
+          <div class="space-y-6 max-w-full">
+            <div class="space-y-4">
+              <!-- Nama Pasien -->
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  Nama Pasien
+                </label>
+                <p class="text-base text-gray-900 font-medium">
+                  {{ permintaanStore.selectedRequest.namaPasien }}
+                </p>
+              </div>
+
+              <!-- No. RM & Tempat Lahir -->
+              <div class="grid grid-cols-2 gap-6">
+                <div>
+                  <label
+                    class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
+                  >
+                    No. Rekam Medis
+                  </label>
+                  <p class="text-base text-gray-900 font-medium">
+                    {{ permintaanStore.selectedRequest.noRM || '-' }}
+                  </p>
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
+                  >
+                    Tempat Lahir
+                  </label>
+                  <p class="text-base text-gray-900 font-medium">
+                    {{ permintaanStore.selectedRequest.tempatLahir }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Jenis Kelamin & Tanggal Lahir -->
+              <div class="grid grid-cols-2 gap-6">
+                <div>
+                  <label
+                    class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
+                  >
+                    Jenis Kelamin
+                  </label>
+                  <p class="text-base text-gray-900 font-medium">
+                    {{
+                      permintaanStore.selectedRequest.jenisKelamin === 'L'
+                        ? 'Laki-laki'
+                        : 'Perempuan'
+                    }}
+                  </p>
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
+                  >
+                    Tanggal Lahir
+                  </label>
+                  <p class="text-base text-gray-900 font-medium">
+                    {{
+                      new Date(permintaanStore.selectedRequest.tanggalLahir).toLocaleDateString(
+                        'id-ID',
+                      )
+                    }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Golongan Darah & Rhesus -->
+              <div class="grid grid-cols-2 gap-6">
+                <div>
+                  <label
+                    class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
+                  >
+                    Golongan Darah
+                  </label>
+                  <span
+                    class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-lg"
+                  >
+                    {{ permintaanStore.selectedRequest.golonganDarah }}
+                    {{ permintaanStore.selectedRequest.rhesusDarah }}
+                  </span>
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
+                  >
+                    Hemoglobin
+                  </label>
+                  <p class="text-base text-gray-900 font-medium">
+                    {{ permintaanStore.selectedRequest.hemoglobin }} g/dL
+                  </p>
+                </div>
+              </div>
+
+              <!-- Ruang/Bagian/Kelas -->
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  Ruang/Bagian/Kelas
+                </label>
+                <p class="text-base text-gray-900 font-medium">
+                  {{ permintaanStore.selectedRequest.ruangBagianKelas || '-' }}
+                </p>
+              </div>
+
+              <!-- Pernah Transfusi -->
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  Riwayat Transfusi
+                </label>
+                <p class="text-base text-gray-900 font-medium">
+                  {{ permintaanStore.selectedRequest.pernahTransfusi ? 'Pernah' : 'Tidak Pernah' }}
+                </p>
+              </div>
+
+              <!-- Indikasi Transfusi -->
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  Indikasi Transfusi
+                </label>
+                <p class="text-base text-gray-900 font-medium">
+                  {{ permintaanStore.selectedRequest.indikasiTransfusi || '-' }}
+                </p>
+              </div>
+
+              <hr class="my-4 border-gray-100" />
+
+              <!-- Status -->
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  Status
+                </label>
+                <span
+                  class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium capitalize"
+                  :class="
+                    statusStyle[permintaanStore.selectedRequest.status] ??
+                    'bg-gray-50 text-gray-600'
+                  "
+                >
+                  {{ permintaanStore.selectedRequest.status }}
+                </span>
+              </div>
+
+              <!-- Tanggal -->
+              <div class="grid grid-cols-2 gap-6">
+                <div>
+                  <label
+                    class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
+                  >
+                    Dibuat
+                  </label>
+                  <p class="text-sm text-gray-600">
+                    {{
+                      new Date(permintaanStore.selectedRequest.createdAt).toLocaleDateString(
+                        'id-ID',
+                        {
+                          weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        },
+                      )
+                    }}
+                  </p>
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
+                  >
+                    Diperbarui
+                  </label>
+                  <p class="text-sm text-gray-600">
+                    {{
+                      new Date(permintaanStore.selectedRequest.updatedAt).toLocaleDateString(
+                        'id-ID',
+                        {
+                          weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        },
+                      )
+                    }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Close Button -->
+            <div class="flex gap-3 pt-4">
+              <button
+                @click="$emit('close')"
+                class="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-xl transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
+
+<style scoped>
+.backdrop-enter-active,
+.backdrop-leave-active {
+  transition: opacity 0.3s ease;
+}
+.backdrop-enter-from,
+.backdrop-leave-to {
+  opacity: 0;
+}
+
+.drawer-enter-active,
+.drawer-leave-active {
+  transition: transform 0.3s ease;
+}
+.drawer-enter-from,
+.drawer-leave-to {
+  transform: translateX(100%);
+}
+</style>
