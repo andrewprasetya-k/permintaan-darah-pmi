@@ -57,10 +57,24 @@ func (ctl *PermintaanDarahController) GetByID(c *gin.Context) {
 
 func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 	status := c.Query("status")
+	search := c.Query("search")
 	rsID := c.Query("rsID")
 	golDarah := c.Query("golDarah")
 	startDateStr := c.Query("startDate")
 	endDateStr := c.Query("endDate")
+
+	if status == "undefined" || status == "null" {
+		status = ""
+	}
+	if search == "undefined" || search == "null" {
+		search = ""
+	}
+	if rsID == "undefined" || rsID == "null" {
+		rsID = ""
+	}
+	if golDarah == "undefined" || golDarah == "null" {
+		golDarah = ""
+	}
 
 	var startDate, endDate *time.Time
 	if startDateStr != "" {
@@ -76,6 +90,7 @@ func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 
 	filters := &dto.PermintaanDarahFilters{
 		Status:    &status,
+		Search:    &search,
 		RsID:      &rsID,
 		GolDarah:  &golDarah,
 		StartDate: startDate,

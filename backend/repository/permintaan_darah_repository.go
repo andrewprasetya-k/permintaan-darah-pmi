@@ -3,6 +3,7 @@ package repository
 import (
 	"backend/dto"
 	"backend/models"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -117,6 +118,17 @@ func (r *permintaanDarahRepository) applyFilters(query *gorm.DB, filters *dto.Pe
 
 	if filters.Status != nil && *filters.Status != "" {
 		query = query.Where("pd_status = ?", *filters.Status)
+	}
+	if filters.Search != nil && strings.TrimSpace(*filters.Search) != "" {
+		search := "%" + strings.TrimSpace(*filters.Search) + "%"
+		query = query.Where(`
+			pd_id ILIKE ? OR
+			pd_nama_pasien ILIKE ? OR
+			COALESCE(pd_no_rm, '') ILIKE ? OR
+			COALESCE(pd_gol_darah::text, '') ILIKE ? OR
+			COALESCE(pd_rhesus::text, '') ILIKE ? OR
+			(CONCAT(COALESCE(pd_gol_darah::text, ''), COALESCE(pd_rhesus::text, ''))) ILIKE ?
+		`, search, search, search, search, search, search)
 	}
 	if filters.RsID != nil && *filters.RsID != "" {
 		query = query.Where("pd_rs_id = ?", *filters.RsID)

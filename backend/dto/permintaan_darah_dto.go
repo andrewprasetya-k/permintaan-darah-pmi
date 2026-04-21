@@ -106,6 +106,7 @@ type PermintaanDarahResponse struct {
 
 type PermintaanDarahFilters struct {
 	Status    *string
+	Search    *string
 	RsID      *string
 	Gender    *string
 	GolDarah  *string

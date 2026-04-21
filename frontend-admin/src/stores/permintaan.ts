@@ -5,20 +5,29 @@ import {
   type CreatePermintaanRequest,
   type UpdatePermintaanRequest,
 } from '@/api/permintaan'
-import type { PermintaanDarah } from '@/types/models'
+import type { PaginationMeta, PermintaanDarah } from '@/types/models'
+
+interface FetchPermintaanParams {
+  search?: string
+  status?: string
+  limit?: number
+  offset?: number
+}
 
 export const usePermintaanStore = defineStore('permintaan', () => {
   const requests = ref<PermintaanDarah[]>([])
   const selectedRequest = ref<PermintaanDarah | null>(null)
+  const pagination = ref<PaginationMeta | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
-  const fetchAll = async (params?: Record<string, any>) => {
+  const fetchAll = async (params?: FetchPermintaanParams) => {
     isLoading.value = true
     error.value = null
     try {
       const response = await permintaanAPI.getAll(params)
       requests.value = response.data
+      pagination.value = response.pagination ?? null
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch requests'
     } finally {
@@ -107,6 +116,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
   return {
     requests,
     selectedRequest,
+    pagination,
     isLoading,
     error,
     fetchAll,
