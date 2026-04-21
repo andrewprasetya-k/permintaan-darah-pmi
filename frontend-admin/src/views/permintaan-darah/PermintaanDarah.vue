@@ -96,86 +96,89 @@ const handleSubmit = () => {
     </div>
 
     <!-- Table -->
-    <div v-else class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden">
+    <div
+      v-else
+      class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden"
+    >
       <div class="min-h-0 flex-1 overflow-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-gray-100">
-            <th
-              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Pasien
-            </th>
-            <th
-              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Golongan Darah
-            </th>
-            <th
-              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Status
-            </th>
-            <th
-              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Tanggal Masuk
-            </th>
-            <th
-              class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Aksi
-            </th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-50">
-          <tr
-            v-for="req in permintaanStore.requests"
-            :key="req.permintaanDarahId"
-            class="hover:bg-gray-50 transition-colors"
-          >
-            <td class="px-5 py-4 font-medium text-gray-800">{{ req.namaPasien }}</td>
-            <td class="px-5 py-4">
-              <span
-                class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-lg"
+        <table class="w-full text-sm">
+          <thead class="sticky top-0 z-10 bg-white shadow-sm">
+            <tr class="border-b border-gray-100">
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
               >
-                {{ req.golonganDarah }} {{ req.rhesusDarah }}
-              </span>
-            </td>
-            <td class="px-5 py-4">
-              <span
-                class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-lg capitalize"
-                :class="statusStyle[req.status] ?? 'bg-gray-50 text-gray-500'"
+                Pasien
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
               >
-                {{ req.status }}
-              </span>
-            </td>
-            <td class="px-5 py-4 text-gray-500">{{ formatDate(req.createdAt) }}</td>
-            <td class="px-5 py-4">
-              <div class="flex items-center justify-center gap-2">
-                <button
-                  @click="openDetailDrawer(req)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
+                Golongan Darah
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Status
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Tanggal Masuk
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Aksi
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50">
+            <tr
+              v-for="req in permintaanStore.requests"
+              :key="req.permintaanDarahId"
+              class="hover:bg-gray-50 transition-colors"
+            >
+              <td class="px-5 py-4 font-medium text-gray-800">{{ req.namaPasien }}</td>
+              <td class="px-5 py-4">
+                <span
+                  class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-lg"
                 >
-                  Detail
-                </button>
-                <button
-                  @click="openEditDrawer(req)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
+                  {{ req.golonganDarah }} {{ req.rhesusDarah }}
+                </span>
+              </td>
+              <td class="px-5 py-4">
+                <span
+                  class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-lg capitalize"
+                  :class="statusStyle[req.status] ?? 'bg-gray-50 text-gray-500'"
                 >
-                  Edit
-                </button>
-                <button
-                  @click="deleteRequest(req.permintaanDarahId)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
-                >
-                  Hapus
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                  {{ req.status }}
+                </span>
+              </td>
+              <td class="px-5 py-4 text-gray-500">{{ formatDate(req.createdAt) }}</td>
+              <td class="px-5 py-4">
+                <div class="flex items-center justify-center gap-2">
+                  <button
+                    @click="openDetailDrawer(req)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    Detail
+                  </button>
+                  <button
+                    @click="openEditDrawer(req)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    @click="deleteRequest(req.permintaanDarahId)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    Hapus
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div

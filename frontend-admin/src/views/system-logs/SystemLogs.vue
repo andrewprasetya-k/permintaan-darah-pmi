@@ -52,14 +52,14 @@ onMounted(async () => {
     >
       <div class="min-h-0 flex-1 overflow-auto">
         <table class="w-full text-sm">
-          <thead class="bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500">
+          <thead class="sticky top-0 z-10 bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500 shadow-sm">
             <tr>
-              <th class="px-4 py-3">Waktu</th>
-              <th class="px-4 py-3">User</th>
-              <th class="px-4 py-3">Role</th>
-              <th class="px-4 py-3">Action</th>
-              <th class="px-4 py-3">Target</th>
-              <th class="px-4 py-3">Catatan</th>
+              <th class="bg-gray-50 px-4 py-3">Waktu</th>
+              <th class="bg-gray-50 px-4 py-3">User</th>
+              <th class="bg-gray-50 px-4 py-3">Role</th>
+              <th class="bg-gray-50 px-4 py-3">Action</th>
+              <th class="bg-gray-50 px-4 py-3">Target</th>
+              <th class="bg-gray-50 px-4 py-3">Catatan</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">

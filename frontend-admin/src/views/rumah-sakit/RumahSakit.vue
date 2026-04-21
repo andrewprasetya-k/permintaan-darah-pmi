@@ -88,30 +88,30 @@ const handleSubmit = () => {
     <div class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden">
       <div class="min-h-0 flex-1 overflow-auto">
       <table class="w-full text-sm">
-        <thead>
+        <thead class="sticky top-0 z-10 bg-white shadow-sm">
           <tr class="border-b border-gray-100">
             <th
-              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
             >
               Nama
             </th>
             <th
-              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
             >
               Telepon
             </th>
             <th
-              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
             >
               Email
             </th>
             <th
-              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
             >
               Username
             </th>
             <th
-              class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              class="bg-white px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
             >
               Aksi
             </th>

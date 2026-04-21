@@ -70,9 +70,11 @@ const formatDate = (date: string) =>
     <div
       class="flex min-h-0 flex-1 flex-col rounded-lg bg-white p-6 shadow-sm"
     >
-      <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin-bottom: 1rem">
-        Aktivitas Terbaru
-      </h2>
+      <div class="sticky top-0 z-10 -mx-6 mb-4 border-b border-gray-100 bg-white px-6 pb-4">
+        <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827">
+          Aktivitas Terbaru
+        </h2>
+      </div>
       <p v-if="logsStore.isLoading" style="color: #6b7280; text-align: center; padding: 2rem">
         Memuat ringkasan dashboard...
       </p>

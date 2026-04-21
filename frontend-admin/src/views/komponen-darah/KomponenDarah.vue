@@ -85,74 +85,77 @@ const handleSubmit = () => {
     </div>
 
     <!-- Table -->
-    <div v-else class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden">
+    <div
+      v-else
+      class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden"
+    >
       <div class="min-h-0 flex-1 overflow-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-gray-100">
-            <th
-              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Nama Komponen
-            </th>
-            <th
-              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Kode
-            </th>
-            <th
-              class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Status
-            </th>
-            <th
-              class="px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Aksi
-            </th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-50">
-          <tr
-            v-for="kom in komponenStore.komponens"
-            :key="kom.komponenId"
-            class="hover:bg-gray-50 transition-colors"
-          >
-            <td class="px-5 py-4 font-medium text-gray-800">{{ kom.komponenDarah }}</td>
-            <td class="px-5 py-4 text-gray-500">{{ kom.komponenKode }}</td>
-            <td class="px-5 py-4">
-              <span
-                class="inline-flex px-2.5 py-1 rounded-lg text-xs font-medium"
-                :class="kom.isActive ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600'"
+        <table class="w-full text-sm">
+          <thead class="sticky top-0 z-10 bg-white shadow-sm">
+            <tr class="border-b border-gray-100">
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
               >
-                {{ kom.isActive ? 'Aktif' : 'Nonaktif' }}
-              </span>
-            </td>
-            <td class="px-5 py-4">
-              <div class="flex items-center justify-center gap-2">
-                <button
-                  @click="openDetailDrawer(kom)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
+                Nama Komponen
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Kode
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Status
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Aksi
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50">
+            <tr
+              v-for="kom in komponenStore.komponens"
+              :key="kom.komponenId"
+              class="hover:bg-gray-50 transition-colors"
+            >
+              <td class="px-5 py-4 font-medium text-gray-800">{{ kom.komponenDarah }}</td>
+              <td class="px-5 py-4 text-gray-500">{{ kom.komponenKode }}</td>
+              <td class="px-5 py-4">
+                <span
+                  class="inline-flex px-2.5 py-1 rounded-lg text-xs font-medium"
+                  :class="kom.isActive ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600'"
                 >
-                  Detail
-                </button>
-                <button
-                  @click="openEditDrawer(kom)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
-                >
-                  Edit
-                </button>
-                <button
-                  @click="deleteKomponen(kom.komponenId)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
-                >
-                  Hapus
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                  {{ kom.isActive ? 'Aktif' : 'Nonaktif' }}
+                </span>
+              </td>
+              <td class="px-5 py-4">
+                <div class="flex items-center justify-center gap-2">
+                  <button
+                    @click="openDetailDrawer(kom)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    Detail
+                  </button>
+                  <button
+                    @click="openEditDrawer(kom)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    @click="deleteKomponen(kom.komponenId)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    Hapus
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div
