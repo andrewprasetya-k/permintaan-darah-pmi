@@ -79,7 +79,7 @@ const router = createRouter({
     {
       path: '/logs',
       name: 'logs-list',
-      component: () => import('../views/logs/SystemLogs.vue'),
+      component: () => import('../views/system-logs/SystemLogs.vue'),
       meta: {
         requiresAuth: true,
         roles: ['admin', 'superadmin'],
