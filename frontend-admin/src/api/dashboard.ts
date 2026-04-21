@@ -11,8 +11,6 @@ export interface StatusSummary {
 
 export const dashboardAPI = {
   getStatusSummary(rumahSakitID: string) {
-    return apiClient.get<StatusSummary>(
-      `/dashboard/status-summary/${rumahSakitID}`,
-    )
+    return apiClient.get<StatusSummary>(`/dashboard/status-summary/${rumahSakitID}`)
   },
 }
