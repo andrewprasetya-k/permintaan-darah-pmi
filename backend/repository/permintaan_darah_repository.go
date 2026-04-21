@@ -13,7 +13,7 @@ type PermintaanDarahRepository interface {
 	GetByID(pdID string) (*models.PermintaanDarah, error)
 	GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]models.PermintaanDarah, error)
 	GetByRsID(rsID string, limit, offset int) ([]models.PermintaanDarah, int64, error)
-	Count() (int64, error)
+	Count(filters *dto.PermintaanDarahFilters) (int64, error)
 	Update(data *models.PermintaanDarah) error
 	Delete(data *models.PermintaanDarah) error
 	SoftDelete(pdID string) error
@@ -52,27 +52,7 @@ func (r *permintaanDarahRepository) GetAll(filters *dto.PermintaanDarahFilters, 
 		offset = 0
 	}
 
-	query := r.db.Where("is_deleted = ?", false)
-	if filters != nil {
-		if filters.Status != nil && *filters.Status != "" {
-			query = query.Where("pd_status = ?", *filters.Status)
-		}
-		if filters.RsID != nil && *filters.RsID != "" {
-			query = query.Where("pd_rs_id = ?", *filters.RsID)
-		}
-		if filters.Gender != nil && *filters.Gender != "" {
-			query = query.Where("pd_gender = ?", *filters.Gender)
-		}
-		if filters.GolDarah != nil && *filters.GolDarah != "" {
-			query = query.Where("pd_gol_darah = ?", *filters.GolDarah)
-		}
-		if filters.StartDate != nil && filters.EndDate != nil {
-			query = query.Where("DATE(pd_tgl_permintaan) >= ?", filters.StartDate.Format("2006-01-02"))
-		}
-		if filters.EndDate != nil && filters.StartDate != nil {
-			query = query.Where("DATE(pd_tgl_permintaan) <= ?", filters.EndDate.Format("2006-01-02"))
-		}
-	}
+	query := r.applyFilters(r.db.Where("is_deleted = ?", false), filters)
 
 	var list []models.PermintaanDarah
 	err := query.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
@@ -123,8 +103,36 @@ func (r *permintaanDarahRepository) Restore(pdID string) error {
 	}).Error
 }
 
-func (r *permintaanDarahRepository) Count() (int64, error) {
-var count int64
-err := r.db.Model(&models.PermintaanDarah{}).Where("is_deleted = ?", false).Count(&count).Error
-return count, err
+func (r *permintaanDarahRepository) Count(filters *dto.PermintaanDarahFilters) (int64, error) {
+	var count int64
+	err := r.applyFilters(r.db.Model(&models.PermintaanDarah{}).Where("is_deleted = ?", false), filters).
+		Count(&count).Error
+	return count, err
+}
+
+func (r *permintaanDarahRepository) applyFilters(query *gorm.DB, filters *dto.PermintaanDarahFilters) *gorm.DB {
+	if filters == nil {
+		return query
+	}
+
+	if filters.Status != nil && *filters.Status != "" {
+		query = query.Where("pd_status = ?", *filters.Status)
+	}
+	if filters.RsID != nil && *filters.RsID != "" {
+		query = query.Where("pd_rs_id = ?", *filters.RsID)
+	}
+	if filters.Gender != nil && *filters.Gender != "" {
+		query = query.Where("pd_gender = ?", *filters.Gender)
+	}
+	if filters.GolDarah != nil && *filters.GolDarah != "" {
+		query = query.Where("pd_gol_darah = ?", *filters.GolDarah)
+	}
+	if filters.StartDate != nil {
+		query = query.Where("DATE(pd_tgl_permintaan) >= ?", filters.StartDate.Format("2006-01-02"))
+	}
+	if filters.EndDate != nil {
+		query = query.Where("DATE(pd_tgl_permintaan) <= ?", filters.EndDate.Format("2006-01-02"))
+	}
+
+	return query
 }

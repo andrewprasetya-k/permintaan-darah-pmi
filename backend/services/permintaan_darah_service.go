@@ -60,7 +60,7 @@ func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest, us
 	}
 	if err := s.repo.Create(&data); err != nil {
 		return nil, err
-		
+
 	}
 
 	// ✅ Auto-log: Create
@@ -98,7 +98,7 @@ func (s *permintaanDarahService) GetAll(filters *dto.PermintaanDarahFilters, lim
 	if err != nil {
 		return nil, 0, err
 	}
-	total, err := s.repo.Count()
+	total, err := s.repo.Count(filters)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -359,19 +359,19 @@ func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.Perm
 
 func mapPermintaanToGetAllResponse(data models.PermintaanDarah) dto.PermintaanDarahGetAllResponse {
 	return dto.PermintaanDarahGetAllResponse{
-	PDID:	   data.PDID,
+		PDID: data.PDID,
 
-	// Data Pasien
-	PDNamaPasien: data.PDNamaPasien,
-	PDGender:	 data.PDGender,
-	PDGolDarah:   data.PDGolDarah,
-	PDRhesus:	 data.PDRhesus,
+		// Data Pasien
+		PDNamaPasien: data.PDNamaPasien,
+		PDGender:     data.PDGender,
+		PDGolDarah:   data.PDGolDarah,
+		PDRhesus:     data.PDRhesus,
 
-	// Status
-	PDStatus: data.PDStatus,
-	CreatedAt: data.CreatedAt,     
-	UpdatedAt: data.UpdatedAt,
-	DeletedAt: data.DeletedAt,
+		// Status
+		PDStatus:  data.PDStatus,
+		CreatedAt: data.CreatedAt,
+		UpdatedAt: data.UpdatedAt,
+		DeletedAt: data.DeletedAt,
 	}
 }
 
