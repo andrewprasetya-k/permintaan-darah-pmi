@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { logsAPI } from '@/api/logs'
-import type { SystemAccessLog, WebSocketMessage } from '@/types/models'
+import type { PaginationMeta, SystemAccessLog, WebSocketMessage } from '@/types/models'
 
 const MAX_RECENT_ACTIVITIES = 10
 
@@ -18,6 +18,7 @@ export const useLogsStore = defineStore('logs', () => {
   const isLoading = ref(false)
   const isRealtimeConnected = ref(false)
   const error = ref<string | null>(null)
+  const pagination = ref<PaginationMeta | null>(null)
 
   let socket: WebSocket | null = null
 
@@ -29,6 +30,7 @@ export const useLogsStore = defineStore('logs', () => {
     try {
       const response = await logsAPI.getSystemLogs(params)
       systemLogs.value = response.data
+      pagination.value = response.pagination ?? null
       if (!params || Number(params.offset ?? 0) === 0) {
         recentActivities.value = response.data.slice(0, MAX_RECENT_ACTIVITIES)
       }
@@ -97,6 +99,7 @@ export const useLogsStore = defineStore('logs', () => {
     isLoading,
     isRealtimeConnected,
     error,
+    pagination,
     fetchSystemLogs,
     connectRealtime,
     disconnectRealtime,
