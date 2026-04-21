@@ -15,6 +15,15 @@ type Pagination struct {
 	Offset int `json:"offset"`
 }
 
+type StatusSummaryResponse struct {
+	Dibuat      int `json:"dibuat"`
+	Diproses    int `json:"diproses"`
+	BisaDiambil int `json:"bisaDiambil"`
+	Selesai     int `json:"selesai"`
+	Dibatalkan  int `json:"dibatalkan"`
+	Total       int `json:"total"`
+}
+
 func SuccessResponse(message string, data interface{}) ApiResponse {
 	return ApiResponse{
 		Success: true,
