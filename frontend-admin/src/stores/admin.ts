@@ -3,9 +3,12 @@ import { ref } from 'vue'
 import { adminAPI, type CreateAdminRequest, type UpdateAdminRequest } from '@/api/admin'
 import type { Admin } from '@/types/models'
 
+export type AdminFilterStatus = 'active' | 'deleted' | 'all'
+
 export const useAdminStore = defineStore('admin', () => {
   const admins = ref<Admin[]>([])
   const selectedAdmin = ref<Admin | null>(null)
+  const currentFilter = ref<AdminFilterStatus>('active')
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -13,7 +16,9 @@ export const useAdminStore = defineStore('admin', () => {
     isLoading.value = true
     error.value = null
     try {
-      const response = await adminAPI.getAll(params)
+      const nextFilter = (params?.status as AdminFilterStatus | undefined) ?? currentFilter.value
+      currentFilter.value = nextFilter
+      const response = await adminAPI.getAll({ ...params, status: nextFilter })
       admins.value = response.data
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch admins'
@@ -73,7 +78,7 @@ export const useAdminStore = defineStore('admin', () => {
     error.value = null
     try {
       await adminAPI.delete(id)
-      admins.value = admins.value.filter((a) => a.adminId !== id)
+      await fetchAll({ status: currentFilter.value })
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to delete admin'
       throw err
@@ -87,7 +92,7 @@ export const useAdminStore = defineStore('admin', () => {
     error.value = null
     try {
       const response = await adminAPI.restore(id)
-      admins.value.push(response.data)
+      await fetchAll({ status: currentFilter.value })
       return response.data
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to restore admin'
@@ -100,6 +105,7 @@ export const useAdminStore = defineStore('admin', () => {
   return {
     admins,
     selectedAdmin,
+    currentFilter,
     isLoading,
     error,
     fetchAll,

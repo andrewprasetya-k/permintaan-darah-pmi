@@ -28,6 +28,7 @@ export interface Admin {
   adminName: string
   adminEmail: string
   adminRole: 'superadmin' | 'admin'
+  isDeleted: boolean
   createdAt: string
   updatedAt: string
   deletedAt?: string

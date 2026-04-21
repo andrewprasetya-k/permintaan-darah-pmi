@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useAdminStore } from '@/stores/admin'
-import { Plus, Pencil, Trash2, Eye, AlertCircle, Users, Shield } from '@lucide/vue'
+import { Plus, Pencil, Eye, AlertCircle, Users, Shield, RotateCcw } from '@lucide/vue'
 import AdminCreateDrawer from './AdminCreateDrawer.vue'
 import AdminEditDrawer from './AdminEditDrawer.vue'
 import AdminDetailDrawer from './AdminDetailDrawer.vue'
@@ -12,6 +12,11 @@ const showEditDrawer = ref(false)
 const showDetailDrawer = ref(false)
 
 onMounted(async () => await adminStore.fetchAll())
+
+const handleFilterChange = async (event: Event) => {
+  const target = event.target as HTMLSelectElement
+  await adminStore.fetchAll({ status: target.value })
+}
 
 const openCreateDrawer = () => {
   showCreateDrawer.value = true
@@ -33,8 +38,14 @@ const deleteAdmin = async (id: string) => {
   }
 }
 
+const restoreAdmin = async (id: string) => {
+  if (confirm('Yakin ingin memulihkan admin ini?')) {
+    await adminStore.restore(id)
+  }
+}
+
 const handleSubmit = () => {
-  adminStore.fetchAll()
+  adminStore.fetchAll({ status: adminStore.currentFilter })
 }
 </script>
 
@@ -42,13 +53,24 @@ const handleSubmit = () => {
   <div class="flex h-full min-h-0 flex-col">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-      <button
-        @click="openCreateDrawer"
-        class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors"
-      >
-        <Plus :size="16" />
-        Tambah Admin
-      </button>
+      <div class="flex items-center gap-3">
+        <button
+          @click="openCreateDrawer"
+          class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors"
+        >
+          <Plus :size="16" />
+          Tambah Admin
+        </button>
+        <select
+          :value="adminStore.currentFilter"
+          @change="handleFilterChange"
+          class="rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+        >
+          <option value="active">Aktif</option>
+          <option value="deleted">Dihapus</option>
+          <option value="all">Semua</option>
+        </select>
+      </div>
     </div>
 
     <!-- Drawers -->
@@ -114,6 +136,11 @@ const handleSubmit = () => {
                 Role
               </th>
               <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Status
+              </th>
+              <th
                 class="bg-white px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
               >
                 Aksi
@@ -143,6 +170,18 @@ const handleSubmit = () => {
                 </span>
               </td>
               <td class="px-5 py-4">
+                <span
+                  class="inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium"
+                  :class="
+                    admin.isDeleted
+                      ? 'bg-red-50 text-red-600'
+                      : 'bg-emerald-50 text-emerald-600'
+                  "
+                >
+                  {{ admin.isDeleted ? 'Dihapus' : 'Aktif' }}
+                </span>
+              </td>
+              <td class="px-5 py-4">
                 <div class="flex items-center justify-center gap-2">
                   <button
                     @click="openDetailDrawer(admin)"
@@ -151,16 +190,26 @@ const handleSubmit = () => {
                     Detail
                   </button>
                   <button
+                    v-if="!admin.isDeleted"
                     @click="openEditDrawer(admin)"
                     class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
                   >
                     Edit
                   </button>
                   <button
+                    v-if="!admin.isDeleted"
                     @click="deleteAdmin(admin.adminId)"
                     class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
                   >
                     Hapus
+                  </button>
+                  <button
+                    v-else
+                    @click="restoreAdmin(admin.adminId)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-emerald-100 text-emerald-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    <RotateCcw :size="14" />
+                    Restore
                   </button>
                 </div>
               </td>
