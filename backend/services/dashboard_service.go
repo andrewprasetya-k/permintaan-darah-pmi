@@ -1,9 +1,12 @@
 package services
 
-import "backend/repository"
+import (
+	"backend/dto"
+	"backend/repository"
+)
 
 type DashboardService interface {
-	StatusSummary(rumahSakitID string) ([]int, error)
+	StatusSummary(rumahSakitID string) (*dto.StatusSummaryResponse, error)
 }
 
 type dashboardService struct {
@@ -14,17 +17,6 @@ func NewDashboardService(repo repository.DashboardRepository) DashboardService {
 	return &dashboardService{repo: repo}
 }
 
-func (s *dashboardService) StatusSummary(rumahSakitID string) ([]int, error) {
-	status := []int{0, 0, 0, 0, 0}
-	sum, err := s.repo.StatusSummary(rumahSakitID)
-	if err != nil {
-		status = []int{0, 0, 0, 0, 0}
-		return status, err
-	}
-	for _, count := range sum {
-		for i := 0; i < len(status); i++ {
-			status[i] += count
-		}
-	}
-	return status, err
+func (s *dashboardService) StatusSummary(rumahSakitID string) (*dto.StatusSummaryResponse, error) {
+	return s.repo.StatusSummary(rumahSakitID)
 }
