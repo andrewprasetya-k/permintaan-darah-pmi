@@ -41,7 +41,7 @@ const formatDate = (date: string) =>
 </script>
 
 <template>
-  <div style="max-width: 1200px; margin: 0 auto">
+  <div class="mx-auto flex h-full min-h-0 max-w-6xl flex-col">
     <!-- Stats Grid -->
     <div
       style="
@@ -68,12 +68,7 @@ const formatDate = (date: string) =>
 
     <!-- Recent Activity -->
     <div
-      style="
-        background-color: white;
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-      "
+      class="flex min-h-0 flex-1 flex-col rounded-lg bg-white p-6 shadow-sm"
     >
       <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin-bottom: 1rem">
         Aktivitas Terbaru
@@ -87,28 +82,30 @@ const formatDate = (date: string) =>
       >
         {{ logsStore.error }}
       </p>
-      <div v-else-if="logsStore.recentActivityItems.length > 0" class="space-y-3">
-        <div
-          v-for="log in logsStore.recentActivityItems"
-          :key="log.sysLogId"
-          class="flex items-start justify-between gap-4 rounded-xl border border-gray-100 px-4 py-3"
-        >
-          <div class="min-w-0">
-            <p style="font-size: 0.875rem; font-weight: 600; color: #111827">
-              {{ log.sysUserNama }}
-              <span style="font-weight: 500; color: #2563eb">{{ log.sysAction }}</span>
-              <span v-if="log.sysTargetTable" style="color: #6b7280">di {{ log.sysTargetTable }}</span>
-            </p>
-            <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.35rem">
-              {{ log.sysNotes }}
-            </p>
-          </div>
-          <div style="text-align: right; white-space: nowrap">
-            <p style="font-size: 0.75rem; color: #9ca3af">{{ formatDate(log.createdAt) }}</p>
-            <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.35rem">{{ log.sysUserRole }}</p>
+      <div v-else-if="logsStore.recentActivityItems.length > 0" class="flex min-h-0 flex-1 flex-col">
+        <div class="min-h-0 flex-1 space-y-3 overflow-auto pr-1">
+          <div
+            v-for="log in logsStore.recentActivityItems"
+            :key="log.sysLogId"
+            class="flex items-start justify-between gap-4 rounded-xl border border-gray-100 px-4 py-3"
+          >
+            <div class="min-w-0">
+              <p style="font-size: 0.875rem; font-weight: 600; color: #111827">
+                {{ log.sysUserNama }}
+                <span style="font-weight: 500; color: #2563eb">{{ log.sysAction }}</span>
+                <span v-if="log.sysTargetTable" style="color: #6b7280">di {{ log.sysTargetTable }}</span>
+              </p>
+              <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.35rem">
+                {{ log.sysNotes }}
+              </p>
+            </div>
+            <div style="text-align: right; white-space: nowrap">
+              <p style="font-size: 0.75rem; color: #9ca3af">{{ formatDate(log.createdAt) }}</p>
+              <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.35rem">{{ log.sysUserRole }}</p>
+            </div>
           </div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.5rem">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem">
           <p style="font-size: 0.75rem; color: #6b7280">
             {{ logsStore.isRealtimeConnected ? 'Realtime aktif' : 'Realtime belum terhubung' }}
           </p>

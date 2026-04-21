@@ -14,11 +14,11 @@ const pageSubtitle = computed(() => (route.meta.subtitle as string) || '')
 </script>
 
 <template>
-  <div class="flex min-h-screen bg-gray-50">
+  <div class="flex h-screen overflow-hidden bg-gray-50">
     <Sidebar />
-    <div class="flex flex-col flex-1 min-h-screen transition-all duration-500">
+    <div class="flex min-h-0 flex-1 flex-col transition-all duration-500">
       <Topbar :title="pageTitle" :subtitle="pageSubtitle" :on-menu-click="() => (isMobileOpen = true)" />
-      <main class="flex-1 p-6 overflow-y-auto">
+      <main class="flex-1 min-h-0 overflow-hidden p-6">
         <slot />
       </main>
     </div>

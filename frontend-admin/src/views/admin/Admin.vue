@@ -39,7 +39,7 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <div>
+  <div class="flex h-full min-h-0 flex-col">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <button
@@ -67,7 +67,7 @@ const handleSubmit = () => {
     <!-- Loading -->
     <div
       v-if="adminStore.isLoading"
-      class="flex items-center justify-center py-16 text-sm text-gray-400"
+      class="flex flex-1 items-center justify-center py-16 text-sm text-gray-400"
     >
       <span
         class="w-5 h-5 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin mr-3"
@@ -85,7 +85,8 @@ const handleSubmit = () => {
     </div>
 
     <!-- Table -->
-    <div v-else class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+    <div v-else class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden">
+      <div class="min-h-0 flex-1 overflow-auto">
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-gray-100">
@@ -163,6 +164,7 @@ const handleSubmit = () => {
           </tr>
         </tbody>
       </table>
+      </div>
 
       <div
         v-if="adminStore.admins.length === 0"

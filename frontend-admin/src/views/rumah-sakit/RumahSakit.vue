@@ -39,7 +39,7 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <div>
+  <div class="flex h-full min-h-0 flex-col">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <button
@@ -85,7 +85,8 @@ const handleSubmit = () => {
     </div>
 
     <!-- Table -->
-    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+    <div class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden">
+      <div class="min-h-0 flex-1 overflow-auto">
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-gray-100">
@@ -151,6 +152,7 @@ const handleSubmit = () => {
           </tr>
         </tbody>
       </table>
+      </div>
 
       <div
         v-if="rumahSakitStore.hospitals.length === 0"
