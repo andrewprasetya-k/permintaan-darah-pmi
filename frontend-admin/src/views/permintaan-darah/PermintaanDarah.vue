@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { usePermintaanStore } from '@/stores/permintaan'
 import {
   Plus,
@@ -27,8 +27,25 @@ const currentPage = ref(1)
 const itemsPerPage = 8
 const deleteTarget = ref<PermintaanDarah | null>(null)
 const deleting = ref(false)
+let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null
 
-onMounted(async () => await permintaanStore.fetchAll())
+const loadRequests = async (page = currentPage.value) => {
+  const offset = (page - 1) * itemsPerPage
+  await permintaanStore.fetchAll({
+    limit: itemsPerPage,
+    offset,
+    status: statusFilter.value === 'all' ? undefined : statusFilter.value,
+    search: searchTerm.value.trim() || undefined,
+  })
+}
+
+onMounted(async () => await loadRequests())
+
+onBeforeUnmount(() => {
+  if (searchDebounceTimer) {
+    clearTimeout(searchDebounceTimer)
+  }
+})
 
 const formatDate = (date: string) =>
   new Date(date).toLocaleDateString('id-ID', {
@@ -57,39 +74,42 @@ const statusMeta: Record<
   dibatalkan: { label: 'Dibatalkan', color: 'bg-red-50 text-red-700', icon: CircleSlash },
 }
 
-const filteredRequests = computed(() => {
-  const keyword = searchTerm.value.trim().toLowerCase()
-
-  return permintaanStore.requests.filter((item) => {
-    const matchesStatus = statusFilter.value === 'all' || item.status === statusFilter.value
-    const matchesSearch =
-      keyword === '' ||
-      item.namaPasien.toLowerCase().includes(keyword) ||
-      item.permintaanDarahId.toLowerCase().includes(keyword) ||
-      formatBloodType(item).toLowerCase().includes(keyword)
-
-    return matchesStatus && matchesSearch
-  })
-})
-
 const totalPages = computed(() =>
-  Math.max(1, Math.ceil(filteredRequests.value.length / itemsPerPage)),
+  Math.max(1, Math.ceil((permintaanStore.pagination?.total ?? 0) / itemsPerPage)),
 )
 
-const paginatedRequests = computed(() => {
-  const startIndex = (currentPage.value - 1) * itemsPerPage
-  return filteredRequests.value.slice(startIndex, startIndex + itemsPerPage)
-})
+const paginatedRequests = computed(() => permintaanStore.requests)
 
 const pageRange = computed(() => {
   const startIndex = (currentPage.value - 1) * itemsPerPage
-  const endIndex = Math.min(startIndex + itemsPerPage, filteredRequests.value.length)
+  const total = permintaanStore.pagination?.total ?? permintaanStore.requests.length
+  const endIndex = Math.min(startIndex + permintaanStore.requests.length, total)
   return { startIndex, endIndex }
 })
 
 const resetPage = () => {
   currentPage.value = 1
 }
+
+const handleSearchInput = () => {
+  resetPage()
+  if (searchDebounceTimer) {
+    clearTimeout(searchDebounceTimer)
+  }
+  searchDebounceTimer = setTimeout(() => {
+    loadRequests(1)
+  }, 300)
+}
+
+const handleStatusChange = async () => {
+  resetPage()
+  await loadRequests(1)
+}
+
+watch(currentPage, async (page, previousPage) => {
+  if (page === previousPage) return
+  await loadRequests(page)
+})
 
 const openCreateDrawer = () => {
   showCreateDrawer.value = true
@@ -121,8 +141,14 @@ const confirmDelete = async () => {
   try {
     await permintaanStore.deleteRequest(deleteTarget.value.permintaanDarahId)
     deleteTarget.value = null
-    if (currentPage.value > totalPages.value) {
-      currentPage.value = totalPages.value
+    const maxPage = Math.max(
+      1,
+      Math.ceil(Math.max((permintaanStore.pagination?.total ?? 1) - 1, 1) / itemsPerPage),
+    )
+    if (currentPage.value > maxPage) {
+      currentPage.value = maxPage
+    } else {
+      await loadRequests(currentPage.value)
     }
   } finally {
     deleting.value = false
@@ -130,8 +156,7 @@ const confirmDelete = async () => {
 }
 
 const handleSubmit = async () => {
-  await permintaanStore.fetchAll()
-  resetPage()
+  await loadRequests(currentPage.value)
 }
 </script>
 
@@ -211,13 +236,13 @@ const handleSubmit = async () => {
                   type="text"
                   placeholder="Cari ID, nama pasien, golongan darah"
                   class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-3 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                  @input="resetPage"
+                  @input="handleSearchInput"
                 />
               </div>
               <select
                 v-model="statusFilter"
                 class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100 sm:w-[190px]"
-                @change="resetPage"
+                @change="handleStatusChange"
               >
                 <option value="all">Semua Status</option>
                 <option value="dibuat">Baru</option>
@@ -239,11 +264,13 @@ const handleSubmit = async () => {
           <div class="border-t border-gray-100 pt-4">
             <p class="text-sm text-gray-600">
               Menampilkan
-              <span class="font-semibold text-gray-900">{{ filteredRequests.length }}</span>
+              <span class="font-semibold text-gray-900">{{ permintaanStore.requests.length }}</span>
               data
               <span v-if="searchTerm || statusFilter !== 'all'">
                 dari
-                <span class="font-semibold text-gray-900">{{ permintaanStore.requests.length }}</span>
+                <span class="font-semibold text-gray-900">{{
+                  permintaanStore.pagination?.total ?? permintaanStore.requests.length
+                }}</span>
                 total permintaan darah
               </span>
             </p>
@@ -368,13 +395,13 @@ const handleSubmit = async () => {
         </div>
 
         <div
-          v-if="filteredRequests.length > 0"
+          v-if="(permintaanStore.pagination?.total ?? 0) > 0"
           class="flex items-center justify-between border-t border-gray-100 bg-gray-50 px-6 py-4"
         >
           <div class="text-sm text-gray-700">
             Menampilkan {{ pageRange.startIndex + 1 }} -
             {{ pageRange.endIndex }}
-            dari {{ filteredRequests.length }} data
+            dari {{ permintaanStore.pagination?.total ?? permintaanStore.requests.length }} data
           </div>
           <div v-if="totalPages > 1" class="flex items-center space-x-2">
             <button

@@ -40,17 +40,6 @@ const handleSubmit = () => {
 
 <template>
   <div class="flex h-full min-h-0 flex-col">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <button
-        @click="openCreateDrawer"
-        class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors"
-      >
-        <Plus :size="16" />
-        Tambah Komponen
-      </button>
-    </div>
-
     <!-- Drawers -->
     <KomponenCreateDrawer
       :is-open="showCreateDrawer"
@@ -89,6 +78,26 @@ const handleSubmit = () => {
       v-else
       class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden"
     >
+      <div class="border-b border-gray-100 px-5 py-4">
+        <div class="flex justify-end">
+          <button
+            @click="openCreateDrawer"
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 lg:px-5"
+          >
+            <Plus :size="16" />
+            Tambah Komponen
+          </button>
+        </div>
+
+        <div class="mt-4 border-t border-gray-100 pt-4">
+          <p class="text-sm text-gray-600">
+            Menampilkan
+            <span class="font-semibold text-gray-900">{{ komponenStore.komponens.length }}</span>
+            data komponen darah
+          </p>
+        </div>
+      </div>
+
       <div class="min-h-0 flex-1 overflow-auto">
         <table class="w-full text-sm">
           <thead class="sticky top-0 z-10 bg-white shadow-sm">
