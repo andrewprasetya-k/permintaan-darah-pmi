@@ -27,7 +27,7 @@ const getInitials = (name: string) => {
 
 <template>
   <header
-    class="bg-white px-4 lg:px-6 py-4 lg:py-6 flex items-center justify-between sticky top-0 z-30 shadow-sm lg:shadow-none"
+    class="bg-white px-4 lg:px-8 py-4 lg:py-6 flex items-center justify-between sticky top-0 z-30 shadow-sm lg:shadow-none"
   >
     <!-- Mobile menu button -->
     <button @click="onMenuClick" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-700">

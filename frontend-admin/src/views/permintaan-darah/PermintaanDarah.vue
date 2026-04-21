@@ -194,67 +194,61 @@ const handleSubmit = async () => {
       </Transition>
     </Teleport>
 
-    <div class="mb-6 flex items-center justify-between">
-      <button
-        @click="openCreateDrawer"
-        class="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-      >
-        <Plus :size="16" />
-        Tambah Permintaan
-      </button>
-    </div>
-
     <div
       class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden"
     >
       <div class="border-b border-gray-100 px-5 py-4">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 class="text-lg font-semibold text-gray-900">Data Permintaan Darah</h2>
-            <p class="mt-1 text-sm text-gray-500">
-              Kelola data permintaan darah yang tersimpan di sistem.
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+              <div class="relative w-full sm:max-w-md">
+                <Search
+                  :size="16"
+                  class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  v-model="searchTerm"
+                  type="text"
+                  placeholder="Cari ID, nama pasien, golongan darah"
+                  class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-3 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  @input="resetPage"
+                />
+              </div>
+              <select
+                v-model="statusFilter"
+                class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100 sm:w-[190px]"
+                @change="resetPage"
+              >
+                <option value="all">Semua Status</option>
+                <option value="dibuat">Baru</option>
+                <option value="diproses">Diproses</option>
+                <option value="bisa_diambil">Siap Diambil</option>
+                <option value="selesai">Selesai</option>
+                <option value="dibatalkan">Dibatalkan</option>
+              </select>
+            </div>
+            <button
+              @click="openCreateDrawer"
+              class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 lg:px-5"
+            >
+              <Plus :size="16" />
+              Tambah Permintaan
+            </button>
+          </div>
+
+          <div class="border-t border-gray-100 pt-4">
+            <p class="text-sm text-gray-600">
+              Menampilkan
+              <span class="font-semibold text-gray-900">{{ filteredRequests.length }}</span>
+              data
+              <span v-if="searchTerm || statusFilter !== 'all'">
+                dari
+                <span class="font-semibold text-gray-900">{{ permintaanStore.requests.length }}</span>
+                total permintaan darah
+              </span>
             </p>
           </div>
-          <div class="flex flex-col gap-3 sm:flex-row">
-            <div class="relative min-w-[260px]">
-              <Search
-                :size="16"
-                class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              />
-              <input
-                v-model="searchTerm"
-                type="text"
-                placeholder="Cari ID, nama pasien, golongan darah"
-                class="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-9 pr-3 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                @input="resetPage"
-              />
-            </div>
-            <select
-              v-model="statusFilter"
-              class="rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-              @change="resetPage"
-            >
-              <option value="all">Semua Status</option>
-              <option value="dibuat">Baru</option>
-              <option value="diproses">Diproses</option>
-              <option value="bisa_diambil">Siap Diambil</option>
-              <option value="selesai">Selesai</option>
-              <option value="dibatalkan">Dibatalkan</option>
-            </select>
-          </div>
         </div>
-        <p class="text-sm text-gray-600">
-          <span class="mt-4 block">
-            Menampilkan
-            <span class="font-semibold text-gray-900">{{ filteredRequests.length }}</span>
-            data
-            <span v-if="searchTerm || statusFilter !== 'all'">
-              dari
-              <span class="font-semibold text-gray-900">{{ permintaanStore.requests.length }}</span>
-              total permintaan darah
-            </span>
-          </span>
-        </p>
       </div>
 
       <div
