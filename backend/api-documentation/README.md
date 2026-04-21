@@ -246,7 +246,7 @@ Retry-After: 45
 ## 🛠️ Common Use Cases
 
 ### For Admin Dashboard
-- GET `/dashboard/status-summary/all` - Overview
+- GET `/dashboard/status-summary/all` - Overview seluruh rumah sakit
 - GET `/system-logs` - Audit trail
 - GET `/permintaan-darah` - All requests
 - PUT `/permintaan-darah/update/{id}` - Update status
@@ -255,7 +255,7 @@ Retry-After: 45
 - POST `/permintaan-darah` - Create request
 - GET `/permintaan-darah/my-requests` - Own requests
 - PUT `/permintaan-darah/my-requests/{id}` - Update own request
-- GET `/dashboard/status-summary/{hospitalId}` - Own dashboard
+- GET `/dashboard/status-summary/{hospitalId}` - Own dashboard (rumah sakit hanya akan menerima data miliknya sendiri)
 - POST `/detail-permintaan-darah` - Add details
 
 ### For Monitoring (WebSocket)
