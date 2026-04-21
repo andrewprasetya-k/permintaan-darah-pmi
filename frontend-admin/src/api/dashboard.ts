@@ -1,11 +1,12 @@
 import { apiClient } from './client'
-import type { ApiResponse } from '@/types/models'
 
 export interface StatusSummary {
-  pending: number
-  approved: number
-  rejected: number
-  completed: number
+  dibuat: number
+  diproses: number
+  bisaDiambil: number
+  selesai: number
+  dibatalkan: number
+  total: number
 }
 
 export const dashboardAPI = {
