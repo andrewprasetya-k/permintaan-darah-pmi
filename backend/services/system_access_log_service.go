@@ -29,7 +29,7 @@ type SystemAccessLogService interface {
 }
 
 type systemAccessLogService struct {
-	repo repository.SystemAccessLogRepository
+	repo  repository.SystemAccessLogRepository
 	wsHub *Hub
 }
 
@@ -53,7 +53,11 @@ func (s *systemAccessLogService) Create(req dto.CreateSystemAccessLogRequest) (*
 		return nil, err
 	}
 	if s.wsHub != nil {
-		msg := NewWebSocketMessage("new_activity", "CREATE", *req.SysUserID, "system_access_log", log)
+		entityID := ""
+		if req.SysUserID != nil {
+			entityID = *req.SysUserID
+		}
+		msg := NewWebSocketMessage("new_activity", "CREATE", entityID, "system_access_log", mapToResponse(&log))
 		s.wsHub.Broadcast(msg)
 	}
 	return mapToResponse(&log), nil

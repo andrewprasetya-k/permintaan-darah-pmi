@@ -2,9 +2,11 @@
 import { computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
+import { useLogsStore } from '@/stores/logs'
 
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
+const logsStore = useLogsStore()
 
 const cards = computed(() => {
   const summary = dashboardStore.statusSummary
@@ -20,9 +22,22 @@ const cards = computed(() => {
 
 onMounted(async () => {
   if (authStore.user?.role === 'admin' || authStore.user?.role === 'superadmin') {
-    await dashboardStore.fetchStatusSummary('all')
+    await Promise.all([
+      dashboardStore.fetchStatusSummary('all'),
+      logsStore.fetchSystemLogs({ limit: 10, offset: 0 }),
+    ])
+    logsStore.connectRealtime()
   }
 })
+
+const formatDate = (date: string) =>
+  new Date(date).toLocaleString('id-ID', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 </script>
 
 <template>
@@ -63,18 +78,46 @@ onMounted(async () => {
       <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin-bottom: 1rem">
         Aktivitas Terbaru
       </h2>
-      <p v-if="dashboardStore.isLoading" style="color: #6b7280; text-align: center; padding: 2rem">
+      <p v-if="logsStore.isLoading" style="color: #6b7280; text-align: center; padding: 2rem">
         Memuat ringkasan dashboard...
       </p>
       <p
-        v-else-if="dashboardStore.error"
+        v-else-if="logsStore.error"
         style="color: #dc2626; text-align: center; padding: 2rem"
       >
-        {{ dashboardStore.error }}
+        {{ logsStore.error }}
       </p>
-      <p v-else style="color: #6b7280; text-align: center; padding: 2rem">
-        Ringkasan status permintaan darah telah dimuat.
-      </p>
+      <div v-else-if="logsStore.recentActivityItems.length > 0" class="space-y-3">
+        <div
+          v-for="log in logsStore.recentActivityItems"
+          :key="log.sysLogId"
+          class="flex items-start justify-between gap-4 rounded-xl border border-gray-100 px-4 py-3"
+        >
+          <div class="min-w-0">
+            <p style="font-size: 0.875rem; font-weight: 600; color: #111827">
+              {{ log.sysUserNama }}
+              <span style="font-weight: 500; color: #2563eb">{{ log.sysAction }}</span>
+              <span v-if="log.sysTargetTable" style="color: #6b7280">di {{ log.sysTargetTable }}</span>
+            </p>
+            <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.35rem">
+              {{ log.sysNotes }}
+            </p>
+          </div>
+          <div style="text-align: right; white-space: nowrap">
+            <p style="font-size: 0.75rem; color: #9ca3af">{{ formatDate(log.createdAt) }}</p>
+            <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.35rem">{{ log.sysUserRole }}</p>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.5rem">
+          <p style="font-size: 0.75rem; color: #6b7280">
+            {{ logsStore.isRealtimeConnected ? 'Realtime aktif' : 'Realtime belum terhubung' }}
+          </p>
+          <RouterLink to="/logs" style="font-size: 0.875rem; font-weight: 600; color: #2563eb">
+            Lihat semua logs
+          </RouterLink>
+        </div>
+      </div>
+      <p v-else style="color: #6b7280; text-align: center; padding: 2rem">Belum ada aktivitas.</p>
     </div>
   </div>
 </template>

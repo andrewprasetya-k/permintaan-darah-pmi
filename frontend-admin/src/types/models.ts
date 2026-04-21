@@ -5,6 +5,17 @@ export interface ApiResponse<T> {
   error?: string
 }
 
+export interface PaginationMeta {
+  total: number
+  page: number
+  limit: number
+  offset: number
+}
+
+export interface PaginatedApiResponse<T> extends ApiResponse<T> {
+  pagination?: PaginationMeta
+}
+
 export interface User {
   id: string
   username: string
@@ -77,21 +88,32 @@ export interface DetailPermintaanDarah {
 }
 
 export interface StatusLog {
-  id: string
+  logId: string
   permintaanDarahId: string
-  status: string
-  keterangan: string
+  statusFrom?: string
+  statusTo: string
+  keterangan?: string
   createdAt: string
 }
 
 export interface SystemAccessLog {
-  id: string
-  userId: string
+  sysLogId: number
+  sysUserId?: string
+  sysUserNama: string
+  sysUserRole: string
+  sysAction: string
+  sysTargetTable?: string
+  sysTargetId?: string
+  sysNotes: string
+  sysUserAgent?: string
+  createdAt: string
+}
+
+export interface WebSocketMessage<T = unknown> {
+  type: string
   action: string
-  table: string
-  targetId: string
-  oldValue: string
-  newValue: string
+  entityId: string
+  entityType: string
+  data: T
   timestamp: string
-  ipAddress: string
 }

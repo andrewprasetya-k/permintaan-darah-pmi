@@ -77,6 +77,17 @@ const router = createRouter({
       },
     },
     {
+      path: '/logs',
+      name: 'logs-list',
+      component: () => import('../views/logs/SystemLogs.vue'),
+      meta: {
+        requiresAuth: true,
+        roles: ['admin', 'superadmin'],
+        title: 'System Logs',
+        subtitle: 'Audit aktivitas dan perubahan yang terjadi di sistem',
+      },
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('../views/utils/NotFoundView.vue'),

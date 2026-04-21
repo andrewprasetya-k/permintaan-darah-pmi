@@ -1,25 +1,5 @@
 import { apiClient } from './client'
-import type { ApiResponse } from '@/types/models'
-
-export interface StatusLog {
-  id: string
-  permintaanID: string
-  status: string
-  keterangan: string
-  createdAt: string
-}
-
-export interface SystemAccessLog {
-  id: string
-  userID: string
-  action: string
-  table: string
-  targetID: string
-  oldValue: string
-  newValue: string
-  timestamp: string
-  ipAddress: string
-}
+import type { StatusLog, SystemAccessLog } from '@/types/models'
 
 export const logsAPI = {
   getStatusLogs(params?: Record<string, any>) {
