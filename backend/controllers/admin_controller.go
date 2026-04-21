@@ -45,8 +45,14 @@ func (ctl *AdminController) GetByID(c *gin.Context) {
 }
 
 func (ctl *AdminController) GetAll(c *gin.Context) {
+	status := c.DefaultQuery("status", "active")
+	if status != "active" && status != "deleted" && status != "all" {
+		utils.SendError(c, http.StatusBadRequest, "Invalid status filter")
+		return
+	}
+
 	limit, offset := utils.ParsePagination(c)
-	resp, total, err := ctl.service.GetAll(limit, offset)
+	resp, total, err := ctl.service.GetAll(limit, offset, status)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
@@ -87,11 +93,12 @@ func (ctl *AdminController) Restore(c *gin.Context) {
 	userID, userName, userRole := utils.ExtractUserFromJWT(c)
 	userAgent := c.GetHeader("User-Agent")
 
-	if err := ctl.service.Restore(c.Param("id"), userID, userName, userRole, &userAgent); err != nil {
+	resp, err := ctl.service.Restore(c.Param("id"), userID, userName, userRole, &userAgent)
+	if err != nil {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Admin restored successfully", nil)
+	utils.SendSuccess(c, http.StatusOK, "Admin restored successfully", resp)
 }
 
 func (ctl *AdminController) GetMe(c *gin.Context) {

@@ -12,10 +12,10 @@ import (
 type AdminService interface {
 	Create(req dto.CreateAdminRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.AdminResponse, error)
 	GetByID(id string) (*dto.AdminResponse, error)
-	GetAll(limit, offset int) ([]dto.AdminResponse, int, error)
+	GetAll(limit, offset int, status string) ([]dto.AdminResponse, int, error)
 	Update(id string, req dto.UpdateAdminRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.AdminResponse, error)
 	Delete(id string, userID *string, userName string, userRole string, userAgent *string) error
-	Restore(id string, userID *string, userName string, userRole string, userAgent *string) error
+	Restore(id string, userID *string, userName string, userRole string, userAgent *string) (*dto.AdminResponse, error)
 }
 
 type adminService struct {
@@ -67,17 +67,17 @@ func (s *adminService) GetByID(id string) (*dto.AdminResponse, error) {
 	return &resp, nil
 }
 
-func (s *adminService) GetAll(limit, offset int) ([]dto.AdminResponse, int, error) {
-	list, err := s.repo.GetAll(limit, offset)
+func (s *adminService) GetAll(limit, offset int, status string) ([]dto.AdminResponse, int, error) {
+	list, err := s.repo.GetAll(limit, offset, status)
 	if err != nil {
 		return nil, 0, err
 	}
-	
-	total, err := s.repo.Count()
+
+	total, err := s.repo.Count(status)
 	if err != nil {
 		return nil, 0, err
 	}
-	
+
 	result := make([]dto.AdminResponse, 0, len(list))
 	for _, item := range list {
 		result = append(result, mapAdminToResponse(item))
@@ -158,15 +158,18 @@ func (s *adminService) Delete(id string, userID *string, userName string, userRo
 	return nil
 }
 
-func (s *adminService) Restore(id string, userID *string, userName string, userRole string, userAgent *string) error {
-
-	admin, err := s.repo.GetByID(id)
+func (s *adminService) Restore(id string, userID *string, userName string, userRole string, userAgent *string) (*dto.AdminResponse, error) {
+	admin, err := s.repo.GetByIDIncludingDeleted(id)
 	if err != nil {
-		return err
+		return nil, err
+	}
+
+	if !admin.IsDeleted {
+		return nil, utils.NewAppError(400, "Admin is not deleted")
 	}
 
 	if err := s.repo.Restore(id); err != nil {
-		return err
+		return nil, err
 	}
 
 	_, _ = s.systemAccessLogService.LogAction(
@@ -180,7 +183,10 @@ func (s *adminService) Restore(id string, userID *string, userName string, userR
 		userAgent,
 	)
 
-	return nil
+	admin.IsDeleted = false
+	admin.DeletedAt = nil
+	resp := mapAdminToResponse(*admin)
+	return &resp, nil
 }
 
 func mapAdminToResponse(data models.Admin) dto.AdminResponse {
@@ -190,6 +196,7 @@ func mapAdminToResponse(data models.Admin) dto.AdminResponse {
 		AdminNama:     data.AdminNama,
 		AdminEmail:    data.AdminEmail,
 		AdminRole:     data.AdminRole,
+		IsDeleted:     data.IsDeleted,
 		CreatedAt:     data.CreatedAt,
 		UpdatedAt:     data.UpdatedAt,
 		DeletedAt:     data.DeletedAt,

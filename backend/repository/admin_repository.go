@@ -10,8 +10,9 @@ import (
 type AdminRepository interface {
 	Create(data *models.Admin) error
 	GetByID(adminID string) (*models.Admin, error)
-	GetAll(limit, offset int) ([]models.Admin, error)
-	Count() (int64, error)
+	GetByIDIncludingDeleted(adminID string) (*models.Admin, error)
+	GetAll(limit, offset int, status string) ([]models.Admin, error)
+	Count(status string) (int64, error)
 	GetByUsername(username string) (*models.Admin, error)
 	Update(data *models.Admin) error
 	Delete(data *models.Admin) error
@@ -41,7 +42,17 @@ func (r *adminRepository) GetByID(adminID string) (*models.Admin, error) {
 	return &data, nil
 }
 
-func (r *adminRepository) GetAll(limit, offset int) ([]models.Admin, error) {
+func (r *adminRepository) GetByIDIncludingDeleted(adminID string) (*models.Admin, error) {
+	var data models.Admin
+	err := r.db.First(&data, "admin_id = ?", adminID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}
+
+func (r *adminRepository) GetAll(limit, offset int, status string) ([]models.Admin, error) {
 	if limit <= 0 {
 		limit = 20
 	}
@@ -49,8 +60,10 @@ func (r *adminRepository) GetAll(limit, offset int) ([]models.Admin, error) {
 		offset = 0
 	}
 
+	query := r.applyStatusFilter(r.db, status)
+
 	var list []models.Admin
-	err := r.db.Where("is_deleted = ?", false).Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
+	err := query.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
@@ -90,8 +103,19 @@ func (r *adminRepository) Restore(adminID string) error {
 	}).Error
 }
 
-func (r *adminRepository) Count() (int64, error) {
+func (r *adminRepository) Count(status string) (int64, error) {
 	var count int64
-	err := r.db.Model(&models.Admin{}).Where("is_deleted = ?", false).Count(&count).Error
+	err := r.applyStatusFilter(r.db.Model(&models.Admin{}), status).Count(&count).Error
 	return count, err
+}
+
+func (r *adminRepository) applyStatusFilter(query *gorm.DB, status string) *gorm.DB {
+	switch status {
+	case "deleted":
+		return query.Where("is_deleted = ?", true)
+	case "all":
+		return query
+	default:
+		return query.Where("is_deleted = ?", false)
+	}
 }

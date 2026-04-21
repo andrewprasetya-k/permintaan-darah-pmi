@@ -27,6 +27,7 @@ type AdminResponse struct {
 	AdminNama     string               `json:"adminName"`
 	AdminEmail    string               `json:"adminEmail"`
 	AdminRole     models.AdminRoleEnum `json:"adminRole"`
+	IsDeleted     bool                 `json:"isDeleted"`
 	CreatedAt     time.Time            `json:"createdAt"`
 	UpdatedAt     time.Time            `json:"updatedAt"`
 	DeletedAt     *time.Time           `json:"deletedAt,omitempty"`
