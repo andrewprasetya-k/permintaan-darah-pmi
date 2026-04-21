@@ -99,12 +99,12 @@ router.beforeEach((to, from, next) => {
 
   // Kalau sudah login dan ke login page, redirect ke home
   if (to.name === 'login' && isAuthenticated) {
-    return next({ name: 'home' })
+    return next({ name: 'dashboard' })
   }
 
   // Cek role-based access
   if (requiredRoles && isAuthenticated && userRole && !requiredRoles.includes(userRole)) {
-    return next({ name: 'home' })
+    return next({ name: 'dashboard' })
   }
 
   next()
