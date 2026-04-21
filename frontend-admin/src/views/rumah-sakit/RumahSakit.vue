@@ -65,7 +65,7 @@ const handleSubmit = () => {
     <RumahSakitDetailDrawer :is-open="showDetailDrawer" @close="showDetailDrawer = false" />
 
     <!-- Loading -->
-    <div
+    <!-- <div
       v-if="rumahSakitStore.isLoading"
       class="flex items-center justify-center py-16 text-sm text-gray-400"
     >
@@ -73,11 +73,11 @@ const handleSubmit = () => {
         class="w-5 h-5 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin mr-3"
       />
       Memuat data...
-    </div>
+    </div> -->
 
     <!-- Error -->
     <div
-      v-else-if="rumahSakitStore.error"
+      v-if="rumahSakitStore.error"
       class="flex items-center gap-2 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm"
     >
       <AlertCircle :size="16" />
@@ -85,7 +85,7 @@ const handleSubmit = () => {
     </div>
 
     <!-- Table -->
-    <div v-else class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-gray-100">
