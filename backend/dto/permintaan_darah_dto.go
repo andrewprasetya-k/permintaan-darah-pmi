@@ -63,6 +63,7 @@ type PermintaanDarahGetAllResponse struct {
 	PDGender      models.GenderEnum     `json:"jenisKelamin"`
 	PDGolDarah    *models.BloodTypeEnum `json:"golonganDarah,omitempty"`
 	PDRhesus      *models.RhesusEnum    `json:"rhesusDarah,omitempty"`
+	PDTglPermintaan time.Time             `json:"tanggalPermintaan"`
 
 	// Status
 	PDStatus        models.PermintaanStatusEnum `json:"status"`

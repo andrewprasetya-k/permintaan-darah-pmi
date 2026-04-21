@@ -306,6 +306,11 @@ const handleSubmit = async () => {
                   Status
                 </th>
                 <th
+                  class="bg-white px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-gray-400"
+                >
+                  Tanggal Permintaan
+                </th>
+                <th
                   class="bg-white px-5 py-3.5 text-center text-xs font-semibold uppercase tracking-wide text-gray-400"
                 >
                   Aksi
@@ -337,6 +342,9 @@ const handleSubmit = async () => {
                     <component :is="statusMeta[item.status]?.icon" :size="12" />
                     {{ statusMeta[item.status]?.label || item.status }}
                   </span>
+                </td>
+                <td class="px-5 py-4 text-gray-500">
+                  {{ formatDate(item.tanggalPermintaan) }}
                 </td>
                 <td class="px-5 py-4">
                   <div class="flex items-center justify-center gap-2">

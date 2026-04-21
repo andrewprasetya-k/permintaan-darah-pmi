@@ -366,6 +366,7 @@ func mapPermintaanToGetAllResponse(data models.PermintaanDarah) dto.PermintaanDa
 		PDGender:     data.PDGender,
 		PDGolDarah:   data.PDGolDarah,
 		PDRhesus:     data.PDRhesus,
+		PDTglPermintaan: data.PDTglPermintaan,
 
 		// Status
 		PDStatus:  data.PDStatus,
