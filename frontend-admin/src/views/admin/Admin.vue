@@ -85,85 +85,88 @@ const handleSubmit = () => {
     </div>
 
     <!-- Table -->
-    <div v-else class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden">
+    <div
+      v-else
+      class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden"
+    >
       <div class="min-h-0 flex-1 overflow-auto">
-      <table class="w-full text-sm">
-        <thead class="sticky top-0 z-10 bg-white shadow-sm">
-          <tr class="border-b border-gray-100">
-            <th
-              class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Nama
-            </th>
-            <th
-              class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Username
-            </th>
-            <th
-              class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Email
-            </th>
-            <th
-              class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Role
-            </th>
-            <th
-              class="bg-white px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Aksi
-            </th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-50">
-          <tr
-            v-for="admin in adminStore.admins"
-            :key="admin.adminId"
-            class="hover:bg-gray-50 transition-colors"
-          >
-            <td class="px-5 py-4 font-medium text-gray-800">{{ admin.adminName }}</td>
-            <td class="px-5 py-4 text-gray-500">{{ admin.adminUsername }}</td>
-            <td class="px-5 py-4 text-gray-500">{{ admin.adminEmail }}</td>
-            <td class="px-5 py-4">
-              <span
-                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium"
-                :class="
-                  admin.adminRole === 'superadmin'
-                    ? 'bg-purple-50 text-purple-600'
-                    : 'bg-blue-50 text-blue-600'
-                "
+        <table class="w-full text-sm">
+          <thead class="sticky top-0 z-10 bg-white shadow-sm">
+            <tr class="border-b border-gray-100">
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
               >
-                <Shield v-if="admin.adminRole === 'superadmin'" :size="10" />
-                {{ admin.adminRole === 'superadmin' ? 'Superadmin' : 'Admin' }}
-              </span>
-            </td>
-            <td class="px-5 py-4">
-              <div class="flex items-center justify-center gap-2">
-                <button
-                  @click="openDetailDrawer(admin)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
+                Nama
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Username
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Email
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Role
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Aksi
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50">
+            <tr
+              v-for="admin in adminStore.admins"
+              :key="admin.adminId"
+              class="hover:bg-gray-50 transition-colors"
+            >
+              <td class="px-5 py-4 font-medium text-gray-800">{{ admin.adminName }}</td>
+              <td class="px-5 py-4 text-gray-500">{{ admin.adminUsername }}</td>
+              <td class="px-5 py-4 text-gray-500">{{ admin.adminEmail }}</td>
+              <td class="px-5 py-4">
+                <span
+                  class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium"
+                  :class="
+                    admin.adminRole === 'superadmin'
+                      ? 'bg-purple-50 text-purple-600'
+                      : 'bg-blue-50 text-blue-600'
+                  "
                 >
-                  Detail
-                </button>
-                <button
-                  @click="openEditDrawer(admin)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
-                >
-                  Edit
-                </button>
-                <button
-                  @click="deleteAdmin(admin.adminId)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
-                >
-                  Hapus
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                  <Shield v-if="admin.adminRole === 'superadmin'" :size="10" />
+                  {{ admin.adminRole === 'superadmin' ? 'Superadmin' : 'Admin' }}
+                </span>
+              </td>
+              <td class="px-5 py-4">
+                <div class="flex items-center justify-center gap-2">
+                  <button
+                    @click="openDetailDrawer(admin)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    Detail
+                  </button>
+                  <button
+                    @click="openEditDrawer(admin)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    @click="deleteAdmin(admin.adminId)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    Hapus
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div
