@@ -9,12 +9,12 @@ import (
 type SystemAccessLogService interface {
 	Create(req dto.CreateSystemAccessLogRequest) (*dto.SystemAccessLogResponse, error)
 	GetByID(logID int64) (*dto.SystemAccessLogResponse, error)
-	GetAll(limit, offset int) (*dto.SystemAccessLogListResponse, int, error)
+	GetAll(limit, offset int) ([]dto.SystemAccessLogResponse, int, error)
 
-	GetByUserID(userID string, limit, offset int) (*dto.SystemAccessLogListResponse, error)
-	GetByAction(action string, limit, offset int) (*dto.SystemAccessLogListResponse, error)
-	GetByTargetTable(targetTable string, limit, offset int) (*dto.SystemAccessLogListResponse, error)
-	GetByTargetID(targetID string, limit, offset int) (*dto.SystemAccessLogListResponse, error)
+	GetByUserID(userID string, limit, offset int) ([]dto.SystemAccessLogResponse, int, error)
+	GetByAction(action string, limit, offset int) ([]dto.SystemAccessLogResponse, int, error)
+	GetByTargetTable(targetTable string, limit, offset int) ([]dto.SystemAccessLogResponse, int, error)
+	GetByTargetID(targetID string, limit, offset int) ([]dto.SystemAccessLogResponse, int, error)
 
 	LogAction(
 		userID *string,
@@ -72,74 +72,49 @@ func (s *systemAccessLogService) GetByID(logID int64) (*dto.SystemAccessLogRespo
 	return mapToResponse(log), nil
 }
 
-func (s *systemAccessLogService) GetAll(limit, offset int) (*dto.SystemAccessLogListResponse, int, error) {
+func (s *systemAccessLogService) GetAll(limit, offset int) ([]dto.SystemAccessLogResponse, int, error) {
 	logs, total, err := s.repo.GetAll(limit, offset)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	return &dto.SystemAccessLogListResponse{
-		Data:     logsToResponses(logs),
-		Total:    total,
-		Page:     offset/limit + 1,
-		PageSize: limit,
-	}, int(total), nil
+	return logsToResponses(logs), int(total), nil
 }
 
-func (s *systemAccessLogService) GetByUserID(userID string, limit, offset int) (*dto.SystemAccessLogListResponse, error) {
+func (s *systemAccessLogService) GetByUserID(userID string, limit, offset int) ([]dto.SystemAccessLogResponse, int, error) {
 	logs, total, err := s.repo.GetByUserID(userID, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return &dto.SystemAccessLogListResponse{
-		Data:     logsToResponses(logs),
-		Total:    total,
-		Page:     offset/limit + 1,
-		PageSize: limit,
-	}, nil
+	return logsToResponses(logs), int(total), nil
 }
 
-func (s *systemAccessLogService) GetByAction(action string, limit, offset int) (*dto.SystemAccessLogListResponse, error) {
+func (s *systemAccessLogService) GetByAction(action string, limit, offset int) ([]dto.SystemAccessLogResponse, int, error) {
 	logs, total, err := s.repo.GetByAction(action, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return &dto.SystemAccessLogListResponse{
-		Data:     logsToResponses(logs),
-		Total:    total,
-		Page:     offset/limit + 1,
-		PageSize: limit,
-	}, nil
+	return logsToResponses(logs), int(total), nil
 }
 
-func (s *systemAccessLogService) GetByTargetTable(targetTable string, limit, offset int) (*dto.SystemAccessLogListResponse, error) {
+func (s *systemAccessLogService) GetByTargetTable(targetTable string, limit, offset int) ([]dto.SystemAccessLogResponse, int, error) {
 	logs, total, err := s.repo.GetByTargetTable(targetTable, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return &dto.SystemAccessLogListResponse{
-		Data:     logsToResponses(logs),
-		Total:    total,
-		Page:     offset/limit + 1,
-		PageSize: limit,
-	}, nil
+	return logsToResponses(logs), int(total), nil
 }
 
-func (s *systemAccessLogService) GetByTargetID(targetID string, limit, offset int) (*dto.SystemAccessLogListResponse, error) {
+func (s *systemAccessLogService) GetByTargetID(targetID string, limit, offset int) ([]dto.SystemAccessLogResponse, int, error) {
 	logs, total, err := s.repo.GetByTargetID(targetID, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return &dto.SystemAccessLogListResponse{
-		Data:     logsToResponses(logs),
-		Total:    total,
-		Page:     offset/limit + 1,
-		PageSize: limit,
-	}, nil
+	return logsToResponses(logs), int(total), nil
 }
 
 func (s *systemAccessLogService) LogAction(

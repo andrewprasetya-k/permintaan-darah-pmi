@@ -54,12 +54,12 @@ func (ctl *SystemAccessLogController) GetByUserID(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 
-	result, err := ctl.service.GetByUserID(userID, limit, offset)
+	result, count, err := ctl.service.GetByUserID(userID, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, result)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Operation successful", result, count, limit, offset)
 }
 
 func (ctl *SystemAccessLogController) GetByAction(c *gin.Context) {
@@ -72,12 +72,12 @@ func (ctl *SystemAccessLogController) GetByAction(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 
-	result, err := ctl.service.GetByAction(action, limit, offset)
+	result, count, err := ctl.service.GetByAction(action, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, result)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Operation successful", result, count, limit, offset)
 }
 
 func (ctl *SystemAccessLogController) GetByTargetTable(c *gin.Context) {
@@ -90,12 +90,12 @@ func (ctl *SystemAccessLogController) GetByTargetTable(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 
-	result, err := ctl.service.GetByTargetTable(targetTable, limit, offset)
+	result, count, err := ctl.service.GetByTargetTable(targetTable, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, result)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Operation successful", result, count, limit, offset)
 }
 
 func (ctl *SystemAccessLogController) GetByTargetID(c *gin.Context) {
@@ -108,10 +108,10 @@ func (ctl *SystemAccessLogController) GetByTargetID(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 
-	result, err := ctl.service.GetByTargetID(targetID, limit, offset)
+	result, count, err := ctl.service.GetByTargetID(targetID, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, result)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Operation successful", result, count, limit, offset)
 }
