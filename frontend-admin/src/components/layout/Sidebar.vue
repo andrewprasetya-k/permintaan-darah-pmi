@@ -15,6 +15,7 @@ import {
   Menu,
   X,
 } from '@lucide/vue'
+import logo from '@/assets/Pmi.png'
 
 const route = useRoute()
 const router = useRouter()
@@ -86,12 +87,10 @@ const logout = () => {
     <!-- Header -->
     <div class="transition-all duration-500" :class="isCollapsed ? 'px-3 py-6' : 'px-6 py-6'">
       <div class="flex items-center justify-between">
-        <div v-if="!isCollapsed" class="flex items-center gap-2">
-          <div class="w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center shrink-0">
-            <span class="text-red-600 font-bold text-xs">PMI</span>
-          </div>
-          <div>
-            <h2 class="text-base font-bold leading-tight text-gray-900">
+        <div v-if="!isCollapsed" class="flex items-center gap-3">
+          <img :src="logo" alt="Logo PMI" class="w-9 h-9 object-contain shrink-0" />
+          <div class="leading-tight">
+            <h2 class="text-sm font-bold text-gray-900">
               PMI <span class="text-red-500">Salatiga</span>
             </h2>
             <p class="text-xs text-gray-400">Permintaan Darah</p>
