@@ -2,8 +2,8 @@ import { apiClient } from './client'
 import type { DetailPermintaanDarah } from '@/types/models'
 
 export interface CreateDetailRequest {
-  pdId: string
-  komId: number
+  permintaanDarahId: string
+  komponenDarahId: number
   golonganDarah: 'A' | 'B' | 'AB' | 'O'
   rhesusDarah: '+' | '-'
   jumlahKantong: number

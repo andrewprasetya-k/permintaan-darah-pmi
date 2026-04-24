@@ -64,6 +64,6 @@ func (r *detailPermintaanDarahRepository) Delete(data *models.DetailPermintaanDa
 
 func (r *detailPermintaanDarahRepository) Count() (int64, error) {
 	var count int64
-	err := r.db.Model(&models.DetailPermintaanDarah{}).Where("is_deleted = ?", false).Count(&count).Error
-return count, err
+	err := r.db.Model(&models.DetailPermintaanDarah{}).Count(&count).Error
+	return count, err
 }

@@ -22,11 +22,12 @@ Authorization: Bearer {token}
 
 ```json
 {
-  "pdId": "PD04071430001",
-  "komId": 2,
+  "permintaanDarahId": "PD04071430001",
+  "komponenDarahId": 2,
   "golonganDarah": "O",
   "rhesusDarah": "+",
   "jumlahKantong": 3
+}
 ```
 
 **Response (201 Created):**
@@ -36,13 +37,13 @@ Authorization: Bearer {token}
   "success": true,
   "message": "Detail created successfully",
   "data": {
-    "dpdId": 2,
-    "pdId": "PD04071430001",
-    "komId": 2,
-    "komNama": "Packed Red Cell (PRC)",
+    "detailId": 2,
+    "permintaanDarahId": "PD04071430001",
+    "komponenNama": "Packed Red Cell (PRC)",
     "golonganDarah": "O",
     "rhesusDarah": "+",
     "jumlahKantong": 3,
+    "tanggalDiperlukan": "0001-01-01T00:00:00Z",
     "createdAt": "2026-04-07T14:35:00Z"
   }
 }
@@ -52,7 +53,7 @@ Authorization: Bearer {token}
 
 ## Get All Details
 
-**GET** `/detail-permintaan-darah?limit=20&offset=0&pdId={pdId}`
+**GET** `/detail-permintaan-darah?limit=20&offset=0`
 
 **Access:** Rumah Sakit only
 
@@ -60,7 +61,6 @@ Authorization: Bearer {token}
 
 - `limit` (optional): default 20, max 100
 - `offset` (optional): default 0
-- `pdId` (optional): filter by blood request ID
 
 **Response (200 OK):**
 
@@ -93,10 +93,9 @@ Authorization: Bearer {token}
   "success": true,
   "message": "Detail retrieved successfully",
   "data": {
-    "dpdId": 1,
-    "pdId": "PD04071430001",
-    "komId": 1,
-    "komNama": "Whole Blood",
+    "detailId": 1,
+    "permintaanDarahId": "PD04071430001",
+    "komponenNama": "Whole Blood",
     "golonganDarah": "O",
     "rhesusDarah": "+",
     "jumlahKantong": 2,
@@ -118,6 +117,10 @@ Authorization: Bearer {token}
 
 ```json
 {
+  "permintaanDarahId": "PD04071430001",
+  "komponenDarahId": 2,
+  "golonganDarah": "O",
+  "rhesusDarah": "+",
   "jumlahKantong": 4,
   "tanggalDiperlukan": "2026-04-11T10:00:00Z"
 }
@@ -158,7 +161,7 @@ Authorization: Bearer {token}
 - Each detail specifies one blood component with quantity and needed date
 - One request (permintaan_darah) can have multiple details
 - Used when rumah sakit needs multiple components for one patient
-- Component must be active (isActive: true)
+- Current list endpoint supports pagination only; it does not yet expose filter by `permintaanDarahId`
 
 ---
 
