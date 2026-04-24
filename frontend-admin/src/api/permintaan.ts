@@ -34,6 +34,7 @@ export interface UpdatePermintaanRequest extends CreatePermintaanRequest {
 
 export interface UpdateStatusRequest {
   status: 'dibuat' | 'diproses' | 'bisa_diambil' | 'selesai' | 'dibatalkan'
+  reason?: string
 }
 
 export const permintaanAPI = {

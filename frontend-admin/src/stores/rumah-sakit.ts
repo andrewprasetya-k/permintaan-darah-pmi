@@ -7,10 +7,13 @@ import {
 } from '@/api/rumah-sakit'
 import type { PaginationMeta, RumahSakit } from '@/types/models'
 
+export type RumahSakitFilterStatus = 'active' | 'deleted' | 'all'
+
 export const useRumahSakitStore = defineStore('rumahSakit', () => {
   const hospitals = ref<RumahSakit[]>([])
   const selectedHospital = ref<RumahSakit | null>(null)
   const selectedRumahSakit = ref<RumahSakit | null>(null)
+  const currentFilter = ref<RumahSakitFilterStatus>('active')
   const pagination = ref<PaginationMeta | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
@@ -19,7 +22,9 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
     isLoading.value = true
     error.value = null
     try {
-      const response = await rumahSakitAPI.getAll(params)
+      const nextFilter = (params?.status as RumahSakitFilterStatus | undefined) ?? currentFilter.value
+      currentFilter.value = nextFilter
+      const response = await rumahSakitAPI.getAll({ ...params, status: nextFilter })
       hospitals.value = response.data
       pagination.value = response.pagination ?? null
     } catch (err) {
@@ -106,6 +111,7 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
     hospitals,
     selectedHospital,
     selectedRumahSakit,
+    currentFilter,
     pagination,
     isLoading,
     error,

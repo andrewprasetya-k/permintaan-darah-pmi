@@ -42,6 +42,7 @@ export interface RumahSakit {
   alamat: string
   email?: string
   username: string
+  isDeleted: boolean
   createdAt: string
   updatedAt: string
   deletedAt?: string
