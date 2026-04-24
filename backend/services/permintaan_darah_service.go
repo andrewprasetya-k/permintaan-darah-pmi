@@ -418,7 +418,6 @@ func mapPermintaanToResponse(data models.PermintaanDarah) dto.PermintaanDarahRes
 			DPDGolonganDarah: d.DPDGolonganDarah,
 			DPDRhesus:        d.DPDRhesus,
 			DPDJmlKantong:    d.DPDJmlKantong,
-			DPDTglDiperlukan: d.DPDTglDiperlukan,
 			CreatedAt:        d.CreatedAt,
 		})
 	}
