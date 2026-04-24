@@ -156,6 +156,14 @@ const confirmDelete = async () => {
 }
 
 const handleSubmit = async () => {
+  showCreateDrawer.value = false
+  showEditDrawer.value = false
+  showDetailDrawer.value = false
+  await loadRequests(currentPage.value)
+}
+
+const handleDetailUpdated = async () => {
+  showDetailDrawer.value = false
   await loadRequests(currentPage.value)
 }
 </script>
@@ -172,7 +180,11 @@ const handleSubmit = async () => {
       @close="showEditDrawer = false"
       @submit="handleSubmit"
     />
-    <PermintaanDetailDrawer :is-open="showDetailDrawer" @close="showDetailDrawer = false" />
+    <PermintaanDetailDrawer
+      :is-open="showDetailDrawer"
+      @close="showDetailDrawer = false"
+      @updated="handleDetailUpdated"
+    />
 
     <Teleport to="body">
       <Transition name="backdrop">
