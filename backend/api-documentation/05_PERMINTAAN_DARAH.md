@@ -88,17 +88,20 @@ Authorization: Bearer {token}
 
 ## Get All Blood Requests
 
-**GET** `/permintaan-darah?limit=20&offset=0&status=dibuat`
+**GET** `/permintaan-darah?limit=20&offset=0&status=dibuat&search=Budi`
 
-**Access:** Admin (all requests) or Rumah Sakit (own + shared)
+**Access:** Admin or Rumah Sakit
 
 **Query Parameters:**
 
 - `limit` (optional): default 20, max 100
 - `offset` (optional): default 0
 - `status` (optional): dibuat | diproses | bisa_diambil | selesai | dibatalkan
-- `searchByName` (optional): patient name
-- `searchByRM` (optional): medical record number
+- `search` (optional): matches request ID, patient name, medical record number, blood type, rhesus, or combined blood type+rhesus
+- `rsID` (optional): filter by rumah sakit ID
+- `golDarah` (optional): A | B | AB | O
+- `startDate` (optional): `YYYY-MM-DD`, compared against `tanggalPermintaan`
+- `endDate` (optional): `YYYY-MM-DD`, compared against `tanggalPermintaan`
 
 **Response (200 OK):**
 

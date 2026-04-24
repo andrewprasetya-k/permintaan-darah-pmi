@@ -158,7 +158,7 @@ GET    /ws/status                # Get active connections count
 ?limit=20&offset=0
 
 # Filtering (permintaan_darah)
-?status=dibuat&searchByName=Budi&searchByRM=RM123
+?status=dibuat&search=Budi&golDarah=O&startDate=2026-04-01&endDate=2026-04-30
 
 # Filtering (logs)
 ?limit=50&offset=100
