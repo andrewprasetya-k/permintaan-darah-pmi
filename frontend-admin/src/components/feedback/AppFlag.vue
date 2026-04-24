@@ -24,7 +24,7 @@ const badgeClass = props.variant === 'success' ? 'bg-emerald-500' : 'bg-red-500'
 
 <template>
   <div
-    class="fixed right-6 top-6 z-60 w-full max-w-sm rounded-2xl border px-4 py-3 shadow-lg"
+    class="fixed right-6 top-6 z-[100] w-full max-w-sm rounded-2xl border px-4 py-3 shadow-lg"
     :class="variantClass"
   >
     <div class="flex items-start gap-3">
