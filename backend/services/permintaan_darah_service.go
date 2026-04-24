@@ -7,6 +7,8 @@ import (
 	"backend/utils"
 	"errors"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 type PermintaanDarahService interface {
@@ -28,10 +30,17 @@ type permintaanDarahService struct {
 	statusLogRepo          repository.StatusLogRepository
 	systemAccessLogService SystemAccessLogService
 	wsHub                  *Hub
+	db                     *gorm.DB
 }
 
-func NewPermintaanDarahService(repo repository.PermintaanDarahRepository, statusLogRepo repository.StatusLogRepository, systemAccessLogService SystemAccessLogService, wsHub *Hub) PermintaanDarahService {
-	return &permintaanDarahService{repo: repo, statusLogRepo: statusLogRepo, systemAccessLogService: systemAccessLogService, wsHub: wsHub}
+func NewPermintaanDarahService(repo repository.PermintaanDarahRepository, statusLogRepo repository.StatusLogRepository, systemAccessLogService SystemAccessLogService, wsHub *Hub, db *gorm.DB) PermintaanDarahService {
+	return &permintaanDarahService{
+		repo:                   repo,
+		statusLogRepo:          statusLogRepo,
+		systemAccessLogService: systemAccessLogService,
+		wsHub:                  wsHub,
+		db:                     db,
+	}
 }
 
 func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error) {
@@ -58,9 +67,27 @@ func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest, us
 		PDCancelReason:      req.PDCancelReason,
 		PDTglPermintaan:     req.PDTglPermintaan,
 	}
-	if err := s.repo.Create(&data); err != nil {
-		return nil, err
+	if err := s.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&data).Error; err != nil {
+			return err
+		}
 
+		for _, detail := range req.Details {
+			detailData := models.DetailPermintaanDarah{
+				DPDPDID:          data.PDID,
+				DPDKomID:         detail.DPDKomID,
+				DPDGolonganDarah: detail.DPDGolonganDarah,
+				DPDRhesus:        detail.DPDRhesus,
+				DPDJmlKantong:    detail.DPDJmlKantong,
+			}
+			if err := tx.Create(&detailData).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
 	}
 
 	// ✅ Auto-log: Create
@@ -75,7 +102,12 @@ func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest, us
 		userAgent,
 	)
 
-	resp := mapPermintaanToResponse(data)
+	createdPermintaan, err := s.repo.GetByID(data.PDID)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := mapPermintaanToResponse(*createdPermintaan)
 	//broadcast WebSocket event
 	if s.wsHub != nil {
 		msg := NewWebSocketMessage("new_permintaan", "CREATE", data.PDID, "permintaan_darah", resp)
@@ -362,10 +394,10 @@ func mapPermintaanToGetAllResponse(data models.PermintaanDarah) dto.PermintaanDa
 		PDID: data.PDID,
 
 		// Data Pasien
-		PDNamaPasien: data.PDNamaPasien,
-		PDGender:     data.PDGender,
-		PDGolDarah:   data.PDGolDarah,
-		PDRhesus:     data.PDRhesus,
+		PDNamaPasien:    data.PDNamaPasien,
+		PDGender:        data.PDGender,
+		PDGolDarah:      data.PDGolDarah,
+		PDRhesus:        data.PDRhesus,
 		PDTglPermintaan: data.PDTglPermintaan,
 
 		// Status

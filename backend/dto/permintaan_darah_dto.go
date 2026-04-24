@@ -28,6 +28,9 @@ type CreatePermintaanDarahRequest struct {
 	PDStatus        models.PermintaanStatusEnum `json:"status" binding:"required,oneof=dibuat diproses bisa_diambil selesai dibatalkan"`
 	PDCancelReason  *string                     `json:"cancelReason,omitempty"`
 	PDTglPermintaan time.Time                   `json:"tanggalPermintaan" binding:"required"`
+
+	// Detail permintaan
+	Details []CreateDetailPermintaanDarahRequest `json:"details,omitempty" binding:"omitempty,dive"`
 }
 
 type UpdatePermintaanDarahRequest struct {
@@ -56,20 +59,20 @@ type UpdatePermintaanDarahRequest struct {
 }
 
 type PermintaanDarahGetAllResponse struct {
-	PDID   string `json:"permintaanDarahId"`
+	PDID string `json:"permintaanDarahId"`
 
 	// Data Pasien
-	PDNamaPasien  string                `json:"namaPasien"`
-	PDGender      models.GenderEnum     `json:"jenisKelamin"`
-	PDGolDarah    *models.BloodTypeEnum `json:"golonganDarah,omitempty"`
-	PDRhesus      *models.RhesusEnum    `json:"rhesusDarah,omitempty"`
+	PDNamaPasien    string                `json:"namaPasien"`
+	PDGender        models.GenderEnum     `json:"jenisKelamin"`
+	PDGolDarah      *models.BloodTypeEnum `json:"golonganDarah,omitempty"`
+	PDRhesus        *models.RhesusEnum    `json:"rhesusDarah,omitempty"`
 	PDTglPermintaan time.Time             `json:"tanggalPermintaan"`
 
 	// Status
-	PDStatus        models.PermintaanStatusEnum `json:"status"`
-	CreatedAt       time.Time                   `json:"createdAt"`
-	UpdatedAt       time.Time                   `json:"updatedAt"`
-	DeletedAt       *time.Time                  `json:"deletedAt,omitempty"`
+	PDStatus  models.PermintaanStatusEnum `json:"status"`
+	CreatedAt time.Time                   `json:"createdAt"`
+	UpdatedAt time.Time                   `json:"updatedAt"`
+	DeletedAt *time.Time                  `json:"deletedAt,omitempty"`
 }
 
 type PermintaanDarahResponse struct {

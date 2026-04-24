@@ -24,7 +24,7 @@ Authorization: Bearer {token}
 
 ```json
 {
-  "rsId": "RS001",
+  "rumahSakitId": "RS001",
   "namaPasien": "Budi Santoso",
   "noRM": "RM123",
   "tempatLahir": "Jakarta",
@@ -37,13 +37,14 @@ Authorization: Bearer {token}
   "pernahTransfusi": false,
   "indikasiTransfusi": "Transfusi rutin",
   "pernahHamil": null,
+  "status": "dibuat",
+  "tanggalPermintaan": "2026-04-10",
   "details": [
     {
-      "komId": 1,
+      "komponenDarahId": 1,
       "golonganDarah": "O",
       "rhesusDarah": "+",
-      "jumlahKantong": 2,
-      "tanggalDiperlukan": "2026-04-10T10:00:00Z"
+      "jumlahKantong": 2
     }
   ]
 }
@@ -67,17 +68,19 @@ Authorization: Bearer {token}
     "rhesusDarah": "+",
     "hemoglobin": 12.5,
     "status": "dibuat",
+    "tanggalPermintaan": "2026-04-10T00:00:00Z",
     "createdAt": "2026-04-07T14:30:45Z",
     "updatedAt": "2026-04-07T14:30:45Z",
-    "details": [
+    "detailPermintaanDarah": [
       {
-        "dpdId": 1,
-        "komId": 1,
-        "komNama": "Whole Blood",
+        "detailId": 1,
+        "permintaanDarahId": "PD04071430001",
+        "komponenNama": "Whole Blood",
         "golonganDarah": "O",
         "rhesusDarah": "+",
         "jumlahKantong": 2,
-        "tanggalDiperlukan": "2026-04-10T10:00:00Z"
+        "tanggalDiperlukan": "0001-01-01T00:00:00Z",
+        "createdAt": "2026-04-07T14:30:45Z"
       }
     ]
   }
@@ -190,8 +193,21 @@ Authorization: Bearer {token}
 
 ```json
 {
+  "rumahSakitId": "RS001",
+  "namaPasien": "Budi Santoso",
+  "noRM": "RM123",
+  "tempatLahir": "Jakarta",
+  "tanggalLahir": "1990-05-15",
+  "jenisKelamin": "L",
+  "golonganDarah": "O",
+  "rhesusDarah": "+",
   "hemoglobin": 13.0,
-  "ruangBagianKelas": "VVIP"
+  "ruangBagianKelas": "VVIP",
+  "pernahTransfusi": false,
+  "indikasiTransfusi": "Transfusi rutin",
+  "pernahHamil": null,
+  "status": "diproses",
+  "tanggalPermintaan": "2026-04-10"
 }
 ```
 
@@ -217,8 +233,21 @@ Authorization: Bearer {token}
 
 ```json
 {
+  "rumahSakitId": "RS001",
+  "namaPasien": "Budi Santoso",
+  "noRM": "RM123",
+  "tempatLahir": "Jakarta",
+  "tanggalLahir": "1990-05-15",
+  "jenisKelamin": "L",
+  "golonganDarah": "O",
+  "rhesusDarah": "+",
   "hemoglobin": 13.0,
-  "indikasiTransfusi": "Transfusi emergensi"
+  "ruangBagianKelas": "ICU",
+  "pernahTransfusi": false,
+  "indikasiTransfusi": "Transfusi emergensi",
+  "pernahHamil": null,
+  "status": "dibuat",
+  "tanggalPermintaan": "2026-04-10"
 }
 ```
 
