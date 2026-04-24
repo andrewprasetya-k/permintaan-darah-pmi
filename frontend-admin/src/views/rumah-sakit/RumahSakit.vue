@@ -1,24 +1,29 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRumahSakitStore } from '@/stores/rumah-sakit'
-import { Plus, AlertCircle, Hospital, ChevronLeft, ChevronRight, RotateCcw } from '@lucide/vue'
+import { Plus, AlertCircle, Hospital, ChevronLeft, ChevronRight, RotateCcw, Trash2 } from '@lucide/vue'
 import RumahSakitCreateDrawer from './RumahSakitCreateDrawer.vue'
 import RumahSakitEditDrawer from './RumahSakitEditDrawer.vue'
 import RumahSakitDetailDrawer from './RumahSakitDetailDrawer.vue'
+import AppModal from '@/components/feedback/AppModal.vue'
+import AppFlag from '@/components/feedback/AppFlag.vue'
 
 const rumahSakitStore = useRumahSakitStore()
 const showCreateDrawer = ref(false)
 const showEditDrawer = ref(false)
 const showDetailDrawer = ref(false)
-const showRestoreModal = ref(false)
-const restoreId = ref('')
-const restoring = ref(false)
+const pendingAction = ref<{ type: 'delete' | 'restore'; id: string; name: string } | null>(null)
+const flag = ref<{ variant: 'success' | 'error'; title: string; message?: string } | null>(null)
 const currentPage = ref(1)
 const itemsPerPage = 10
 
 const loadHospitals = async (page = currentPage.value) => {
   const offset = (page - 1) * itemsPerPage
-  await rumahSakitStore.fetchAll({ limit: itemsPerPage, offset })
+  await rumahSakitStore.fetchAll({
+    status: rumahSakitStore.currentFilter,
+    limit: itemsPerPage,
+    offset,
+  })
 }
 
 onMounted(async () => await loadHospitals())
@@ -37,31 +42,55 @@ const openDetailDrawer = (rumahSakit: any) => {
   showDetailDrawer.value = true
 }
 
-const deleteHospital = async (id: string) => {
-  if (confirm('Yakin ingin menghapus rumah sakit ini?')) {
-    await rumahSakitStore.deleteHospital(id)
-    await loadHospitals(currentPage.value)
-  }
+const handleFilterChange = async (event: Event) => {
+  const target = event.target as HTMLSelectElement
+  currentPage.value = 1
+  await rumahSakitStore.fetchAll({ status: target.value, limit: itemsPerPage, offset: 0 })
 }
 
 const handleSubmit = async () => {
   await loadHospitals(currentPage.value)
 }
 
-const openRestoreModal = () => {
-  restoreId.value = ''
-  showRestoreModal.value = true
+const openDeleteDialog = (id: string, name: string) => {
+  pendingAction.value = { type: 'delete', id, name }
 }
 
-const submitRestore = async () => {
-  if (!restoreId.value.trim()) return
-  restoring.value = true
+const openRestoreDialog = (id: string, name: string) => {
+  pendingAction.value = { type: 'restore', id, name }
+}
+
+const closeActionDialog = () => {
+  pendingAction.value = null
+}
+
+const submitAction = async () => {
+  if (!pendingAction.value) return
   try {
-    await rumahSakitStore.restore(restoreId.value.trim())
-    showRestoreModal.value = false
+    if (pendingAction.value.type === 'delete') {
+      await rumahSakitStore.deleteHospital(pendingAction.value.id)
+      flag.value = {
+        variant: 'success',
+        title: 'Rumah sakit dinonaktifkan',
+        message: `${pendingAction.value.name} dipindahkan ke status nonaktif.`,
+      }
+    } else {
+      await rumahSakitStore.restore(pendingAction.value.id)
+      flag.value = {
+        variant: 'success',
+        title: 'Rumah sakit dipulihkan',
+        message: `${pendingAction.value.name} kembali aktif di sistem.`,
+      }
+    }
     await loadHospitals(currentPage.value)
+  } catch (error) {
+    flag.value = {
+      variant: 'error',
+      title: 'Operasi gagal',
+      message: error instanceof Error ? error.message : 'Gagal memproses rumah sakit.',
+    }
   } finally {
-    restoring.value = false
+    closeActionDialog()
   }
 }
 
@@ -84,58 +113,56 @@ watch(currentPage, async (page, previousPage) => {
 
 <template>
   <div class="flex h-full min-h-0 flex-col">
-    <Teleport to="body">
-      <Transition name="backdrop">
+    <AppFlag
+      v-if="flag"
+      :variant="flag.variant"
+      :title="flag.title"
+      :message="flag.message"
+      @close="flag = null"
+    />
+
+    <AppModal
+      :is-open="!!pendingAction"
+      :title="pendingAction?.type === 'delete' ? 'Nonaktifkan Rumah Sakit' : 'Pulihkan Rumah Sakit'"
+      :description="
+        pendingAction?.type === 'delete'
+          ? `Rumah sakit ${pendingAction?.name} akan dipindahkan ke status nonaktif.`
+          : `Rumah sakit ${pendingAction?.name} akan dipulihkan ke status aktif.`
+      "
+      @close="closeActionDialog"
+    >
+      <template #icon>
         <div
-          v-if="showRestoreModal"
-          class="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
-          @click="showRestoreModal = false"
-        />
-      </Transition>
-      <Transition name="drawer">
-        <div
-          v-if="showRestoreModal"
-          class="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-2xl"
+          class="flex h-12 w-12 items-center justify-center rounded-2xl"
+          :class="
+            pendingAction?.type === 'delete'
+              ? 'bg-red-50 text-red-600'
+              : 'bg-emerald-50 text-emerald-600'
+          "
         >
-          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
-            <RotateCcw :size="20" />
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900">Pulihkan Rumah Sakit</h3>
-          <p class="mt-2 text-sm leading-6 text-gray-500">
-            Endpoint backend mendukung restore by ID. Masukkan `rumahSakitId` yang ingin dipulihkan.
-          </p>
-          <input
-            v-model="restoreId"
-            type="text"
-            placeholder="Contoh: RS001"
-            class="mt-4 w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-900 outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-          />
-          <div
-            v-if="rumahSakitStore.error"
-            class="mt-3 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-600"
-          >
-            {{ rumahSakitStore.error }}
-          </div>
-          <div class="mt-6 flex gap-3">
-            <button
-              type="button"
-              class="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
-              @click="showRestoreModal = false"
-            >
-              Batal
-            </button>
-            <button
-              type="button"
-              :disabled="restoring || !restoreId.trim()"
-              class="flex-1 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
-              @click="submitRestore"
-            >
-              {{ restoring ? 'Memulihkan...' : 'Pulihkan' }}
-            </button>
-          </div>
+          <Trash2 v-if="pendingAction?.type === 'delete'" :size="20" />
+          <RotateCcw v-else :size="20" />
         </div>
-      </Transition>
-    </Teleport>
+      </template>
+
+      <template #footer>
+        <button
+          type="button"
+          class="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+          @click="closeActionDialog"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          class="flex-1 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition-colors"
+          :class="pendingAction?.type === 'delete' ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-600 hover:bg-emerald-700'"
+          @click="submitAction"
+        >
+          {{ pendingAction?.type === 'delete' ? 'Nonaktifkan' : 'Pulihkan' }}
+        </button>
+      </template>
+    </AppModal>
 
     <!-- Drawers -->
     <RumahSakitCreateDrawer
@@ -150,17 +177,6 @@ watch(currentPage, async (page, previousPage) => {
     />
     <RumahSakitDetailDrawer :is-open="showDetailDrawer" @close="showDetailDrawer = false" />
 
-    <!-- Loading -->
-    <!-- <div
-      v-if="rumahSakitStore.isLoading"
-      class="flex items-center justify-center py-16 text-sm text-gray-400"
-    >
-      <span
-        class="w-5 h-5 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin mr-3"
-      />
-      Memuat data...
-    </div> -->
-
     <!-- Error -->
     <div
       v-if="rumahSakitStore.error"
@@ -171,16 +187,21 @@ watch(currentPage, async (page, previousPage) => {
     </div>
 
     <!-- Table -->
-    <div class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden">
+    <div
+      v-else
+      class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden"
+    >
       <div class="border-b border-gray-100 px-5 py-4">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-          <button
-            @click="openRestoreModal"
-            class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 lg:px-5"
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <select
+            :value="rumahSakitStore.currentFilter"
+            @change="handleFilterChange"
+            class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100 sm:w-[190px]"
           >
-            <RotateCcw :size="16" />
-            Pulihkan ID
-          </button>
+            <option value="active">Aktif</option>
+            <option value="deleted">Dihapus</option>
+            <option value="all">Semua</option>
+          </select>
           <button
             @click="openCreateDrawer"
             class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 lg:px-5"
@@ -249,16 +270,26 @@ watch(currentPage, async (page, previousPage) => {
                   Detail
                 </button>
                 <button
+                  v-if="!rs.isDeleted"
                   @click="openEditDrawer(rs)"
                   class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
                 >
                   Edit
                 </button>
                 <button
-                  @click="deleteHospital(rs.rumahSakitId)"
+                  v-if="!rs.isDeleted"
+                  @click="openDeleteDialog(rs.rumahSakitId, rs.nama)"
                   class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
                 >
-                  Hapus
+                  Nonaktifkan
+                </button>
+                <button
+                  v-else
+                  @click="openRestoreDialog(rs.rumahSakitId, rs.nama)"
+                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-emerald-100 text-emerald-600 text-xs font-medium rounded-lg transition-colors"
+                >
+                  <RotateCcw :size="14" />
+                  Restore
                 </button>
               </div>
             </td>
@@ -310,26 +341,3 @@ watch(currentPage, async (page, previousPage) => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.backdrop-enter-active,
-.backdrop-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.backdrop-enter-from,
-.backdrop-leave-to {
-  opacity: 0;
-}
-
-.drawer-enter-active,
-.drawer-leave-active {
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.drawer-enter-from,
-.drawer-leave-to {
-  opacity: 0;
-  transform: translate(-50%, -46%);
-}
-</style>
