@@ -5,11 +5,15 @@ import { Plus, AlertCircle, Droplets, Power, ChevronLeft, ChevronRight } from '@
 import KomponenCreateDrawer from './KomponenCreateDrawer.vue'
 import KomponenEditDrawer from './KomponenEditDrawer.vue'
 import KomponenDetailDrawer from './KomponenDetailDrawer.vue'
+import AppModal from '@/components/feedback/AppModal.vue'
+import AppFlag from '@/components/feedback/AppFlag.vue'
 
 const komponenStore = useKomponenStore()
 const showCreateDrawer = ref(false)
 const showEditDrawer = ref(false)
 const showDetailDrawer = ref(false)
+const pendingDelete = ref<{ id: number; name: string } | null>(null)
+const flag = ref<{ variant: 'success' | 'error'; title: string; message?: string } | null>(null)
 const currentPage = ref(1)
 const itemsPerPage = 10
 
@@ -34,23 +38,60 @@ const openDetailDrawer = (komponen: any) => {
   showDetailDrawer.value = true
 }
 
-const deleteKomponen = async (id: number) => {
-  if (confirm('Yakin ingin menghapus komponen darah ini?')) {
-    await komponenStore.deleteKomponen(id)
-    await loadKomponen(currentPage.value)
-  }
+const openDeleteDialog = (id: number, name: string) => {
+  pendingDelete.value = { id, name }
 }
 
 const toggleKomponenStatus = async (id: number, isActive: boolean) => {
-  if (isActive) {
-    await komponenStore.deactivate(id)
-  } else {
-    await komponenStore.activate(id)
+  try {
+    if (isActive) {
+      await komponenStore.deactivate(id)
+      flag.value = {
+        variant: 'success',
+        title: 'Komponen dinonaktifkan',
+      }
+    } else {
+      await komponenStore.activate(id)
+      flag.value = {
+        variant: 'success',
+        title: 'Komponen diaktifkan',
+      }
+    }
+  } catch (error) {
+    flag.value = {
+      variant: 'error',
+      title: 'Operasi gagal',
+      message: error instanceof Error ? error.message : 'Gagal mengubah status komponen.',
+    }
   }
 }
 
 const handleSubmit = async () => {
+  showCreateDrawer.value = false
+  showEditDrawer.value = false
+  showDetailDrawer.value = false
   await loadKomponen(currentPage.value)
+}
+
+const submitDelete = async () => {
+  if (!pendingDelete.value) return
+  try {
+    await komponenStore.deleteKomponen(pendingDelete.value.id)
+    flag.value = {
+      variant: 'success',
+      title: 'Komponen dihapus',
+      message: `${pendingDelete.value.name} berhasil dihapus dari daftar.`,
+    }
+    await loadKomponen(currentPage.value)
+  } catch (error) {
+    flag.value = {
+      variant: 'error',
+      title: 'Operasi gagal',
+      message: error instanceof Error ? error.message : 'Gagal menghapus komponen darah.',
+    }
+  } finally {
+    pendingDelete.value = null
+  }
 }
 
 const totalPages = computed(() =>
@@ -72,6 +113,38 @@ watch(currentPage, async (page, previousPage) => {
 
 <template>
   <div class="flex h-full min-h-0 flex-col">
+    <AppFlag
+      v-if="flag"
+      :variant="flag.variant"
+      :title="flag.title"
+      :message="flag.message"
+      @close="flag = null"
+    />
+
+    <AppModal
+      :is-open="!!pendingDelete"
+      title="Hapus Komponen Darah"
+      :description="`Komponen ${pendingDelete?.name} akan dihapus dari sistem.`"
+      @close="pendingDelete = null"
+    >
+      <template #footer>
+        <button
+          type="button"
+          class="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+          @click="pendingDelete = null"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          class="flex-1 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700"
+          @click="submitDelete"
+        >
+          Hapus
+        </button>
+      </template>
+    </AppModal>
+
     <!-- Drawers -->
     <KomponenCreateDrawer
       :is-open="showCreateDrawer"
@@ -199,7 +272,7 @@ watch(currentPage, async (page, previousPage) => {
                     {{ kom.isActive ? 'Nonaktifkan' : 'Aktifkan' }}
                   </button>
                   <button
-                    @click="deleteKomponen(kom.komponenId)"
+                    @click="openDeleteDialog(kom.komponenId, kom.komponenDarah)"
                     class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
                   >
                     Hapus

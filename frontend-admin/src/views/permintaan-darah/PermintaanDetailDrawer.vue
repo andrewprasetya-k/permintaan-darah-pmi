@@ -3,6 +3,8 @@ import { computed, ref } from 'vue'
 import { usePermintaanStore } from '@/stores/permintaan'
 import { X, AlertCircle } from '@lucide/vue'
 import { permintaanAPI } from '@/api/permintaan'
+import AppModal from '@/components/feedback/AppModal.vue'
+import AppFlag from '@/components/feedback/AppFlag.vue'
 
 const props = defineProps<{
   isOpen: boolean
@@ -17,6 +19,9 @@ const permintaanStore = usePermintaanStore()
 const isUpdatingStatus = ref(false)
 const statusError = ref<string | null>(null)
 const showStatusDropdown = ref(false)
+const pendingStatus = ref<string | null>(null)
+const cancelReason = ref('')
+const flag = ref<{ variant: 'success' | 'error'; title: string; message?: string } | null>(null)
 
 const subtitle = computed(() => permintaanStore.selectedRequest?.namaPasien)
 
@@ -44,28 +49,120 @@ const validNextStatuses = computed(() => {
 const updateStatus = async (newStatus: string) => {
   if (!permintaanStore.selectedRequest) return
 
+  if (newStatus === 'dibatalkan') {
+    pendingStatus.value = newStatus
+    cancelReason.value = ''
+    statusError.value = null
+    showStatusDropdown.value = false
+    return
+  }
+
+  await submitStatusUpdate(newStatus)
+}
+
+const closeCancellationDialog = () => {
+  pendingStatus.value = null
+  cancelReason.value = ''
+  statusError.value = null
+}
+
+const submitStatusUpdate = async (newStatus: string, reason?: string) => {
+  if (!permintaanStore.selectedRequest) return
+
   isUpdatingStatus.value = true
   statusError.value = null
 
   try {
     const response = await permintaanAPI.updateStatus(
       permintaanStore.selectedRequest.permintaanDarahId,
-      { status: newStatus as any },
+      { status: newStatus as any, reason },
     )
     permintaanStore.selectedRequest = response.data
     showStatusDropdown.value = false
+    closeCancellationDialog()
+    flag.value = {
+      variant: 'success',
+      title: 'Status diperbarui',
+      message:
+        newStatus === 'dibatalkan'
+          ? 'Permintaan darah berhasil dibatalkan.'
+          : `Status berhasil diubah menjadi ${newStatus}.`,
+    }
     emit('updated')
   } catch (error: unknown) {
     statusError.value =
       error instanceof Error && error.message ? error.message : 'Gagal mengubah status'
+    flag.value = {
+      variant: 'error',
+      title: 'Operasi gagal',
+      message:
+        error instanceof Error && error.message ? error.message : 'Gagal mengubah status permintaan darah.',
+    }
   } finally {
     isUpdatingStatus.value = false
   }
+}
+
+const submitCancellation = async () => {
+  if (!cancelReason.value.trim()) {
+    statusError.value = 'Alasan pembatalan harus diisi'
+    return
+  }
+
+  await submitStatusUpdate('dibatalkan', cancelReason.value.trim())
 }
 </script>
 
 <template>
   <Teleport to="body">
+    <AppFlag
+      v-if="flag"
+      :variant="flag.variant"
+      :title="flag.title"
+      :message="flag.message"
+      @close="flag = null"
+    />
+
+    <AppModal
+      :is-open="pendingStatus === 'dibatalkan'"
+      title="Batalkan Permintaan Darah"
+      description="Status dibatalkan memerlukan alasan yang akan dikirim ke payload backend."
+      @close="closeCancellationDialog"
+    >
+      <textarea
+        v-model="cancelReason"
+        rows="4"
+        placeholder="Masukkan alasan pembatalan"
+        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-900 outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+      />
+
+      <div
+        v-if="statusError && pendingStatus === 'dibatalkan'"
+        class="mt-3 flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 p-3 text-xs text-red-600"
+      >
+        <AlertCircle :size="14" class="shrink-0" />
+        {{ statusError }}
+      </div>
+
+      <template #footer>
+        <button
+          type="button"
+          class="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+          @click="closeCancellationDialog"
+        >
+          Tutup
+        </button>
+        <button
+          type="button"
+          :disabled="isUpdatingStatus"
+          class="flex-1 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+          @click="submitCancellation"
+        >
+          {{ isUpdatingStatus ? 'Memproses...' : 'Batalkan Permintaan' }}
+        </button>
+      </template>
+    </AppModal>
+
     <Transition name="backdrop">
       <div
         v-if="isOpen"
@@ -278,35 +375,6 @@ const updateStatus = async (newStatus: string) => {
                     >
                       {{ permintaanStore.selectedRequest.status }}
                     </span>
-                    <button
-                      v-if="validNextStatuses.length > 0"
-                      @click="showStatusDropdown = !showStatusDropdown"
-                      :disabled="isUpdatingStatus"
-                      class="px-3 py-1.5 text-xs text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
-                    >
-                      Ubah
-                    </button>
-                  </div>
-
-                  <!-- Status Dropdown Menu -->
-                  <div
-                    v-if="showStatusDropdown && validNextStatuses.length > 0"
-                    class="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-max"
-                  >
-                    <div
-                      v-for="status in validNextStatuses"
-                      :key="status"
-                      @click="updateStatus(status)"
-                      class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors first:rounded-t-lg last:rounded-b-lg"
-                    >
-                      {{
-                        status === 'dibatalkan'
-                          ? 'Batalkan'
-                          : status === 'bisa_diambil'
-                            ? 'Bisa Diambil'
-                            : status.charAt(0).toUpperCase() + status.slice(1)
-                      }}
-                    </div>
                   </div>
                 </div>
 

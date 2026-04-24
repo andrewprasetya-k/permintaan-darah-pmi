@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useAdminStore } from '@/stores/admin'
-import { Plus, AlertCircle, Users, Shield, RotateCcw, ChevronLeft, ChevronRight } from '@lucide/vue'
+import { Plus, AlertCircle, Users, Shield, RotateCcw, ChevronLeft, ChevronRight, Trash2 } from '@lucide/vue'
 import AdminCreateDrawer from './AdminCreateDrawer.vue'
 import AdminEditDrawer from './AdminEditDrawer.vue'
 import AdminDetailDrawer from './AdminDetailDrawer.vue'
+import AppModal from '@/components/feedback/AppModal.vue'
+import AppFlag from '@/components/feedback/AppFlag.vue'
 
 const adminStore = useAdminStore()
 const showCreateDrawer = ref(false)
 const showEditDrawer = ref(false)
 const showDetailDrawer = ref(false)
+const pendingAction = ref<{ type: 'delete' | 'restore'; id: string; name: string } | null>(null)
+const flag = ref<{ variant: 'success' | 'error'; title: string; message?: string } | null>(null)
 const currentPage = ref(1)
 const itemsPerPage = 10
 
@@ -44,21 +48,53 @@ const openDetailDrawer = (admin: any) => {
   showDetailDrawer.value = true
 }
 
-const deleteAdmin = async (id: string) => {
-  if (confirm('Yakin ingin menghapus admin ini?')) {
-    await adminStore.deleteAdmin(id)
-    await loadAdmins(currentPage.value)
-  }
+const openDeleteDialog = (id: string, name: string) => {
+  pendingAction.value = { type: 'delete', id, name }
 }
 
-const restoreAdmin = async (id: string) => {
-  if (confirm('Yakin ingin memulihkan admin ini?')) {
-    await adminStore.restore(id)
+const openRestoreDialog = (id: string, name: string) => {
+  pendingAction.value = { type: 'restore', id, name }
+}
+
+const closeActionDialog = () => {
+  pendingAction.value = null
+}
+
+const submitAction = async () => {
+  if (!pendingAction.value) return
+
+  try {
+    if (pendingAction.value.type === 'delete') {
+      await adminStore.deleteAdmin(pendingAction.value.id)
+      flag.value = {
+        variant: 'success',
+        title: 'Admin dihapus',
+        message: `${pendingAction.value.name} berhasil dipindahkan ke status nonaktif.`,
+      }
+    } else {
+      await adminStore.restore(pendingAction.value.id)
+      flag.value = {
+        variant: 'success',
+        title: 'Admin dipulihkan',
+        message: `${pendingAction.value.name} kembali aktif di sistem.`,
+      }
+    }
     await loadAdmins(currentPage.value)
+  } catch (error) {
+    flag.value = {
+      variant: 'error',
+      title: 'Operasi gagal',
+      message: error instanceof Error ? error.message : 'Terjadi kesalahan saat memproses admin.',
+    }
+  } finally {
+    closeActionDialog()
   }
 }
 
 const handleSubmit = async () => {
+  showCreateDrawer.value = false
+  showEditDrawer.value = false
+  showDetailDrawer.value = false
   await loadAdmins(currentPage.value)
 }
 
@@ -81,6 +117,57 @@ watch(currentPage, async (page, previousPage) => {
 
 <template>
   <div class="flex h-full min-h-0 flex-col">
+    <AppFlag
+      v-if="flag"
+      :variant="flag.variant"
+      :title="flag.title"
+      :message="flag.message"
+      @close="flag = null"
+    />
+
+    <AppModal
+      :is-open="!!pendingAction"
+      :title="pendingAction?.type === 'delete' ? 'Hapus Admin' : 'Pulihkan Admin'"
+      :description="
+        pendingAction?.type === 'delete'
+          ? `Admin ${pendingAction?.name} akan dipindahkan ke status nonaktif.`
+          : `Admin ${pendingAction?.name} akan dipulihkan ke status aktif.`
+      "
+      @close="closeActionDialog"
+    >
+      <template #icon>
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-2xl"
+          :class="
+            pendingAction?.type === 'delete'
+              ? 'bg-red-50 text-red-600'
+              : 'bg-emerald-50 text-emerald-600'
+          "
+        >
+          <Trash2 v-if="pendingAction?.type === 'delete'" :size="20" />
+          <RotateCcw v-else :size="20" />
+        </div>
+      </template>
+
+      <template #footer>
+        <button
+          type="button"
+          class="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+          @click="closeActionDialog"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          class="flex-1 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition-colors"
+          :class="pendingAction?.type === 'delete' ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-600 hover:bg-emerald-700'"
+          @click="submitAction"
+        >
+          {{ pendingAction?.type === 'delete' ? 'Hapus' : 'Pulihkan' }}
+        </button>
+      </template>
+    </AppModal>
+
     <!-- Drawers -->
     <AdminCreateDrawer
       :is-open="showCreateDrawer"
@@ -235,14 +322,14 @@ watch(currentPage, async (page, previousPage) => {
                   </button>
                   <button
                     v-if="!admin.isDeleted"
-                    @click="deleteAdmin(admin.adminId)"
+                    @click="openDeleteDialog(admin.adminId, admin.adminName)"
                     class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
                   >
                     Hapus
                   </button>
                   <button
                     v-else
-                    @click="restoreAdmin(admin.adminId)"
+                    @click="openRestoreDialog(admin.adminId, admin.adminName)"
                     class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-emerald-100 text-emerald-600 text-xs font-medium rounded-lg transition-colors"
                   >
                     <RotateCcw :size="14" />
