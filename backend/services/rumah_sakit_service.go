@@ -12,7 +12,7 @@ import (
 type RumahSakitService interface {
 	Create(req dto.CreateRumahSakitRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.RumahSakitResponse, error)
 	GetByID(id string) (*dto.RumahSakitResponse, error)
-	GetAll(limit, offset int) ([]dto.RumahSakitResponse, int, error)
+	GetAll(limit, offset int, status string) ([]dto.RumahSakitResponse, int, error)
 	Update(id string, req dto.UpdateRumahSakitRequest, userID *string, userName string, userRole string, userAgent *string) (*dto.RumahSakitResponse, error)
 	Delete(id string, userID *string, userName string, userRole string, userAgent *string) error
 	Restore(id string, userID *string, userName string, userRole string, userAgent *string) error
@@ -71,8 +71,8 @@ func (s *rumahSakitService) GetByID(id string) (*dto.RumahSakitResponse, error) 
 	return &resp, nil
 }
 
-func (s *rumahSakitService) GetAll(limit, offset int) ([]dto.RumahSakitResponse, int, error) {
-	list, err := s.repo.GetAll(limit, offset)
+func (s *rumahSakitService) GetAll(limit, offset int, status string) ([]dto.RumahSakitResponse, int, error) {
+	list, err := s.repo.GetAll(limit, offset, status)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -80,7 +80,7 @@ func (s *rumahSakitService) GetAll(limit, offset int) ([]dto.RumahSakitResponse,
 	for _, item := range list {
 		result = append(result, mapRumahSakitToResponse(item))
 	}
-	total, err := s.repo.Count()
+	total, err := s.repo.Count(status)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -212,6 +212,7 @@ func mapRumahSakitToResponse(data models.RumahSakit) dto.RumahSakitResponse {
 		RSAlamat:   data.RSAlamat,
 		RSEmail:    data.RSEmail,
 		RSUsername: data.RSUsername,
+		IsDeleted:  data.IsDeleted,
 		CreatedAt:  data.CreatedAt,
 		UpdatedAt:  data.UpdatedAt,
 		DeletedAt:  data.DeletedAt,

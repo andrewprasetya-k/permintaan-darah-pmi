@@ -10,6 +10,7 @@ type RumahSakit struct {
 	RSEmail    *string    `gorm:"column:rs_email;unique" json:"email,omitempty"`
 	RSUsername string     `gorm:"column:rs_username;unique" json:"username"`
 	RSPassword string     `gorm:"column:rs_password" json:"password"`
+	IsDeleted  bool       `gorm:"column:is_deleted;default:false" json:"isDeleted"`
 	CreatedAt  time.Time  `gorm:"column:created_at" json:"createdAt"`
 	UpdatedAt  time.Time  `gorm:"column:updated_at" json:"updatedAt"`
 	DeletedAt  *time.Time `gorm:"column:deleted_at" json:"deletedAt,omitempty"`

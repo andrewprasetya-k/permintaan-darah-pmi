@@ -67,8 +67,14 @@ func (ctl *RumahSakitController) GetMe(c *gin.Context) {
 }
 
 func (ctl *RumahSakitController) GetAll(c *gin.Context) {
+	status := c.DefaultQuery("status", "active")
+	if status != "active" && status != "deleted" && status != "all" {
+		utils.SendError(c, http.StatusBadRequest, "Invalid status filter")
+		return
+	}
+
 	limit, offset := utils.ParsePagination(c)
-	resp, total, err := ctl.service.GetAll(limit, offset)
+	resp, total, err := ctl.service.GetAll(limit, offset, status)
 	if err != nil {
 		utils.HandleError(c, err)
 		return

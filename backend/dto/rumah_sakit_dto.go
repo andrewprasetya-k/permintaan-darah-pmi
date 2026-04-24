@@ -27,6 +27,7 @@ type RumahSakitResponse struct {
 	RSEmail    *string    `json:"email,omitempty"`
 	RSUsername string     `json:"username" binding:"required"`
 	RSPassword *string    `json:"password,omitempty"`
+	IsDeleted  bool       `json:"isDeleted"`
 	CreatedAt  time.Time  `json:"createdAt"`
 	UpdatedAt  time.Time  `json:"updatedAt"`
 	DeletedAt  *time.Time `json:"deletedAt,omitempty"`

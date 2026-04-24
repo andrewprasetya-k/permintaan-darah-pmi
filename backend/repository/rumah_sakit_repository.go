@@ -11,8 +11,8 @@ import (
 type RumahSakitRepository interface {
 	Create(data *models.RumahSakit) error
 	GetByID(rsID string) (*models.RumahSakit, error)
-	GetAll(limit, offset int) ([]models.RumahSakit, error)
-	Count() (int64, error)
+	GetAll(limit, offset int, status string) ([]models.RumahSakit, error)
+	Count(status string) (int64, error)
 	GetByUsername(username string) (*models.RumahSakit, error)
 	Update(data *models.RumahSakit) error
 	Delete(data *models.RumahSakit) error
@@ -45,7 +45,7 @@ func (r *rumahSakitRepository) GetByID(rsID string) (*models.RumahSakit, error) 
 	return &data, nil
 }
 
-func (r *rumahSakitRepository) GetAll(limit, offset int) ([]models.RumahSakit, error) {
+func (r *rumahSakitRepository) GetAll(limit, offset int, status string) ([]models.RumahSakit, error) {
 	if limit <= 0 {
 		limit = 20
 	}
@@ -53,8 +53,10 @@ func (r *rumahSakitRepository) GetAll(limit, offset int) ([]models.RumahSakit, e
 		offset = 0
 	}
 
+	query := r.applyStatusFilter(r.db, status)
+
 	var list []models.RumahSakit
-	err := r.db.Where("is_deleted = ?", false).Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
+	err := query.Order("updated_at desc").Limit(limit).Offset(offset).Find(&list).Error
 	if err != nil {
 		return nil, err
 	}
@@ -103,8 +105,19 @@ func (r *rumahSakitRepository) Restore(rsID string) error {
 	}).Error
 }
 
-func (r *rumahSakitRepository) Count() (int64, error) {
+func (r *rumahSakitRepository) Count(status string) (int64, error) {
 	var count int64
-	err := r.db.Model(&models.RumahSakit{}).Where("is_deleted = ?", false).Count(&count).Error
+	err := r.applyStatusFilter(r.db.Model(&models.RumahSakit{}), status).Count(&count).Error
 	return count, err
+}
+
+func (r *rumahSakitRepository) applyStatusFilter(query *gorm.DB, status string) *gorm.DB {
+	switch status {
+	case "deleted":
+		return query.Where("is_deleted = ?", true)
+	case "all":
+		return query
+	default:
+		return query.Where("is_deleted = ?", false)
+	}
 }
