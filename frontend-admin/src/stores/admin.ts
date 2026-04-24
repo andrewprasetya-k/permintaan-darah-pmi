@@ -1,14 +1,16 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { adminAPI, type CreateAdminRequest, type UpdateAdminRequest } from '@/api/admin'
-import type { Admin } from '@/types/models'
+import type { Admin, PaginationMeta } from '@/types/models'
 
 export type AdminFilterStatus = 'active' | 'deleted' | 'all'
 
 export const useAdminStore = defineStore('admin', () => {
   const admins = ref<Admin[]>([])
   const selectedAdmin = ref<Admin | null>(null)
+  const myProfile = ref<Admin | null>(null)
   const currentFilter = ref<AdminFilterStatus>('active')
+  const pagination = ref<PaginationMeta | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -20,6 +22,7 @@ export const useAdminStore = defineStore('admin', () => {
       currentFilter.value = nextFilter
       const response = await adminAPI.getAll({ ...params, status: nextFilter })
       admins.value = response.data
+      pagination.value = response.pagination ?? null
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch admins'
     } finally {
@@ -102,10 +105,42 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
+  const fetchMe = async () => {
+    isLoading.value = true
+    error.value = null
+    try {
+      const response = await adminAPI.getMe()
+      myProfile.value = response.data
+      return response.data
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to fetch profile'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const updateMe = async (data: UpdateAdminRequest) => {
+    isLoading.value = true
+    error.value = null
+    try {
+      const response = await adminAPI.updateMe(data)
+      myProfile.value = response.data
+      return response.data
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to update profile'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     admins,
     selectedAdmin,
+    myProfile,
     currentFilter,
+    pagination,
     isLoading,
     error,
     fetchAll,
@@ -114,5 +149,7 @@ export const useAdminStore = defineStore('admin', () => {
     update,
     deleteAdmin,
     restore,
+    fetchMe,
+    updateMe,
   }
 })

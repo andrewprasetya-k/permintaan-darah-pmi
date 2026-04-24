@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { komponenAPI, type CreateKomponenRequest, type UpdateKomponenRequest } from '@/api/komponen'
-import type { KomponenDarah } from '@/types/models'
+import type { KomponenDarah, PaginationMeta } from '@/types/models'
 
 export const useKomponenStore = defineStore('komponen', () => {
   const komponens = ref<KomponenDarah[]>([])
   const selectedKomponen = ref<KomponenDarah | null>(null)
+  const pagination = ref<PaginationMeta | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -15,6 +16,7 @@ export const useKomponenStore = defineStore('komponen', () => {
     try {
       const response = await komponenAPI.getAll(params)
       komponens.value = response.data
+      pagination.value = response.pagination ?? null
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch components'
     } finally {
@@ -121,6 +123,7 @@ export const useKomponenStore = defineStore('komponen', () => {
   return {
     komponens,
     selectedKomponen,
+    pagination,
     isLoading,
     error,
     fetchAll,

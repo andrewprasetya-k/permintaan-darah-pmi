@@ -88,6 +88,17 @@ const router = createRouter({
       },
     },
     {
+      path: '/profil',
+      name: 'profile',
+      component: () => import('../views/profile/ProfileView.vue'),
+      meta: {
+        requiresAuth: true,
+        roles: ['admin', 'superadmin'],
+        title: 'Profil Saya',
+        subtitle: 'Kelola informasi akun admin yang sedang aktif',
+      },
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('../views/utils/NotFoundView.vue'),

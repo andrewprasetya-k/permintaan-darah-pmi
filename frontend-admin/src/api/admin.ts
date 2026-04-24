@@ -30,8 +30,16 @@ export const adminAPI = {
     return apiClient.get<Admin>(`/admin/${id}`)
   },
 
+  getMe() {
+    return apiClient.get<Admin>('/admin/me')
+  },
+
   update(id: string, data: UpdateAdminRequest) {
     return apiClient.put<Admin>(`/admin/${id}`, data)
+  },
+
+  updateMe(data: UpdateAdminRequest) {
+    return apiClient.put<Admin>('/admin/me', data)
   },
 
   delete(id: string) {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useKomponenStore } from '@/stores/komponen'
-import { Plus, Pencil, Trash2, Eye, AlertCircle, Droplets } from '@lucide/vue'
+import { Plus, AlertCircle, Droplets, Power, ChevronLeft, ChevronRight } from '@lucide/vue'
 import KomponenCreateDrawer from './KomponenCreateDrawer.vue'
 import KomponenEditDrawer from './KomponenEditDrawer.vue'
 import KomponenDetailDrawer from './KomponenDetailDrawer.vue'
@@ -10,8 +10,15 @@ const komponenStore = useKomponenStore()
 const showCreateDrawer = ref(false)
 const showEditDrawer = ref(false)
 const showDetailDrawer = ref(false)
+const currentPage = ref(1)
+const itemsPerPage = 10
 
-onMounted(async () => await komponenStore.fetchAll())
+const loadKomponen = async (page = currentPage.value) => {
+  const offset = (page - 1) * itemsPerPage
+  await komponenStore.fetchAll({ limit: itemsPerPage, offset })
+}
+
+onMounted(async () => await loadKomponen())
 
 const openCreateDrawer = () => {
   showCreateDrawer.value = true
@@ -30,12 +37,37 @@ const openDetailDrawer = (komponen: any) => {
 const deleteKomponen = async (id: number) => {
   if (confirm('Yakin ingin menghapus komponen darah ini?')) {
     await komponenStore.deleteKomponen(id)
+    await loadKomponen(currentPage.value)
   }
 }
 
-const handleSubmit = () => {
-  komponenStore.fetchAll()
+const toggleKomponenStatus = async (id: number, isActive: boolean) => {
+  if (isActive) {
+    await komponenStore.deactivate(id)
+  } else {
+    await komponenStore.activate(id)
+  }
 }
+
+const handleSubmit = async () => {
+  await loadKomponen(currentPage.value)
+}
+
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil((komponenStore.pagination?.total ?? 0) / itemsPerPage)),
+)
+
+const pageRange = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage
+  const total = komponenStore.pagination?.total ?? komponenStore.komponens.length
+  const endIndex = Math.min(startIndex + komponenStore.komponens.length, total)
+  return { startIndex, endIndex }
+})
+
+watch(currentPage, async (page, previousPage) => {
+  if (page === previousPage) return
+  await loadKomponen(page)
+})
 </script>
 
 <template>
@@ -92,7 +124,7 @@ const handleSubmit = () => {
         <div class="mt-4 border-t border-gray-100 pt-4">
           <p class="text-sm text-gray-600">
             Menampilkan
-            <span class="font-semibold text-gray-900">{{ komponenStore.komponens.length }}</span>
+            <span class="font-semibold text-gray-900">{{ komponenStore.pagination?.total ?? komponenStore.komponens.length }}</span>
             data komponen darah
           </p>
         </div>
@@ -155,6 +187,18 @@ const handleSubmit = () => {
                     Edit
                   </button>
                   <button
+                    @click="toggleKomponenStatus(kom.komponenId, kom.isActive)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors"
+                    :class="
+                      kom.isActive
+                        ? 'text-amber-600 hover:bg-amber-100'
+                        : 'text-emerald-600 hover:bg-emerald-100'
+                    "
+                  >
+                    <Power :size="14" />
+                    {{ kom.isActive ? 'Nonaktifkan' : 'Aktifkan' }}
+                  </button>
+                  <button
                     @click="deleteKomponen(kom.komponenId)"
                     class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
                   >
@@ -173,6 +217,39 @@ const handleSubmit = () => {
       >
         <Droplets :size="40" class="mb-3" />
         <p class="text-sm">Belum ada data komponen darah</p>
+      </div>
+
+      <div
+        v-if="(komponenStore.pagination?.total ?? 0) > 0"
+        class="flex items-center justify-between border-t border-gray-100 px-5 py-4"
+      >
+        <p class="text-sm text-gray-500">
+          Menampilkan {{ pageRange.startIndex + 1 }} - {{ pageRange.endIndex }} dari
+          {{ komponenStore.pagination?.total ?? komponenStore.komponens.length }} data
+        </p>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            :disabled="currentPage === 1"
+            class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-50"
+            @click="currentPage -= 1"
+          >
+            <ChevronLeft :size="14" />
+            Sebelumnya
+          </button>
+          <span class="min-w-20 text-center text-sm font-medium text-gray-700">
+            {{ currentPage }} / {{ totalPages }}
+          </span>
+          <button
+            type="button"
+            :disabled="currentPage >= totalPages"
+            class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-50"
+            @click="currentPage += 1"
+          >
+            Berikutnya
+            <ChevronRight :size="14" />
+          </button>
+        </div>
       </div>
     </div>
   </div>

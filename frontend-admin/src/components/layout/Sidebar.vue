@@ -9,6 +9,7 @@ import {
   Hospital,
   FlaskConical,
   ScrollText,
+  UserRound,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -46,6 +47,7 @@ const menuGroups = computed(() => [
       { name: 'Manajemen Rumah Sakit', to: '/rumah-sakit', icon: Hospital },
       { name: 'Komponen Darah', to: '/komponen', icon: FlaskConical },
       { name: 'System Logs', to: '/logs', icon: ScrollText },
+      { name: 'Profil Saya', to: '/profil', icon: UserRound },
       ...(userRole.value === 'superadmin'
         ? [{ name: 'Manajemen Admin', to: '/admin', icon: Users }]
         : []),

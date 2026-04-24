@@ -90,11 +90,13 @@ export interface DetailPermintaanDarah {
 }
 
 export interface StatusLog {
-  logId: string
+  logId: number
   permintaanDarahId: string
+  adminId?: string
+  adminNama: string
   statusFrom?: string
   statusTo: string
-  keterangan?: string
+  notes?: string
   createdAt: string
 }
 

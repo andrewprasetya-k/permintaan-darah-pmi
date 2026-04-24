@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useAdminStore } from '@/stores/admin'
-import { Plus, Pencil, Eye, AlertCircle, Users, Shield, RotateCcw } from '@lucide/vue'
+import { Plus, AlertCircle, Users, Shield, RotateCcw, ChevronLeft, ChevronRight } from '@lucide/vue'
 import AdminCreateDrawer from './AdminCreateDrawer.vue'
 import AdminEditDrawer from './AdminEditDrawer.vue'
 import AdminDetailDrawer from './AdminDetailDrawer.vue'
@@ -10,12 +10,24 @@ const adminStore = useAdminStore()
 const showCreateDrawer = ref(false)
 const showEditDrawer = ref(false)
 const showDetailDrawer = ref(false)
+const currentPage = ref(1)
+const itemsPerPage = 10
 
-onMounted(async () => await adminStore.fetchAll())
+const loadAdmins = async (page = currentPage.value) => {
+  const offset = (page - 1) * itemsPerPage
+  await adminStore.fetchAll({
+    status: adminStore.currentFilter,
+    limit: itemsPerPage,
+    offset,
+  })
+}
+
+onMounted(async () => await loadAdmins())
 
 const handleFilterChange = async (event: Event) => {
   const target = event.target as HTMLSelectElement
-  await adminStore.fetchAll({ status: target.value })
+  currentPage.value = 1
+  await adminStore.fetchAll({ status: target.value, limit: itemsPerPage, offset: 0 })
 }
 
 const openCreateDrawer = () => {
@@ -35,18 +47,36 @@ const openDetailDrawer = (admin: any) => {
 const deleteAdmin = async (id: string) => {
   if (confirm('Yakin ingin menghapus admin ini?')) {
     await adminStore.deleteAdmin(id)
+    await loadAdmins(currentPage.value)
   }
 }
 
 const restoreAdmin = async (id: string) => {
   if (confirm('Yakin ingin memulihkan admin ini?')) {
     await adminStore.restore(id)
+    await loadAdmins(currentPage.value)
   }
 }
 
-const handleSubmit = () => {
-  adminStore.fetchAll({ status: adminStore.currentFilter })
+const handleSubmit = async () => {
+  await loadAdmins(currentPage.value)
 }
+
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil((adminStore.pagination?.total ?? 0) / itemsPerPage)),
+)
+
+const pageRange = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage
+  const total = adminStore.pagination?.total ?? adminStore.admins.length
+  const endIndex = Math.min(startIndex + adminStore.admins.length, total)
+  return { startIndex, endIndex }
+})
+
+watch(currentPage, async (page, previousPage) => {
+  if (page === previousPage) return
+  await loadAdmins(page)
+})
 </script>
 
 <template>
@@ -112,7 +142,7 @@ const handleSubmit = () => {
         <div class="mt-4 border-t border-gray-100 pt-4">
           <p class="text-sm text-gray-600">
             Menampilkan
-            <span class="font-semibold text-gray-900">{{ adminStore.admins.length }}</span>
+            <span class="font-semibold text-gray-900">{{ adminStore.pagination?.total ?? adminStore.admins.length }}</span>
             data admin
           </p>
         </div>
@@ -231,6 +261,39 @@ const handleSubmit = () => {
       >
         <Users :size="40" class="mb-3" />
         <p class="text-sm">Belum ada data admin</p>
+      </div>
+
+      <div
+        v-if="(adminStore.pagination?.total ?? 0) > 0"
+        class="flex items-center justify-between border-t border-gray-100 px-5 py-4"
+      >
+        <p class="text-sm text-gray-500">
+          Menampilkan {{ pageRange.startIndex + 1 }} - {{ pageRange.endIndex }} dari
+          {{ adminStore.pagination?.total ?? adminStore.admins.length }} data
+        </p>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            :disabled="currentPage === 1"
+            class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-50"
+            @click="currentPage -= 1"
+          >
+            <ChevronLeft :size="14" />
+            Sebelumnya
+          </button>
+          <span class="min-w-20 text-center text-sm font-medium text-gray-700">
+            {{ currentPage }} / {{ totalPages }}
+          </span>
+          <button
+            type="button"
+            :disabled="currentPage >= totalPages"
+            class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-50"
+            @click="currentPage += 1"
+          >
+            Berikutnya
+            <ChevronRight :size="14" />
+          </button>
+        </div>
       </div>
     </div>
   </div>

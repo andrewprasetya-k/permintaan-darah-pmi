@@ -5,12 +5,13 @@ import {
   type CreateRumahSakitRequest,
   type UpdateRumahSakitRequest,
 } from '@/api/rumah-sakit'
-import type { RumahSakit } from '@/types/models'
+import type { PaginationMeta, RumahSakit } from '@/types/models'
 
 export const useRumahSakitStore = defineStore('rumahSakit', () => {
   const hospitals = ref<RumahSakit[]>([])
   const selectedHospital = ref<RumahSakit | null>(null)
   const selectedRumahSakit = ref<RumahSakit | null>(null)
+  const pagination = ref<PaginationMeta | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -20,6 +21,7 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
     try {
       const response = await rumahSakitAPI.getAll(params)
       hospitals.value = response.data
+      pagination.value = response.pagination ?? null
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch hospitals'
     } finally {
@@ -91,9 +93,7 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
     isLoading.value = true
     error.value = null
     try {
-      const response = await rumahSakitAPI.restore(id)
-      hospitals.value.push(response.data)
-      return response.data
+      await rumahSakitAPI.restore(id)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to restore hospital'
       throw err
@@ -106,6 +106,7 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
     hospitals,
     selectedHospital,
     selectedRumahSakit,
+    pagination,
     isLoading,
     error,
     fetchAll,
