@@ -16,7 +16,7 @@ Authorization: Bearer {token}
 
 ### Get All Status Logs
 
-**GET** `/status-logs?limit=20&offset=0&pdId={pdId}`
+**GET** `/status-logs?limit=20&offset=0`
 
 **Access:** Admin only
 
@@ -24,7 +24,6 @@ Authorization: Bearer {token}
 
 - `limit` (optional): default 20, max 100
 - `offset` (optional): default 0
-- `pdId` (optional): filter by blood request ID
 
 **Purpose:** View history of all status changes for blood requests
 
@@ -37,20 +36,18 @@ Authorization: Bearer {token}
   "data": [
     {
       "logId": 1,
-      "pdId": "PD04071430001",
+      "permintaanDarahId": "PD04071430001",
       "adminId": "ADM-001",
       "adminNama": "Admin One",
-      "statusFrom": "dibuat",
       "statusTo": "diproses",
       "notes": "Status berubah dari dibuat menjadi diproses. Alasan: Verifikasi completed",
       "createdAt": "2026-04-07T14:35:00Z"
     },
     {
       "logId": 2,
-      "pdId": "PD04071430001",
+      "permintaanDarahId": "PD04071430001",
       "adminId": "ADM-001",
       "adminNama": "Admin One",
-      "statusFrom": "diproses",
       "statusTo": "bisa_diambil",
       "notes": "Status berubah dari diproses menjadi bisa_diambil",
       "createdAt": "2026-04-07T15:30:00Z"
@@ -91,28 +88,26 @@ Authorization: Bearer {token}
   "data": [
     {
       "sysLogId": 1001,
-      "userId": "ADM-001",
-      "userName": "Admin One",
-      "userRole": "superadmin",
-      "action": "LOGIN",
-      "targetTable": null,
-      "targetId": null,
-      "notes": "Super admin login from web",
-      "ipAddress": "192.168.1.100",
-      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "sysUserId": "ADM-001",
+      "sysUserNama": "Admin One",
+      "sysUserRole": "superadmin",
+      "sysAction": "LOGIN",
+      "sysTargetTable": null,
+      "sysTargetId": null,
+      "sysNotes": "Super admin login from web",
+      "sysUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
       "createdAt": "2026-04-07T14:00:00Z"
     },
     {
       "sysLogId": 1002,
-      "userId": "ADM-001",
-      "userName": "Admin One",
-      "userRole": "superadmin",
-      "action": "CREATE",
-      "targetTable": "permintaan_darah",
-      "targetId": "PD04071430001",
-      "notes": "Created blood request for patient Budi Santoso",
-      "ipAddress": "192.168.1.100",
-      "userAgent": "Mozilla/5.0...",
+      "sysUserId": "ADM-001",
+      "sysUserNama": "Admin One",
+      "sysUserRole": "superadmin",
+      "sysAction": "CREATE",
+      "sysTargetTable": "permintaan_darah",
+      "sysTargetId": "PD04071430001",
+      "sysNotes": "Created blood request for patient Budi Santoso",
+      "sysUserAgent": "Mozilla/5.0...",
       "createdAt": "2026-04-07T14:30:45Z"
     }
   ],

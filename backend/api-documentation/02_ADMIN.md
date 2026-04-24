@@ -44,6 +44,7 @@ Authorization: Bearer {token}
     "adminName": "Admin Two",
     "adminEmail": "admin2@example.com",
     "adminRole": "admin",
+    "isDeleted": false,
     "createdAt": "2026-04-07T10:30:45Z",
     "updatedAt": "2026-04-07T10:30:45Z"
   }
@@ -72,7 +73,7 @@ Authorization: Bearer {token}
 
 ## Get All Admins (Superadmin Only)
 
-**GET** `/admin?limit=20&offset=0`
+**GET** `/admin?limit=20&offset=0&status=active`
 
 **Access:** Superadmin only
 
@@ -80,6 +81,7 @@ Authorization: Bearer {token}
 
 - `limit` (optional): default 20, max 100
 - `offset` (optional): default 0
+- `status` (optional): `active` | `deleted` | `all` (default `active`)
 
 **Response (200 OK):**
 
@@ -94,6 +96,7 @@ Authorization: Bearer {token}
       "adminName": "Admin One",
       "adminEmail": "admin@example.com",
       "adminRole": "superadmin",
+      "isDeleted": false,
       "createdAt": "2026-04-01T10:00:00Z",
       "updatedAt": "2026-04-07T10:30:45Z"
     },
@@ -103,6 +106,7 @@ Authorization: Bearer {token}
       "adminName": "Admin Two",
       "adminEmail": "admin2@example.com",
       "adminRole": "admin",
+      "isDeleted": false,
       "createdAt": "2026-04-07T10:30:45Z",
       "updatedAt": "2026-04-07T10:30:45Z"
     }
@@ -140,6 +144,7 @@ Authorization: Bearer {token}
     "adminName": "Admin One",
     "adminEmail": "admin@example.com",
     "adminRole": "superadmin",
+    "isDeleted": false,
     "createdAt": "2026-04-01T10:00:00Z",
     "updatedAt": "2026-04-07T10:30:45Z"
   }
@@ -172,12 +177,14 @@ Authorization: Bearer {token}
 ```json
 {
   "adminUsername": "admin_updated",
-  "adminPassword": "newpassword123",
   "adminName": "Admin One Updated",
   "adminEmail": "admin_updated@example.com",
-  "adminRole": "admin"
+  "adminRole": "admin",
+  "adminPassword": "newpassword123"
 }
 ```
+
+**Note:** `adminPassword` bersifat opsional saat update. Jika field ini tidak dikirim atau string kosong, password lama tetap dipakai.
 
 **Response (200 OK):**
 
@@ -191,6 +198,7 @@ Authorization: Bearer {token}
     "adminName": "Admin One Updated",
     "adminEmail": "admin_updated@example.com",
     "adminRole": "admin",
+    "isDeleted": false,
     "createdAt": "2026-04-01T10:00:00Z",
     "updatedAt": "2026-04-07T11:00:00Z"
   }
@@ -239,7 +247,16 @@ Authorization: Bearer {token}
 {
   "success": true,
   "message": "Admin restored successfully",
-  "data": null
+  "data": {
+    "adminId": "ADM-001",
+    "adminUsername": "admin",
+    "adminName": "Admin One",
+    "adminEmail": "admin@example.com",
+    "adminRole": "superadmin",
+    "isDeleted": false,
+    "createdAt": "2026-04-01T10:00:00Z",
+    "updatedAt": "2026-04-07T11:40:00Z"
+  }
 }
 ```
 
@@ -256,13 +273,14 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Profile retrieved successfully",
+  "message": "Admin retrieved successfully",
   "data": {
     "adminId": "ADM-001",
     "adminUsername": "admin",
     "adminName": "Admin One",
     "adminEmail": "admin@example.com",
     "adminRole": "superadmin",
+    "isDeleted": false,
     "createdAt": "2026-04-01T10:00:00Z",
     "updatedAt": "2026-04-07T10:30:45Z"
   }
@@ -281,9 +299,11 @@ Authorization: Bearer {token}
 
 ```json
 {
-  "adminPassword": "newpassword123",
+  "adminUsername": "admin",
   "adminName": "Admin Updated Name",
-  "adminEmail": "newemail@example.com"
+  "adminEmail": "newemail@example.com",
+  "adminRole": "superadmin",
+  "adminPassword": "newpassword123"
 }
 ```
 
@@ -292,20 +312,21 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Profile updated successfully",
+  "message": "Admin profile updated successfully",
   "data": {
     "adminId": "ADM-001",
     "adminUsername": "admin",
     "adminName": "Admin Updated Name",
     "adminEmail": "newemail@example.com",
     "adminRole": "superadmin",
+    "isDeleted": false,
     "createdAt": "2026-04-01T10:00:00Z",
     "updatedAt": "2026-04-07T11:30:00Z"
   }
 }
 ```
 
-**Note:** Can only update own password, name, and email. Cannot change adminRole or adminUsername.
+**Note:** Endpoint ini saat ini memakai DTO update admin yang sama dengan `PUT /admin/{id}`, jadi request tetap harus mengirim `adminUsername`, `adminName`, `adminEmail`, dan `adminRole`. `adminPassword` opsional.
 
 ---
 

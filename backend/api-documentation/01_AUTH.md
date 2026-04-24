@@ -26,7 +26,7 @@
   "success": true,
   "message": "Login successful",
   "data": {
-    "userId": "ADM-001",
+    "id": "ADM-001",
     "username": "admin@example.com",
     "role": "superadmin",
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQURNLTAwMSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoic3VwZXJhZG1pbiIsImV4cCI6MTcxMjU2ODAwMH0..."
@@ -77,7 +77,7 @@
   "success": true,
   "message": "Login successful",
   "data": {
-    "userId": "RS001",
+    "id": "RS001",
     "username": "rs_username",
     "role": "rumah_sakit",
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiUlMwMDEiLCJ1c2VybmFtZSI6InJzX3VzZXJuYW1lIiwicm9sZSI6InJ1bWFoX3Nha2l0IiwiZXhwIjoxNzEyNTY4MDAwfQ..."
@@ -103,7 +103,7 @@
 - **Type:** JWT (JSON Web Token)
 - **Algorithm:** HS256
 - **Expiry:** 24 hours
-- **Claims:** user_id, username, role, exp (expiration timestamp)
+- **Claims:** `user_id`, `username`, `role`, `exp`
 
 ### Token Usage
 
@@ -132,6 +132,7 @@ Lihat `GENERAL.md` untuk details WebSocket.
 - Token tidak bisa di-refresh (harus login ulang untuk new token)
 - Login endpoints menerapkan rate limiting ketat (5 attempts/menit) untuk prevent brute force
 - Request/response payload sensitive (passwords) tidak di-log untuk security
+- JWT middleware untuk protected endpoint mengembalikan payload sederhana seperti `{"error":"Invalid token"}` saat token missing, malformed, atau invalid
 
 ---
 

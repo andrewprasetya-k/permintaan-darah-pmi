@@ -22,8 +22,9 @@ Authorization: Bearer {token}
 
 ```json
 {
-  "komNama": "Packed Red Cell (PRC)",
-  "komKode": "PRC"
+  "komponenDarah": "Packed Red Cell (PRC)",
+  "komponenKode": "PRC",
+  "isActive": true
 }
 ```
 
@@ -34,9 +35,9 @@ Authorization: Bearer {token}
   "success": true,
   "message": "Blood component created successfully",
   "data": {
-    "komId": 2,
-    "komNama": "Packed Red Cell (PRC)",
-    "komKode": "PRC",
+    "komponenId": 2,
+    "komponenDarah": "Packed Red Cell (PRC)",
+    "komponenKode": "PRC",
     "isActive": true
   }
 }
@@ -63,21 +64,21 @@ Authorization: Bearer {token}
   "message": "Blood components retrieved successfully",
   "data": [
     {
-      "komId": 1,
-      "komNama": "Whole Blood",
-      "komKode": "WB",
+      "komponenId": 1,
+      "komponenDarah": "Whole Blood",
+      "komponenKode": "WB",
       "isActive": true
     },
     {
-      "komId": 2,
-      "komNama": "Packed Red Cell (PRC)",
-      "komKode": "PRC",
+      "komponenId": 2,
+      "komponenDarah": "Packed Red Cell (PRC)",
+      "komponenKode": "PRC",
       "isActive": true
     },
     {
-      "komId": 3,
-      "komNama": "Washed Erythrocyte (WE)",
-      "komKode": "WE",
+      "komponenId": 3,
+      "komponenDarah": "Washed Erythrocyte (WE)",
+      "komponenKode": "WE",
       "isActive": true
     }
   ],
@@ -109,9 +110,9 @@ Authorization: Bearer {token}
   "success": true,
   "message": "Blood component retrieved successfully",
   "data": {
-    "komId": 1,
-    "komNama": "Whole Blood",
-    "komKode": "WB",
+    "komponenId": 1,
+    "komponenDarah": "Whole Blood",
+    "komponenKode": "WB",
     "isActive": true
   }
 }
@@ -142,8 +143,9 @@ Authorization: Bearer {token}
 
 ```json
 {
-  "komNama": "Whole Blood - Updated",
-  "komKode": "WB_UPD"
+  "komponenDarah": "Whole Blood - Updated",
+  "komponenKode": "WB_UPD",
+  "isActive": true
 }
 ```
 
@@ -154,9 +156,9 @@ Authorization: Bearer {token}
   "success": true,
   "message": "Blood component updated successfully",
   "data": {
-    "komId": 1,
-    "komNama": "Whole Blood - Updated",
-    "komKode": "WB_UPD",
+    "komponenId": 1,
+    "komponenDarah": "Whole Blood - Updated",
+    "komponenKode": "WB_UPD",
     "isActive": true
   }
 }
@@ -183,9 +185,9 @@ Authorization: Bearer {token}
   "success": true,
   "message": "Blood component activated successfully",
   "data": {
-    "komId": 1,
-    "komNama": "Whole Blood",
-    "komKode": "WB",
+    "komponenId": 1,
+    "komponenDarah": "Whole Blood",
+    "komponenKode": "WB",
     "isActive": true
   }
 }
@@ -212,9 +214,9 @@ Authorization: Bearer {token}
   "success": true,
   "message": "Blood component deactivated successfully",
   "data": {
-    "komId": 1,
-    "komNama": "Whole Blood",
-    "komKode": "WB",
+    "komponenId": 1,
+    "komponenDarah": "Whole Blood",
+    "komponenKode": "WB",
     "isActive": false
   }
 }

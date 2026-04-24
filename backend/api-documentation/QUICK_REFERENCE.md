@@ -111,8 +111,8 @@ GET    /system-logs/table/:table          # By table
 GET    /system-logs/target/:targetId      # By target
 
 # Dashboard
-GET    /dashboard/status-summary/:rsId    # Get stats
-# :rsId = hospital ID or "all" (admin only)
+GET    /dashboard/status-summary/:rumahSakitID    # Get stats
+# :rumahSakitID = hospital ID or "all" (admin only)
 ```
 
 ---

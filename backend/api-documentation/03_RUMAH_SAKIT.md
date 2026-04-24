@@ -24,12 +24,12 @@ Authorization: Bearer {token}
 
 ```json
 {
-  "rsNama": "Rumah Sakit Pusat",
-  "rsNoTelp": "021-1234567",
-  "rsAlamat": "Jl. Merdeka No. 10, Jakarta",
-  "rsEmail": "info@rspusat.com",
-  "rsUsername": "rspusat",
-  "rsPassword": "password123"
+  "nama": "Rumah Sakit Pusat",
+  "nomorTelepon": "021-1234567",
+  "alamat": "Jl. Merdeka No. 10, Jakarta",
+  "email": "info@rspusat.com",
+  "username": "rspusat",
+  "password": "password123"
 }
 ```
 
@@ -40,12 +40,12 @@ Authorization: Bearer {token}
   "success": true,
   "message": "Hospital created successfully",
   "data": {
-    "rsId": "RS001",
-    "rsNama": "Rumah Sakit Pusat",
-    "rsNoTelp": "021-1234567",
-    "rsAlamat": "Jl. Merdeka No. 10, Jakarta",
-    "rsEmail": "info@rspusat.com",
-    "rsUsername": "rspusat",
+    "rumahSakitId": "RS001",
+    "nama": "Rumah Sakit Pusat",
+    "nomorTelepon": "021-1234567",
+    "alamat": "Jl. Merdeka No. 10, Jakarta",
+    "email": "info@rspusat.com",
+    "username": "rspusat",
     "createdAt": "2026-04-07T10:30:45Z",
     "updatedAt": "2026-04-07T10:30:45Z"
   }
@@ -73,12 +73,12 @@ Authorization: Bearer {token}
   "message": "Hospitals retrieved successfully",
   "data": [
     {
-      "rsId": "RS001",
-      "rsNama": "Rumah Sakit Pusat",
-      "rsNoTelp": "021-1234567",
-      "rsAlamat": "Jl. Merdeka No. 10, Jakarta",
-      "rsEmail": "info@rspusat.com",
-      "rsUsername": "rspusat",
+      "rumahSakitId": "RS001",
+      "nama": "Rumah Sakit Pusat",
+      "nomorTelepon": "021-1234567",
+      "alamat": "Jl. Merdeka No. 10, Jakarta",
+      "email": "info@rspusat.com",
+      "username": "rspusat",
       "createdAt": "2026-04-01T10:00:00Z",
       "updatedAt": "2026-04-07T10:30:45Z"
     }
@@ -107,12 +107,12 @@ Authorization: Bearer {token}
   "success": true,
   "message": "Hospital retrieved successfully",
   "data": {
-    "rsId": "RS001",
-    "rsNama": "Rumah Sakit Pusat",
-    "rsNoTelp": "021-1234567",
-    "rsAlamat": "Jl. Merdeka No. 10, Jakarta",
-    "rsEmail": "info@rspusat.com",
-    "rsUsername": "rspusat",
+    "rumahSakitId": "RS001",
+    "nama": "Rumah Sakit Pusat",
+    "nomorTelepon": "021-1234567",
+    "alamat": "Jl. Merdeka No. 10, Jakarta",
+    "email": "info@rspusat.com",
+    "username": "rspusat",
     "createdAt": "2026-04-01T10:00:00Z",
     "updatedAt": "2026-04-07T10:30:45Z"
   }
@@ -131,12 +131,11 @@ Authorization: Bearer {token}
 
 ```json
 {
-  "rsNama": "Rumah Sakit Pusat - Updated",
-  "rsNoTelp": "021-9876543",
-  "rsAlamat": "Jl. Merdeka No. 10, Jakarta Pusat",
-  "rsEmail": "updated@rspusat.com",
-  "rsUsername": "rspusat_updated",
-  "rsPassword": "newpassword123"
+  "nama": "Rumah Sakit Pusat - Updated",
+  "nomorTelepon": "021-9876543",
+  "alamat": "Jl. Merdeka No. 10, Jakarta Pusat",
+  "email": "updated@rspusat.com",
+  "password": "newpassword123"
 }
 ```
 
@@ -147,12 +146,12 @@ Authorization: Bearer {token}
   "success": true,
   "message": "Hospital updated successfully",
   "data": {
-    "rsId": "RS001",
-    "rsNama": "Rumah Sakit Pusat - Updated",
-    "rsNoTelp": "021-9876543",
-    "rsAlamat": "Jl. Merdeka No. 10, Jakarta Pusat",
-    "rsEmail": "updated@rspusat.com",
-    "rsUsername": "rspusat_updated",
+    "rumahSakitId": "RS001",
+    "nama": "Rumah Sakit Pusat - Updated",
+    "nomorTelepon": "021-9876543",
+    "alamat": "Jl. Merdeka No. 10, Jakarta Pusat",
+    "email": "updated@rspusat.com",
+    "username": "rspusat",
     "createdAt": "2026-04-01T10:00:00Z",
     "updatedAt": "2026-04-07T11:00:00Z"
   }
@@ -210,12 +209,12 @@ Authorization: Bearer {token}
   "success": true,
   "message": "Profile retrieved successfully",
   "data": {
-    "rsId": "RS001",
-    "rsNama": "Rumah Sakit Pusat",
-    "rsNoTelp": "021-1234567",
-    "rsAlamat": "Jl. Merdeka No. 10, Jakarta",
-    "rsEmail": "info@rspusat.com",
-    "rsUsername": "rspusat",
+    "rumahSakitId": "RS001",
+    "nama": "Rumah Sakit Pusat",
+    "nomorTelepon": "021-1234567",
+    "alamat": "Jl. Merdeka No. 10, Jakarta",
+    "email": "info@rspusat.com",
+    "username": "rspusat",
     "createdAt": "2026-04-01T10:00:00Z",
     "updatedAt": "2026-04-07T10:30:45Z"
   }
@@ -234,10 +233,11 @@ Authorization: Bearer {token}
 
 ```json
 {
-  "rsNoTelp": "021-9876543",
-  "rsAlamat": "Jl. Merdeka No. 10, Jakarta Selatan",
-  "rsEmail": "newemail@rspusat.com",
-  "rsPassword": "newpassword123"
+  "nama": "Rumah Sakit Pusat",
+  "nomorTelepon": "021-9876543",
+  "alamat": "Jl. Merdeka No. 10, Jakarta Selatan",
+  "email": "newemail@rspusat.com",
+  "password": "newpassword123"
 }
 ```
 
@@ -248,12 +248,12 @@ Authorization: Bearer {token}
   "success": true,
   "message": "Profile updated successfully",
   "data": {
-    "rsId": "RS001",
-    "rsNama": "Rumah Sakit Pusat",
-    "rsNoTelp": "021-9876543",
-    "rsAlamat": "Jl. Merdeka No. 10, Jakarta Selatan",
-    "rsEmail": "newemail@rspusat.com",
-    "rsUsername": "rspusat",
+    "rumahSakitId": "RS001",
+    "nama": "Rumah Sakit Pusat",
+    "nomorTelepon": "021-9876543",
+    "alamat": "Jl. Merdeka No. 10, Jakarta Selatan",
+    "email": "newemail@rspusat.com",
+    "username": "rspusat",
     "createdAt": "2026-04-01T10:00:00Z",
     "updatedAt": "2026-04-07T11:30:00Z"
   }

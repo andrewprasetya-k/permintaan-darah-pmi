@@ -41,6 +41,14 @@
 }
 ```
 
+JWT middleware adalah pengecualian. Saat token missing atau invalid, middleware mengembalikan payload sederhana seperti:
+
+```json
+{
+  "error": "Invalid token"
+}
+```
+
 ---
 
 ## HTTP Status Codes
@@ -108,6 +116,7 @@ Authorization: Bearer {token}
 - **Type:** JWT (JSON Web Token)
 - **Expiry:** 24 hours
 - **Algorithm:** HS256
+- **Claims:** `user_id`, `username`, `role`, `exp`
 - **Location:** Authorization header
 - **Format:** `Bearer {token}`
 
@@ -289,7 +298,7 @@ Setiap endpoint diorganisir per modul:
 | ----------- | ----------------------------------------------------------------- |
 | Superadmin  | Admin CRUD, hospital CRUD, components, all permintaan, all logs  |
 | Admin       | Hospital view/update, components, all permintaan, all logs       |
-| Rumah Sakit | Own profile, own permintaan, details, shared dashboard           |
+| Rumah Sakit | Own profile, own permintaan, own request status update, dashboard |
 
 ---
 
