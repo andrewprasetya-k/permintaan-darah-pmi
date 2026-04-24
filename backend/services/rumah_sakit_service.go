@@ -124,7 +124,14 @@ func (s *rumahSakitService) Update(id string, req dto.UpdateRumahSakitRequest, u
 	data.RSNoTelp = req.RSNoTelp
 	data.RSAlamat = req.RSAlamat
 	data.RSEmail = req.RSEmail
-	data.RSPassword = *req.RSPassword
+
+	if req.RSPassword != nil && *req.RSPassword != "" {
+		hashedPassword, err := utils.HashPassword(*req.RSPassword)
+		if err != nil {
+			return nil, err
+		}
+		data.RSPassword = hashedPassword
+	}
 
 	if err := s.repo.Update(data); err != nil {
 		return nil, err

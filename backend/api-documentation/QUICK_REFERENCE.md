@@ -236,12 +236,15 @@ curl -X POST http://localhost:8080/api/permintaan-darah \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "rsId":"RS001",
+    "rumahSakitId":"RS001",
     "namaPasien":"Budi",
+    "tempatLahir":"Jakarta",
     "tanggalLahir":"1990-05-15",
     "jenisKelamin":"L",
     "golonganDarah":"O",
-    "details":[{"komId":1,"jumlahKantong":2}]
+    "status":"dibuat",
+    "tanggalPermintaan":"2026-04-10",
+    "details":[{"komponenDarahId":1,"golonganDarah":"O","rhesusDarah":"+","jumlahKantong":2}]
   }'
 ```
 

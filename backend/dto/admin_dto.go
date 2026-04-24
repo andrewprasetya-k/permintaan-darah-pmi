@@ -15,7 +15,7 @@ type CreateAdminRequest struct {
 
 type UpdateAdminRequest struct {
 	AdminUsername string               `json:"adminUsername" binding:"required"`
-	AdminPassword string               `json:"adminPassword" binding:"required"`
+	AdminPassword string               `json:"adminPassword,omitempty" binding:"omitempty"`
 	AdminNama     string               `json:"adminName" binding:"required"`
 	AdminEmail    string               `json:"adminEmail" binding:"required,email"`
 	AdminRole     models.AdminRoleEnum `json:"adminRole" binding:"required,oneof=admin superadmin"`

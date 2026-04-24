@@ -106,10 +106,17 @@ func (s *adminService) Update(id string, req dto.UpdateAdminRequest, userID *str
 	}
 
 	data.AdminUsername = req.AdminUsername
-	data.AdminPassword = req.AdminPassword
 	data.AdminNama = req.AdminNama
 	data.AdminEmail = req.AdminEmail
 	data.AdminRole = req.AdminRole
+
+	if req.AdminPassword != "" {
+		hashedPassword, err := utils.HashPassword(req.AdminPassword)
+		if err != nil {
+			return nil, err
+		}
+		data.AdminPassword = hashedPassword
+	}
 
 	if err := s.repo.Update(data); err != nil {
 		return nil, err

@@ -11,7 +11,7 @@ export interface CreateAdminRequest {
 
 export interface UpdateAdminRequest {
   adminUsername: string
-  adminPassword: string
+  adminPassword?: string
   adminName: string
   adminEmail: string
   adminRole: 'superadmin' | 'admin'

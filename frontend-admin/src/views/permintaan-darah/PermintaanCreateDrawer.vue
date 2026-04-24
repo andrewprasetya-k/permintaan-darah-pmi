@@ -27,7 +27,7 @@ const formData = ref<CreatePermintaanRequest>({
 } as CreatePermintaanRequest)
 
 const newDetail = ref<CreateDetailRequestPayload>({
-  komId: 0,
+  komponenDarahId: 0,
   golonganDarah: 'A',
   rhesusDarah: '+',
   jumlahKantong: 1,
@@ -45,7 +45,7 @@ const resetForm = () => {
     details: [],
   } as CreatePermintaanRequest
   newDetail.value = {
-    komId: 0,
+    komponenDarahId: 0,
     golonganDarah: 'A',
     rhesusDarah: '+',
     jumlahKantong: 1,
@@ -53,10 +53,10 @@ const resetForm = () => {
 }
 
 const addDetail = () => {
-  if (newDetail.value.komId > 0) {
+  if (newDetail.value.komponenDarahId > 0) {
     formData.value.details?.push({ ...newDetail.value })
     newDetail.value = {
-      komId: 0,
+      komponenDarahId: 0,
       golonganDarah: 'A',
       rhesusDarah: '+',
       jumlahKantong: 1,
@@ -300,7 +300,7 @@ const handleSubmit = async () => {
                 >
                   <div class="text-sm">
                     <p class="font-medium text-gray-900">
-                      {{ komponenStore.komponens.find((k: any) => k.komponenId === detail.komId)?.komponenDarah || `Komponen #${detail.komId}` }}
+                      {{ komponenStore.komponens.find((k: any) => k.komponenId === detail.komponenDarahId)?.komponenDarah || `Komponen #${detail.komponenDarahId}` }}
                     </p>
                     <p class="text-xs text-gray-500">
                       {{ detail.golonganDarah }}{{ detail.rhesusDarah }} • {{ detail.jumlahKantong }} kantong
@@ -322,7 +322,7 @@ const handleSubmit = async () => {
                   <div>
                     <label class="block text-xs font-medium text-gray-600 mb-1">Komponen</label>
                     <select
-                      v-model.number="newDetail.komId"
+                      v-model.number="newDetail.komponenDarahId"
                       class="w-full px-2 py-1.5 text-xs text-gray-900 bg-white border border-gray-200 rounded outline-none focus:border-blue-400"
                     >
                       <option :value="0">Pilih komponen...</option>
