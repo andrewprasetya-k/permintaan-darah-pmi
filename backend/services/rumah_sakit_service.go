@@ -180,12 +180,12 @@ func (s *rumahSakitService) Delete(id string, userID *string, userName string, u
 }
 
 func (s *rumahSakitService) Restore(id string, userID *string, userName string, userRole string, userAgent *string) error {
-	rs, err := s.repo.GetByID(id)
-	if err != nil {
+	if err := s.repo.Restore(id); err != nil {
 		return err
 	}
 
-	if err := s.repo.Restore(id); err != nil {
+	rs, err := s.repo.GetByID(id)
+	if err != nil {
 		return err
 	}
 

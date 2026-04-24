@@ -92,17 +92,31 @@ func (r *rumahSakitRepository) Delete(data *models.RumahSakit) error {
 }
 
 func (r *rumahSakitRepository) SoftDelete(rsID string) error {
-	return r.db.Model(&models.RumahSakit{}).Where("rs_id = ?", rsID).Updates(map[string]interface{}{
+	tx := r.db.Model(&models.RumahSakit{}).Where("rs_id = ?", rsID).Where("is_deleted = ?", false).Updates(map[string]interface{}{
 		"is_deleted": true,
 		"deleted_at": time.Now(),
-	}).Error
+	})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
 func (r *rumahSakitRepository) Restore(rsID string) error {
-	return r.db.Model(&models.RumahSakit{}).Where("rs_id = ?", rsID).Updates(map[string]interface{}{
+	tx := r.db.Model(&models.RumahSakit{}).Where("rs_id = ?", rsID).Where("is_deleted = ?", true).Updates(map[string]interface{}{
 		"is_deleted": false,
 		"deleted_at": nil,
-	}).Error
+	})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
 func (r *rumahSakitRepository) Count(status string) (int64, error) {
