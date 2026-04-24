@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import logo from '@/assets/Pmi.png'
 import { LogIn, AlertCircle } from '@lucide/vue'
 
 const router = useRouter()
@@ -39,9 +40,8 @@ const handleLogin = async () => {
     <div class="w-full max-w-sm">
       <!-- Brand -->
       <div class="flex flex-col items-center mb-8">
-        <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4">
-          <span class="text-red-600 font-bold text-sm">PMI</span>
-        </div>
+        <img :src="logo" alt="PMI Logo" class="w-14 h-14 object-contain mb-4" />
+
         <h1 class="text-xl font-bold text-gray-900">
           PMI <span class="text-red-500">Salatiga</span>
         </h1>

@@ -55,8 +55,9 @@ const updateStatus = async (newStatus: string) => {
     permintaanStore.selectedRequest = response.data
     showStatusDropdown.value = false
     emit('updated')
-  } catch (error: any) {
-    statusError.value = error?.response?.data?.message || 'Gagal mengubah status'
+  } catch (error: unknown) {
+    statusError.value =
+      error instanceof Error && error.message ? error.message : 'Gagal mengubah status'
   } finally {
     isUpdatingStatus.value = false
   }
