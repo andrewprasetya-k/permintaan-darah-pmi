@@ -49,7 +49,6 @@ func main() {
 	rumahSakitRepo := repository.NewRumahSakitRepository(db)
 	komponenRepo := repository.NewKomponenDarahRepository(db)
 	permintaanRepo := repository.NewPermintaanDarahRepository(db)
-	detailRepo := repository.NewDetailPermintaanDarahRepository(db)
 	statusLogRepo := repository.NewStatusLogRepository(db)
 	systemAccessLogRepo := repository.NewSystemAccessLogRepository(db)
 	dashboardRepo := repository.NewDashboardRepository(db)
@@ -60,7 +59,6 @@ func main() {
 
 	systemAccessLogSvc := services.NewSystemAccessLogService(systemAccessLogRepo, wsHub)
 	permintaanSvc := services.NewPermintaanDarahService(permintaanRepo, statusLogRepo, systemAccessLogSvc, wsHub, db)
-	detailSvc := services.NewDetailPermintaanDarahService(detailRepo, systemAccessLogSvc, permintaanSvc)
 	statusLogSvc := services.NewStatusLogService(statusLogRepo)
 	dashboardSvc := services.NewDashboardService(dashboardRepo)
 
@@ -76,7 +74,6 @@ func main() {
 	rumahSakitCtl := controllers.NewRumahSakitController(rumahSakitSvc)
 	komponenCtl := controllers.NewKomponenDarahController(komponenSvc)
 	permintaanCtl := controllers.NewPermintaanDarahController(permintaanSvc)
-	detailCtl := controllers.NewDetailPermintaanDarahController(detailSvc)
 	statusLogCtl := controllers.NewStatusLogController(statusLogSvc)
 	systemAccessLogCtl := controllers.NewSystemAccessLogController(systemAccessLogSvc)
 	dashboardCtl := controllers.NewDashboardController(dashboardSvc)
@@ -89,7 +86,6 @@ func main() {
 		rumahSakitCtl,
 		komponenCtl,
 		permintaanCtl,
-		detailCtl,
 		statusLogCtl,
 		systemAccessLogCtl,
 		dashboardCtl,

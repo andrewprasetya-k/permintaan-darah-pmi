@@ -96,18 +96,6 @@ dibatalkan (any point, needs reason)
 
 ---
 
-## 📋 Request Details (Rumah Sakit Only)
-
-```bash
-POST   /detail-permintaan-darah  # Create detail
-GET    /detail-permintaan-darah  # List details
-GET    /detail-permintaan-darah/:id    # Get detail
-PUT    /detail-permintaan-darah/:id    # Update detail
-DELETE /detail-permintaan-darah/:id    # Delete detail
-```
-
----
-
 ## 📊 Logs & Audit (Admin Only)
 
 ```bash
@@ -273,7 +261,6 @@ curl -X PUT http://localhost:8080/api/permintaan-darah/update/PD04071430001 \
 - **03_RUMAH_SAKIT.md** - Hospital management
 - **04_KOMPONEN_DARAH.md** - Blood components
 - **05_PERMINTAAN_DARAH.md** - Blood requests
-- **06_DETAIL_PERMINTAAN_DARAH.md** - Request details
 - **07_LOGS.md** - Audit trails
 - **08_DASHBOARD.md** - Dashboard/stats
 

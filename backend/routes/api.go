@@ -14,7 +14,6 @@ func RegisterAPIRoutes(
 	rumahSakitController *controllers.RumahSakitController,
 	komponenController *controllers.KomponenDarahController,
 	permintaanController *controllers.PermintaanDarahController,
-	detailController *controllers.DetailPermintaanDarahController,
 	statusLogController *controllers.StatusLogController,
 	systemAccessLogController *controllers.SystemAccessLogController,
 	dashboardController *controllers.DashboardController,
@@ -102,14 +101,6 @@ func RegisterAPIRoutes(
 	permintaan.PUT("/:id", permintaanController.Update)
 	permintaan.DELETE("/:id", permintaanController.Delete)
 	permintaan.PUT("/update/:id", permintaanController.UpdateStatus)
-
-	detail := protected.Group("/detail-permintaan-darah")
-	detail.Use(middleware.RumahSakitOnly())
-	detail.POST("", detailController.Create)
-	detail.GET("", detailController.GetAll)
-	detail.GET("/:id", detailController.GetByID)
-	detail.PUT("/:id", detailController.Update)
-	detail.DELETE("/:id", detailController.Delete)
 
 	filter := protected.Group("/filter")
 	filter.Use(middleware.AdminOnly())

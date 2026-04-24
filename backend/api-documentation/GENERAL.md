@@ -277,7 +277,6 @@ Setiap endpoint diorganisir per modul:
 - `03_RUMAH_SAKIT.md` - Rumah Sakit management (CRUD)
 - `04_KOMPONEN_DARAH.md` - Blood component management (CRUD)
 - `05_PERMINTAAN_DARAH.md` - Blood request management (CRUD + Status)
-- `06_DETAIL_PERMINTAAN_DARAH.md` - Blood request details (CRUD)
 - `07_LOGS.md` - Status & system access logs
 - `08_DASHBOARD.md` - Dashboard & analytics
 - `GENERAL.md` - This file (General guidelines)

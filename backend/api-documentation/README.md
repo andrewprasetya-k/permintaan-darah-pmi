@@ -27,11 +27,10 @@
 
 #### Core Business
 6. **[05_PERMINTAAN_DARAH.md](05_PERMINTAAN_DARAH.md)** - Blood request CRUD + status management (Admin/Rumah Sakit)
-7. **[06_DETAIL_PERMINTAAN_DARAH.md](06_DETAIL_PERMINTAAN_DARAH.md)** - Blood request details (Rumah Sakit)
 
 #### Reporting & Monitoring
-8. **[07_LOGS.md](07_LOGS.md)** - Audit logs (Admin only)
-9. **[08_DASHBOARD.md](08_DASHBOARD.md)** - Dashboard analytics (Admin/Rumah Sakit)
+7. **[07_LOGS.md](07_LOGS.md)** - Audit logs (Admin only)
+8. **[08_DASHBOARD.md](08_DASHBOARD.md)** - Dashboard analytics (Admin/Rumah Sakit)
 
 ---
 
@@ -99,7 +98,6 @@ See **GENERAL.md** for WebSocket details.
 - ✅ Create/manage own blood requests
 - ✅ View own requests + shared requests
 - ✅ Update own request status
-- ✅ Add/manage request details
 - ❌ Cannot manage other hospitals
 - ❌ Cannot access admin/component management
 - ❌ Cannot view logs
@@ -256,7 +254,6 @@ Retry-After: 45
 - GET `/permintaan-darah/my-requests` - Own requests
 - PUT `/permintaan-darah/my-requests/{id}` - Update own request
 - GET `/dashboard/status-summary/{hospitalId}` - Own dashboard (rumah sakit hanya akan menerima data miliknya sendiri)
-- POST `/detail-permintaan-darah` - Add details
 
 ### For Monitoring (WebSocket)
 ```javascript
