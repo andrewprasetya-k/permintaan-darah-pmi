@@ -49,6 +49,9 @@ const handleFilterChange = async (event: Event) => {
 }
 
 const handleSubmit = async () => {
+  showCreateDrawer.value = false
+  showEditDrawer.value = false
+  showDetailDrawer.value = false
   await loadHospitals(currentPage.value)
 }
 
