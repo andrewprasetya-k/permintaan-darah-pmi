@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { usePermintaanStore } from '@/stores/permintaan'
 import { useKomponenStore } from '@/stores/komponen'
+import { useRumahSakitStore } from '@/stores/rumah-sakit'
+import { useAuthStore } from '@/stores/auth'
 import type { CreatePermintaanRequest, CreateDetailRequestPayload } from '@/api/permintaan'
 import { X, AlertCircle, Plus, Trash2 } from '@lucide/vue'
 
-defineProps<{ isOpen: boolean }>()
+const props = defineProps<{ isOpen: boolean }>()
 
 const emit = defineEmits<{
   close: []
@@ -14,13 +16,23 @@ const emit = defineEmits<{
 
 const permintaanStore = usePermintaanStore()
 const komponenStore = useKomponenStore()
+const rumahSakitStore = useRumahSakitStore()
+const authStore = useAuthStore()
 const isSubmitting = ref(false)
 const formData = ref<CreatePermintaanRequest>({
+  rumahSakitId: '',
   namaPasien: '',
+  noRM: '',
   tempatLahir: '',
   tanggalLahir: '',
   jenisKelamin: 'L',
+  golonganDarah: 'A',
+  rhesusDarah: '+',
   pernahTransfusi: false,
+  hemoglobin: undefined,
+  ruangBagianKelas: '',
+  indikasiTransfusi: '',
+  pernahHamil: '',
   status: 'dibuat',
   tanggalPermintaan: new Date().toISOString().split('T')[0],
   details: [],
@@ -35,11 +47,19 @@ const newDetail = ref<CreateDetailRequestPayload>({
 
 const resetForm = () => {
   formData.value = {
+    rumahSakitId: '',
     namaPasien: '',
+    noRM: '',
     tempatLahir: '',
     tanggalLahir: '',
     jenisKelamin: 'L',
+    golonganDarah: 'A',
+    rhesusDarah: '+',
     pernahTransfusi: false,
+    hemoglobin: undefined,
+    ruangBagianKelas: '',
+    indikasiTransfusi: '',
+    pernahHamil: '',
     status: 'dibuat',
     tanggalPermintaan: new Date().toISOString().split('T')[0],
     details: [],
@@ -51,6 +71,32 @@ const resetForm = () => {
     jumlahKantong: 1,
   }
 }
+
+const normalizeOptionalString = (value?: string) => {
+  const trimmed = value?.trim()
+  return trimmed ? trimmed : undefined
+}
+
+const normalizeOptionalNumber = (value?: number) => {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined
+}
+
+const loadReferenceData = async () => {
+  if (komponenStore.komponens.length === 0) {
+    await komponenStore.fetchAll({ limit: 100, offset: 0 })
+  }
+  if (umahSakitStore.hospitals.length === 0) {
+    await rumahSakitStore.fetchAll({ status: 'active', limit: 500, offset: 0 })
+  }
+}
+
+watch(
+  () => props.isOpen,
+  async (isOpen) => {
+    if (!isOpen) return
+    await loadReferenceData()
+  },
+)
 
 const addDetail = () => {
   if (newDetail.value.komponenDarahId > 0) {
@@ -68,6 +114,11 @@ const removeDetail = (index: number) => {
   formData.value.details?.splice(index, 1)
 }
 
+const toIsoDateString = (value?: string) => {
+  if (!value) return undefined
+  return new Date(`${value}T00:00:00`).toISOString()
+}
+
 const handleClose = () => {
   resetForm()
   emit('close')
@@ -76,7 +127,26 @@ const handleClose = () => {
 const handleSubmit = async () => {
   isSubmitting.value = true
   try {
-    await permintaanStore.create(formData.value)
+    const payload: CreatePermintaanRequest = {
+      namaPasien: formData.value.namaPasien.trim(),
+      noRM: normalizeOptionalString(formData.value.noRM),
+      tempatLahir: formData.value.tempatLahir.trim(),
+      tanggalLahir: toIsoDateString(formData.value.tanggalLahir) ?? formData.value.tanggalLahir,
+      jenisKelamin: formData.value.jenisKelamin,
+      golonganDarah: formData.value.golonganDarah,
+      rhesusDarah: formData.value.rhesusDarah,
+      hemoglobin: normalizeOptionalNumber(formData.value.hemoglobin),
+      ruangBagianKelas: normalizeOptionalString(formData.value.ruangBagianKelas),
+      pernahTransfusi: formData.value.pernahTransfusi,
+      indikasiTransfusi: normalizeOptionalString(formData.value.indikasiTransfusi),
+      pernahHamil: normalizeOptionalString(formData.value.pernahHamil),
+      status: 'dibuat',
+      cancelReason: undefined,
+      tanggalPermintaan:
+        toIsoDateString(formData.value.tanggalPermintaan) ?? formData.value.tanggalPermintaan,
+      details: formData.value.details,
+    }
+    await permintaanStore.create(payload)
     emit('submit')
     resetForm()
     emit('close')
@@ -118,6 +188,26 @@ const handleSubmit = async () => {
         <!-- Content -->
         <div class="flex-1 overflow-y-auto px-10 py-8">
           <form @submit.prevent="handleSubmit" class="space-y-5 max-w-full">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                Rumah Sakit
+              </label>
+              <select
+                v-model="formData.rumahSakitId"
+                required
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              >
+                <option value="">Pilih rumah sakit</option>
+                <option
+                  v-for="hospital in rumahSakitStore.hospitals"
+                  :key="hospital.rumahSakitId"
+                  :value="hospital.rumahSakitId"
+                >
+                  {{ hospital.nama }}
+                </option>
+              </select>
+            </div>
+
             <!-- Row 1: Nama Pasien & No. RM -->
             <div class="grid grid-cols-2 gap-4">
               <div>
@@ -142,7 +232,6 @@ const handleSubmit = async () => {
                 <input
                   v-model="formData.noRM"
                   type="text"
-                  required
                   class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
@@ -238,7 +327,6 @@ const handleSubmit = async () => {
                   v-model.number="formData.hemoglobin"
                   type="number"
                   step="0.1"
-                  required
                   class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
@@ -276,10 +364,37 @@ const handleSubmit = async () => {
               </label>
               <textarea
                 v-model="formData.indikasiTransfusi"
-                required
                 rows="3"
                 class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
               />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >
+                  Pernah Hamil
+                </label>
+                <input
+                  v-model="formData.pernahHamil"
+                  type="text"
+                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >
+                  Tanggal Permintaan
+                </label>
+                <input
+                  v-model="formData.tanggalPermintaan"
+                  type="date"
+                  required
+                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
             </div>
 
             <hr class="my-4 border-gray-200" />
@@ -300,10 +415,15 @@ const handleSubmit = async () => {
                 >
                   <div class="text-sm">
                     <p class="font-medium text-gray-900">
-                      {{ komponenStore.komponens.find((k: any) => k.komponenId === detail.komponenDarahId)?.komponenDarah || `Komponen #${detail.komponenDarahId}` }}
+                      {{
+                        komponenStore.komponens.find(
+                          (k: any) => k.komponenId === detail.komponenDarahId,
+                        )?.komponenDarah || `Komponen #${detail.komponenDarahId}`
+                      }}
                     </p>
                     <p class="text-xs text-gray-500">
-                      {{ detail.golonganDarah }}{{ detail.rhesusDarah }} • {{ detail.jumlahKantong }} kantong
+                      {{ detail.golonganDarah }}{{ detail.rhesusDarah }} •
+                      {{ detail.jumlahKantong }} kantong
                     </p>
                   </div>
                   <button
@@ -326,7 +446,11 @@ const handleSubmit = async () => {
                       class="w-full px-2 py-1.5 text-xs text-gray-900 bg-white border border-gray-200 rounded outline-none focus:border-blue-400"
                     >
                       <option :value="0">Pilih komponen...</option>
-                      <option v-for="kom in komponenStore.komponens" :key="kom.komponenId" :value="kom.komponenId">
+                      <option
+                        v-for="kom in komponenStore.komponens"
+                        :key="kom.komponenId"
+                        :value="kom.komponenId"
+                      >
                         {{ kom.komponenDarah }}
                       </option>
                     </select>
