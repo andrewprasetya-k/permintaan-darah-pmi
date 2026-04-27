@@ -112,6 +112,10 @@ const removeDetail = (index: number) => {
   formData.value.details?.splice(index, 1)
 }
 
+const activeKomponen = computed(() => 
+  komponenStore.komponens.filter((k) => k.isActive)
+)
+
 const toIsoDateString = (value?: string) => {
   if (!value) return undefined
   return new Date(`${value}T00:00:00`).toISOString()
@@ -446,7 +450,7 @@ const handleSubmit = async () => {
                     >
                       <option :value="0">Pilih komponen...</option>
                       <option
-                        v-for="kom in komponenStore.komponens"
+                        v-for="kom in activeKomponen"
                         :key="kom.komponenId"
                         :value="kom.komponenId"
                       >
