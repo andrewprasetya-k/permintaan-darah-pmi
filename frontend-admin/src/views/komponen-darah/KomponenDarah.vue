@@ -13,6 +13,7 @@ const showCreateDrawer = ref(false)
 const showEditDrawer = ref(false)
 const showDetailDrawer = ref(false)
 const pendingDelete = ref<{ id: number; name: string } | null>(null)
+const pendingToggle = ref<{ id: number; isActive: boolean; name: string } | null>(null)
 const flag = ref<{ variant: 'success' | 'error'; title: string; message?: string } | null>(null)
 const currentPage = ref(1)
 const itemsPerPage = 10
@@ -42,6 +43,10 @@ const openDeleteDialog = (id: number, name: string) => {
   pendingDelete.value = { id, name }
 }
 
+const openNonaktifDialog = (id: number, isActive: boolean, name: string) => {
+  pendingToggle.value = { id, isActive, name }
+}
+
 const toggleKomponenStatus = async (id: number, isActive: boolean) => {
   try {
     if (isActive) {
@@ -63,6 +68,8 @@ const toggleKomponenStatus = async (id: number, isActive: boolean) => {
       title: 'Operasi gagal',
       message: error instanceof Error ? error.message : 'Gagal mengubah status komponen.',
     }
+  } finally {
+    pendingToggle.value = null
   }
 }
 
@@ -145,6 +152,35 @@ watch(currentPage, async (page, previousPage) => {
       </template>
     </AppModal>
 
+    <AppModal
+      :is-open="!!pendingToggle"
+      :title="pendingToggle?.isActive ? 'Nonaktifkan Komponen Darah' : 'Aktifkan Komponen Darah'"
+      :description="`Komponen ${pendingToggle?.name} akan ${pendingToggle?.isActive ? 'dinonaktifkan' : 'diaktifkan'}.`"
+      @close="pendingToggle = null"
+    >
+      <template #footer>
+        <button
+          type="button"
+          class="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+          @click="pendingToggle = null"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          class="flex-1 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition-colors"
+          :class="
+            pendingToggle?.isActive
+              ? 'bg-amber-600 hover:bg-amber-700'
+              : 'bg-emerald-600 hover:bg-emerald-700'
+          "
+          @click="toggleKomponenStatus(pendingToggle!.id, pendingToggle!.isActive)"
+        >
+          {{ pendingToggle?.isActive ? 'Nonaktifkan' : 'Aktifkan' }}
+        </button>
+      </template>
+    </AppModal>
+
     <!-- Drawers -->
     <KomponenCreateDrawer
       :is-open="showCreateDrawer"
@@ -197,7 +233,9 @@ watch(currentPage, async (page, previousPage) => {
         <div class="mt-4 border-t border-gray-100 pt-4">
           <p class="text-sm text-gray-600">
             Menampilkan
-            <span class="font-semibold text-gray-900">{{ komponenStore.pagination?.total ?? komponenStore.komponens.length }}</span>
+            <span class="font-semibold text-gray-900">{{
+              komponenStore.pagination?.total ?? komponenStore.komponens.length
+            }}</span>
             data komponen darah
           </p>
         </div>
@@ -260,7 +298,7 @@ watch(currentPage, async (page, previousPage) => {
                     Edit
                   </button>
                   <button
-                    @click="toggleKomponenStatus(kom.komponenId, kom.isActive)"
+                    @click="openNonaktifDialog(kom.komponenId, kom.isActive, kom.komponenDarah)"
                     class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors"
                     :class="
                       kom.isActive
