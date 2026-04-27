@@ -4,7 +4,6 @@ import (
 	"backend/dto"
 	"backend/repository"
 	"backend/utils"
-	"errors"
 	"fmt"
 )
 
@@ -27,11 +26,11 @@ func (s *authService) AdminLogin(req dto.LoginRequest) (*dto.LoginResponse, erro
 	admin, err := s.adm.GetByUsername(req.Username)
 	if err != nil {
 		s.logSvc.LogAction(nil, req.Username, "admin", "LOGIN_FAILED", nil, nil, fmt.Sprintf("Login failed: %v", err), nil)
-		return nil, errors.New("invalid credentials")
+		return nil, utils.ErrInvalidCredentials
 	}
 	if !utils.ValidatePassword(admin.AdminPassword, req.Password) {
 		s.logSvc.LogAction(&admin.AdminID, admin.AdminNama, string(admin.AdminRole), "LOGIN_FAILED", nil, &admin.AdminID, "Invalid password", nil)
-		return nil, errors.New("invalid credentials")
+		return nil, utils.ErrInvalidCredentials
 	}
 	token, err := utils.GenerateJWT(admin.AdminID, admin.AdminUsername, string(admin.AdminRole))
 	if err != nil {
@@ -53,11 +52,11 @@ func (s *authService) RumahSakitLogin(req dto.LoginRequest) (*dto.LoginResponse,
 	rs, err := s.rs.GetByUsername(req.Username)
 	if err != nil {
 		s.logSvc.LogAction(nil, req.Username, "rumah_sakit", "LOGIN_FAILED", nil, nil, fmt.Sprintf("Login failed: %v", err), nil)
-		return nil, errors.New("invalid credentials")
+		return nil, utils.ErrInvalidCredentials
 	}
 	if !utils.ValidatePassword(rs.RSPassword, req.Password) {
 		s.logSvc.LogAction(&rs.RSID, rs.RSNama, "rumah_sakit", "LOGIN_FAILED", nil, &rs.RSID, "Invalid password", nil)
-		return nil, errors.New("invalid credentials")
+		return nil, utils.ErrInvalidCredentials
 	}
 	token, err := utils.GenerateJWT(rs.RSID, rs.RSUsername, "rumah_sakit")
 	if err != nil {
