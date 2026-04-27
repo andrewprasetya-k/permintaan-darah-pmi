@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRumahSakitStore } from '@/stores/rumah-sakit'
-import { Plus, AlertCircle, Hospital, ChevronLeft, ChevronRight, RotateCcw, Trash2 } from '@lucide/vue'
+import {
+  Plus,
+  AlertCircle,
+  Hospital,
+  ChevronLeft,
+  ChevronRight,
+  RotateCcw,
+  Trash2,
+} from '@lucide/vue'
 import RumahSakitCreateDrawer from './RumahSakitCreateDrawer.vue'
 import RumahSakitEditDrawer from './RumahSakitEditDrawer.vue'
 import RumahSakitDetailDrawer from './RumahSakitDetailDrawer.vue'
@@ -159,7 +167,11 @@ watch(currentPage, async (page, previousPage) => {
         <button
           type="button"
           class="flex-1 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition-colors"
-          :class="pendingAction?.type === 'delete' ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-600 hover:bg-emerald-700'"
+          :class="
+            pendingAction?.type === 'delete'
+              ? 'bg-red-600 hover:bg-red-700'
+              : 'bg-emerald-600 hover:bg-emerald-700'
+          "
           @click="submitAction"
         >
           {{ pendingAction?.type === 'delete' ? 'Nonaktifkan' : 'Pulihkan' }}
@@ -202,7 +214,7 @@ watch(currentPage, async (page, previousPage) => {
             class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100 sm:w-[190px]"
           >
             <option value="active">Aktif</option>
-            <option value="deleted">Dihapus</option>
+            <option value="deleted">Nonaktif</option>
             <option value="all">Semua</option>
           </select>
           <button
@@ -217,88 +229,90 @@ watch(currentPage, async (page, previousPage) => {
         <div class="mt-4 border-t border-gray-100 pt-4">
           <p class="text-sm text-gray-600">
             Menampilkan
-            <span class="font-semibold text-gray-900">{{ rumahSakitStore.pagination?.total ?? rumahSakitStore.hospitals.length }}</span>
+            <span class="font-semibold text-gray-900">{{
+              rumahSakitStore.pagination?.total ?? rumahSakitStore.hospitals.length
+            }}</span>
             data rumah sakit
           </p>
         </div>
       </div>
 
       <div class="min-h-0 flex-1 overflow-auto">
-      <table class="w-full text-sm">
-        <thead class="sticky top-0 z-10 bg-white shadow-sm">
-          <tr class="border-b border-gray-100">
-            <th
-              class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+        <table class="w-full text-sm">
+          <thead class="sticky top-0 z-10 bg-white shadow-sm">
+            <tr class="border-b border-gray-100">
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Nama
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Telepon
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Email
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Username
+              </th>
+              <th
+                class="bg-white px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
+              >
+                Aksi
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50">
+            <tr
+              v-for="rs in rumahSakitStore.hospitals"
+              :key="rs.rumahSakitId"
+              class="hover:bg-gray-50 transition-colors"
             >
-              Nama
-            </th>
-            <th
-              class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Telepon
-            </th>
-            <th
-              class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Email
-            </th>
-            <th
-              class="bg-white px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Username
-            </th>
-            <th
-              class="bg-white px-5 py-3.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wide"
-            >
-              Aksi
-            </th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-50">
-          <tr
-            v-for="rs in rumahSakitStore.hospitals"
-            :key="rs.rumahSakitId"
-            class="hover:bg-gray-50 transition-colors"
-          >
-            <td class="px-5 py-4 font-medium text-gray-800">{{ rs.nama }}</td>
-            <td class="px-5 py-4 text-gray-500">{{ rs.nomorTelepon }}</td>
-            <td class="px-5 py-4 text-gray-500">{{ rs.email || '—' }}</td>
-            <td class="px-5 py-4 text-gray-500">{{ rs.username }}</td>
-            <td class="px-5 py-4">
-              <div class="flex items-center justify-center gap-2">
-                <button
-                  @click="openDetailDrawer(rs)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
-                >
-                  Detail
-                </button>
-                <button
-                  v-if="!rs.isDeleted"
-                  @click="openEditDrawer(rs)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
-                >
-                  Edit
-                </button>
-                <button
-                  v-if="!rs.isDeleted"
-                  @click="openDeleteDialog(rs.rumahSakitId, rs.nama)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
-                >
-                  Nonaktifkan
-                </button>
-                <button
-                  v-else
-                  @click="openRestoreDialog(rs.rumahSakitId, rs.nama)"
-                  class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-emerald-100 text-emerald-600 text-xs font-medium rounded-lg transition-colors"
-                >
-                  <RotateCcw :size="14" />
-                  Restore
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              <td class="px-5 py-4 font-medium text-gray-800">{{ rs.nama }}</td>
+              <td class="px-5 py-4 text-gray-500">{{ rs.nomorTelepon }}</td>
+              <td class="px-5 py-4 text-gray-500">{{ rs.email || '—' }}</td>
+              <td class="px-5 py-4 text-gray-500">{{ rs.username }}</td>
+              <td class="px-5 py-4">
+                <div class="flex items-center justify-center gap-2">
+                  <button
+                    @click="openDetailDrawer(rs)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-green-100 text-green-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    Detail
+                  </button>
+                  <button
+                    v-if="!rs.isDeleted"
+                    @click="openEditDrawer(rs)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    v-if="!rs.isDeleted"
+                    @click="openDeleteDialog(rs.rumahSakitId, rs.nama)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    Nonaktifkan
+                  </button>
+                  <button
+                    v-else
+                    @click="openRestoreDialog(rs.rumahSakitId, rs.nama)"
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-emerald-100 text-emerald-600 text-xs font-medium rounded-lg transition-colors"
+                  >
+                    <RotateCcw :size="14" />
+                    Restore
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div
