@@ -352,9 +352,9 @@ func (s *permintaanDarahService) UpdateStatus(pdID string, newStatus models.Perm
 	}
 
 	log := models.StatusLog{
-		LogPdID:    pdID,
-		LogAdminID: userID,
-
+		LogPdID:       pdID,
+		LogAdminID:    userID,
+		LogAdminNama:  userName,
 		LogStatusFrom: &oldStatus,
 		LogStatusTo:   newStatus,
 		LogNotes:      &notes,
@@ -481,9 +481,9 @@ func (s *permintaanDarahService) UpdateStatusWithOwnershipCheck(pdID string, new
 	}
 
 	log := models.StatusLog{
-		LogPdID:    pdID,
-		LogAdminID: userID,
-
+		LogPdID:       pdID,
+		LogAdminID:    userID,
+		LogAdminNama:  userName,
 		LogStatusFrom: &oldStatus,
 		LogStatusTo:   newStatus,
 		LogNotes:      &notes,

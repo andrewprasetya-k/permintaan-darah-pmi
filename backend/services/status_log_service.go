@@ -22,10 +22,12 @@ func NewStatusLogService(repo repository.StatusLogRepository) StatusLogService {
 
 func (s *statusLogService) Create(req dto.CreateStatusLogRequest) (*dto.StatusLogResponse, error) {
 	data := models.StatusLog{
-		LogPdID:     req.LogPdID,
-		LogAdminID:  req.LogAdminID,
-		LogStatusTo: req.LogStatusTo,
-		LogNotes:    req.LogNotes,
+		LogPdID:       req.LogPdID,
+		LogAdminID:    req.LogAdminID,
+		LogAdminNama:  req.LogAdminNama,
+		LogStatusFrom: req.LogStatusFrom,
+		LogStatusTo:   req.LogStatusTo,
+		LogNotes:      req.LogNotes,
 	}
 	if err := s.repo.Create(&data); err != nil {
 		return nil, err
@@ -61,11 +63,13 @@ func (s *statusLogService) GetAll(limit, offset int) ([]dto.StatusLogResponse, i
 
 func mapStatusLogToResponse(data models.StatusLog) dto.StatusLogResponse {
 	return dto.StatusLogResponse{
-		LogID:       data.LogID,
-		LogPdID:     data.LogPdID,
-		LogAdminID:  data.LogAdminID,
-		LogStatusTo: data.LogStatusTo,
-		LogNotes:    data.LogNotes,
-		CreatedAt:   data.CreatedAt,
+		LogID:         data.LogID,
+		LogPdID:       data.LogPdID,
+		LogAdminID:    data.LogAdminID,
+		LogAdminNama:  data.LogAdminNama,
+		LogStatusFrom: data.LogStatusFrom,
+		LogStatusTo:   data.LogStatusTo,
+		LogNotes:      data.LogNotes,
+		CreatedAt:     data.CreatedAt,
 	}
 }
