@@ -9,8 +9,9 @@ Authorization: Bearer {token}
 ```
 
 **Access Control:**
-- Create/Read/Update/Delete - **Admin or Rumah Sakit**
-- Status updates - **Admin** (UpdateStatus) or **Rumah Sakit** (UpdateMyRequest)
+- Create/List/Detail/Update/Status update - **Admin or Rumah Sakit**
+- `DELETE /permintaan-darah/{id}` - **Admin or Superadmin only** (checked inside controller)
+- `GET /permintaan-darah/my-requests` and `PUT /permintaan-darah/my-requests/{id}` - **Rumah Sakit only** with ownership check
 
 ---
 
@@ -28,7 +29,7 @@ Authorization: Bearer {token}
   "namaPasien": "Budi Santoso",
   "noRM": "RM123",
   "tempatLahir": "Jakarta",
-  "tanggalLahir": "1990-05-15",
+  "tanggalLahir": "1990-05-15T00:00:00Z",
   "jenisKelamin": "L",
   "golonganDarah": "O",
   "rhesusDarah": "+",
@@ -38,7 +39,7 @@ Authorization: Bearer {token}
   "indikasiTransfusi": "Transfusi rutin",
   "pernahHamil": null,
   "status": "dibuat",
-  "tanggalPermintaan": "2026-04-10",
+  "tanggalPermintaan": "2026-04-10T00:00:00Z",
   "details": [
     {
       "komponenDarahId": 1,
@@ -55,14 +56,14 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Blood request created successfully",
+  "message": "Created successfully",
   "data": {
     "permintaanDarahId": "PD04071430001",
     "rumahSakitId": "RS001",
     "namaPasien": "Budi Santoso",
     "noRM": "RM123",
     "tempatLahir": "Jakarta",
-    "tanggalLahir": "1990-05-15",
+    "tanggalLahir": "1990-05-15T00:00:00Z",
     "jenisKelamin": "L",
     "golonganDarah": "O",
     "rhesusDarah": "+",
@@ -97,7 +98,7 @@ Authorization: Bearer {token}
 
 **Query Parameters:**
 
-- `limit` (optional): default 20, max 100
+- `limit` (optional): default 20
 - `offset` (optional): default 0
 - `status` (optional): dibuat | diproses | bisa_diambil | selesai | dibatalkan
 - `search` (optional): matches request ID, patient name, medical record number, blood type, rhesus, or combined blood type+rhesus
@@ -111,7 +112,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Blood requests retrieved successfully",
+  "message": "Data retrieved successfully",
   "data": [...],
   "pagination": {
     "total": 50,
@@ -132,7 +133,7 @@ Authorization: Bearer {token}
 
 **Query Parameters:**
 
-- `limit` (optional): default 20, max 100
+- `limit` (optional): default 20
 - `offset` (optional): default 0
 
 **Response (200 OK):**
@@ -140,7 +141,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Own blood requests retrieved successfully",
+  "message": "Data retrieved successfully",
   "data": [...],
   "pagination": {
     "total": 15,
@@ -157,7 +158,7 @@ Authorization: Bearer {token}
 
 **GET** `/permintaan-darah/{id}`
 
-**Access:** Admin or Rumah Sakit (own or shared)
+**Access:** Admin or Rumah Sakit. Current controller does not enforce ownership for this endpoint.
 
 **Path Parameters:**
 
@@ -168,7 +169,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Blood request retrieved successfully",
+  "message": "Data retrieved successfully",
   "data": {
     "permintaanDarahId": "PD04071430001",
     "rumahSakitId": "RS001",
@@ -176,18 +177,18 @@ Authorization: Bearer {token}
     "status": "diproses",
     "createdAt": "2026-04-07T14:30:45Z",
     "updatedAt": "2026-04-07T15:00:00Z",
-    "details": [...]
+    "detailPermintaanDarah": [...]
   }
 }
 ```
 
 ---
 
-## Update Blood Request (Admin Only)
+## Update Blood Request
 
 **PUT** `/permintaan-darah/{id}`
 
-**Access:** Admin only
+**Access:** Admin or Rumah Sakit. Current controller does not enforce ownership for this endpoint; Rumah Sakit-specific ownership check is available on `/permintaan-darah/my-requests/{id}`.
 
 **Request:**
 
@@ -197,7 +198,7 @@ Authorization: Bearer {token}
   "namaPasien": "Budi Santoso",
   "noRM": "RM123",
   "tempatLahir": "Jakarta",
-  "tanggalLahir": "1990-05-15",
+  "tanggalLahir": "1990-05-15T00:00:00Z",
   "jenisKelamin": "L",
   "golonganDarah": "O",
   "rhesusDarah": "+",
@@ -207,7 +208,7 @@ Authorization: Bearer {token}
   "indikasiTransfusi": "Transfusi rutin",
   "pernahHamil": null,
   "status": "diproses",
-  "tanggalPermintaan": "2026-04-10"
+  "tanggalPermintaan": "2026-04-10T00:00:00Z"
 }
 ```
 
@@ -216,7 +217,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Blood request updated successfully",
+  "message": "Data retrieved successfully",
   "data": {...}
 }
 ```
@@ -237,7 +238,7 @@ Authorization: Bearer {token}
   "namaPasien": "Budi Santoso",
   "noRM": "RM123",
   "tempatLahir": "Jakarta",
-  "tanggalLahir": "1990-05-15",
+  "tanggalLahir": "1990-05-15T00:00:00Z",
   "jenisKelamin": "L",
   "golonganDarah": "O",
   "rhesusDarah": "+",
@@ -247,7 +248,7 @@ Authorization: Bearer {token}
   "indikasiTransfusi": "Transfusi emergensi",
   "pernahHamil": null,
   "status": "dibuat",
-  "tanggalPermintaan": "2026-04-10"
+  "tanggalPermintaan": "2026-04-10T00:00:00Z"
 }
 ```
 
@@ -256,18 +257,18 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Blood request updated successfully",
+  "message": "Request updated successfully",
   "data": {...}
 }
 ```
 
 ---
 
-## Update Blood Request Status (Admin Only)
+## Update Blood Request Status
 
 **PUT** `/permintaan-darah/update/{id}`
 
-**Access:** Admin only
+**Access:** Admin or Rumah Sakit. For Rumah Sakit users, the service checks that the request belongs to their hospital.
 
 **Request:**
 
@@ -278,20 +279,18 @@ Authorization: Bearer {token}
 }
 ```
 
-**Valid Status Transitions:**
+**Status Transition Handling:**
 
-- `dibuat` → `diproses` | `dibatalkan`
-- `diproses` → `bisa_diambil` | `dibatalkan`
-- `bisa_diambil` → `selesai` | `dibatalkan`
-- `selesai` → ❌ (cannot change)
-- `dibatalkan` → ❌ (cannot change)
+- Backend currently blocks changes only when current status is `selesai` or `dibatalkan`.
+- Backend requires `reason` when new status is `dibatalkan`.
+- Frontend may enforce a stricter workflow (`dibuat` → `diproses` → `bisa_diambil` → `selesai`), but that transition matrix is not enforced in the service.
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Blood request status updated successfully",
+  "message": "Status updated successfully",
   "data": {
     "permintaanDarahId": "PD04071430001",
     "status": "diproses",
@@ -322,7 +321,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Blood request deleted successfully",
+  "message": "Operation successful",
   "data": null
 }
 ```
@@ -356,7 +355,9 @@ Authorization: Bearer {token}
 - Status changes are logged in status_logs for audit trail
 - Real-time WebSocket notifications on status changes
 - Requests marked selesai or dibatalkan cannot be modified
+- Request dates should be sent as RFC3339 timestamps because the DTO uses `time.Time`.
+- `tanggalDiperlukan` exists in the detail response DTO, but the current model/create flow does not persist it, so it may appear as the zero timestamp.
 
 ---
 
-**Last Updated:** 2026-04-07
+**Last Updated:** 2026-04-27

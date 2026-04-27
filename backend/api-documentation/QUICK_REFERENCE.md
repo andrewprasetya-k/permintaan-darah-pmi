@@ -10,12 +10,12 @@
 # Admin Login
 POST /auth/login/admin
 {"username": "admin@example.com", "password": "pass123"}
-→ Returns: {token, userId, role}
+→ Returns: {id, username, role, token}
 
 # Hospital Login
 POST /auth/login/rumah-sakit
 {"username": "rs_username", "password": "pass123"}
-→ Returns: {token, userId, role}
+→ Returns: {id, username, role, token}
 
 # All requests after login:
 Authorization: Bearer {token}
@@ -52,7 +52,7 @@ DELETE /rumah-sakit/:id          # Delete (soft)
 PUT    /rumah-sakit/restore/:id  # Restore hospital
 GET    /rumah-sakit/me           # Get own (rumah sakit)
 PUT    /rumah-sakit/me           # Update own (rumah sakit)
-GET    /filter/rumah-sakit/      # Get distinct names (admin)
+GET    /filter/rumah-sakit/      # Get hospital ID/name pairs (admin)
 ```
 
 ---
@@ -76,19 +76,19 @@ PUT    /komponen-darah/deactivate/:id    # Deactivate
 ```bash
 # Create & List
 POST   /permintaan-darah         # Create (admin/rumah sakit)
-GET    /permintaan-darah         # List all (admin) / own+shared (rumah sakit)
-GET    /permintaan-darah/:id     # Get detail
+GET    /permintaan-darah         # List requests; current endpoint is not ownership-scoped
+GET    /permintaan-darah/:id     # Get detail; current endpoint is not ownership-scoped
 
 # Rumah Sakit (Own Requests)
 GET    /permintaan-darah/my-requests        # List own
 PUT    /permintaan-darah/my-requests/:id    # Update own
 
-# Admin (All Requests)
-PUT    /permintaan-darah/:id                # Update any
-DELETE /permintaan-darah/:id                # Delete any
-PUT    /permintaan-darah/update/:id         # Change status
+# Shared/admin routes
+PUT    /permintaan-darah/:id                # Update request; current endpoint is not ownership-scoped
+DELETE /permintaan-darah/:id                # Delete request (admin/superadmin checked in controller)
+PUT    /permintaan-darah/update/:id         # Change status; rumah sakit ownership checked in service
 
-# Status Workflow
+# Frontend Status Workflow
 dibuat → diproses → bisa_diambil → selesai
   ↓        ↓           ↓
 dibatalkan (any point, needs reason)
@@ -125,7 +125,7 @@ ws://localhost:8080/api/ws/connect?token={JWT_TOKEN}
 
 # Messages Received
 {
-  "type": "status_change" | "update_permintaan",
+  "type": "new_permintaan" | "update_permintaan" | "status_change" | "new_activity",
   "action": "UPDATE",
   "entityId": "PD...",
   "entityType": "permintaan_darah",
@@ -227,11 +227,11 @@ curl -X POST http://localhost:8080/api/permintaan-darah \
     "rumahSakitId":"RS001",
     "namaPasien":"Budi",
     "tempatLahir":"Jakarta",
-    "tanggalLahir":"1990-05-15",
+    "tanggalLahir":"1990-05-15T00:00:00Z",
     "jenisKelamin":"L",
     "golonganDarah":"O",
     "status":"dibuat",
-    "tanggalPermintaan":"2026-04-10",
+    "tanggalPermintaan":"2026-04-10T00:00:00Z",
     "details":[{"komponenDarahId":1,"golonganDarah":"O","rhesusDarah":"+","jumlahKantong":2}]
   }'
 ```
@@ -266,6 +266,6 @@ curl -X PUT http://localhost:8080/api/permintaan-darah/update/PD04071430001 \
 
 ---
 
-**Last Updated:** 2026-04-07  
+**Last Updated:** 2026-04-27  
 **Token Expiry:** 24 hours  
 **Base URL:** http://localhost:8080/api

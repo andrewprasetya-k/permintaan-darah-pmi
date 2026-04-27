@@ -29,7 +29,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Status summary retrieved successfully",
+  "message": "Operation successful",
   "data": {
     "dibuat": 5,
     "diproses": 10,
@@ -101,4 +101,4 @@ Authorization: Bearer {token}
 
 ---
 
-**Last Updated:** 2026-04-07
+**Last Updated:** 2026-04-27

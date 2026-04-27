@@ -6,7 +6,7 @@
 
 **Version:** 1.0.0
 
-**Last Updated:** 2026-04-07
+**Last Updated:** 2026-04-27
 
 ---
 
@@ -96,8 +96,8 @@ See **GENERAL.md** for WebSocket details.
 
 ### Rumah Sakit (Hospital)
 - ✅ Create/manage own blood requests
-- ✅ View own requests + shared requests
-- ✅ Update own request status
+- ✅ View and update own requests through `/permintaan-darah/my-requests`
+- ✅ Update own request status through `/permintaan-darah/update/{id}` with ownership check
 - ❌ Cannot manage other hospitals
 - ❌ Cannot access admin/component management
 - ❌ Cannot view logs
@@ -124,7 +124,7 @@ OR at any point: Rumah Sakit or Admin can mark `dibatalkan` with reason.
 
 - Status changes broadcast to all connected WebSocket clients
 - All actions logged in system_access_logs
-- Status changes also logged in status_logs for audit trail
+- Status changes are logged in status_logs for audit trail
 
 ---
 
@@ -151,6 +151,8 @@ Different endpoints have different limits:
 | Login              | 5 requests      | 1 minute  |
 | Protected API      | 100 requests    | 1 minute  |
 | Strict endpoints   | 30 requests     | 1 minute  |
+
+Note: the strict limiter helper exists in code but is not registered on a route in `routes/api.go` at this time.
 
 Response when limit exceeded:
 
@@ -235,9 +237,13 @@ Retry-After: 45
 - `CREATE` - Create
 - `UPDATE` - Update
 - `DELETE` - Delete
+- `SOFT_DELETE` - Soft delete
 - `RESTORE` - Restore
 - `LOGIN` - Login
 - `LOGIN_FAILED` - Failed login
+- `UPDATE_STATUS` - Request status change
+- `ACTIVATE` - Component activated
+- `DEACTIVATE` - Component deactivated
 
 ---
 
@@ -253,6 +259,7 @@ Retry-After: 45
 - POST `/permintaan-darah` - Create request
 - GET `/permintaan-darah/my-requests` - Own requests
 - PUT `/permintaan-darah/my-requests/{id}` - Update own request
+- PUT `/permintaan-darah/update/{id}` - Update own request status with ownership check
 - GET `/dashboard/status-summary/{hospitalId}` - Own dashboard (rumah sakit hanya akan menerima data miliknya sendiri)
 
 ### For Monitoring (WebSocket)
@@ -286,5 +293,5 @@ For issues or questions:
 ---
 
 **Maintained by:** Development Team  
-**Last Updated:** 2026-04-07  
+**Last Updated:** 2026-04-27  
 **Status:** ✅ Production Ready

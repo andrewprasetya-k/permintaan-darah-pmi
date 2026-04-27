@@ -64,8 +64,7 @@ Authorization: Bearer {token}
 
 ```json
 {
-  "success": false,
-  "message": "Forbidden: Super Admins only"
+  "error": "Forbidden: Super Admins only"
 }
 ```
 
@@ -79,7 +78,7 @@ Authorization: Bearer {token}
 
 **Query Parameters:**
 
-- `limit` (optional): default 20, max 100
+- `limit` (optional): default 20
 - `offset` (optional): default 0
 - `status` (optional): `active` | `deleted` | `all` (default `active`)
 
@@ -346,4 +345,4 @@ Authorization: Bearer {token}
 
 ---
 
-**Last Updated:** 2026-04-07
+**Last Updated:** 2026-04-27

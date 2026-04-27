@@ -41,7 +41,7 @@
 }
 ```
 
-JWT middleware adalah pengecualian. Saat token missing atau invalid, middleware mengembalikan payload sederhana seperti:
+JWT/RBAC middleware adalah pengecualian. Saat token missing/invalid atau role tidak sesuai, middleware mengembalikan payload sederhana seperti:
 
 ```json
 {
@@ -71,7 +71,7 @@ JWT middleware adalah pengecualian. Saat token missing atau invalid, middleware 
 
 ### Query Parameters
 
-- `limit` - Number of items per page (default: 20, max: 100)
+- `limit` - Number of items per page (default: 20)
 - `offset` - Starting position (default: 0)
 
 ### Pagination Response
@@ -170,6 +170,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - `RESTORE` - Restore deleted record
 - `LOGIN` - User login
 - `LOGIN_FAILED` - Failed login attempt
+- `UPDATE_STATUS` - Permintaan status changed
+- `ACTIVATE` - Component activated
+- `DEACTIVATE` - Component deactivated
 
 ---
 
@@ -244,8 +247,10 @@ ws://localhost:8080/api/ws/connect?token=JWT_TOKEN
 
 ### Supported Message Types
 
+- `new_permintaan` - Permintaan dibuat
+- `update_permintaan` - Permintaan diupdate
 - `status_change` - Permintaan status berubah
-- `update_permintaan` - Permintaan dibuat atau diupdate
+- `new_activity` - System activity log baru
 
 ### Connection Features
 
@@ -264,6 +269,8 @@ Berbagai endpoint memiliki rate limiting untuk prevent abuse:
 | Login endpoints | 5 requests      | 1 menit |
 | Protected API   | 100 requests    | 1 menit |
 | Strict endpoints| 30 requests     | 1 menit |
+
+Catatan: helper strict rate limiter tersedia di kode, tetapi belum dipasang pada route di `routes/api.go` saat ini.
 
 Response header saat rate limit exceeded:
 
@@ -302,5 +309,5 @@ Setiap endpoint diorganisir per modul:
 
 ---
 
-**Last Updated:** 2026-04-07  
+**Last Updated:** 2026-04-27  
 **API Version:** 1.0.0

@@ -132,8 +132,8 @@ Lihat `GENERAL.md` untuk details WebSocket.
 - Token tidak bisa di-refresh (harus login ulang untuk new token)
 - Login endpoints menerapkan rate limiting ketat (5 attempts/menit) untuk prevent brute force
 - Request/response payload sensitive (passwords) tidak di-log untuk security
-- JWT middleware untuk protected endpoint mengembalikan payload sederhana seperti `{"error":"Invalid token"}` saat token missing, malformed, atau invalid
+- JWT/RBAC middleware untuk protected endpoint mengembalikan payload sederhana seperti `{"error":"Invalid token"}` atau `{"error":"Forbidden: Admins only"}` saat token/role tidak valid
 
 ---
 
-**Last Updated:** 2026-04-07
+**Last Updated:** 2026-04-27

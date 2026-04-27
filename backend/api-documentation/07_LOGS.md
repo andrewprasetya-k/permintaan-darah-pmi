@@ -22,7 +22,7 @@ Authorization: Bearer {token}
 
 **Query Parameters:**
 
-- `limit` (optional): default 20, max 100
+- `limit` (optional): default 20
 - `offset` (optional): default 0
 
 **Purpose:** View history of all status changes for blood requests
@@ -32,13 +32,14 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Status logs retrieved successfully",
+  "message": "Data retrieved successfully",
   "data": [
     {
       "logId": 1,
       "permintaanDarahId": "PD04071430001",
       "adminId": "ADM-001",
       "adminNama": "Admin One",
+      "statusFrom": "dibuat",
       "statusTo": "diproses",
       "notes": "Status berubah dari dibuat menjadi diproses. Alasan: Verifikasi completed",
       "createdAt": "2026-04-07T14:35:00Z"
@@ -48,6 +49,7 @@ Authorization: Bearer {token}
       "permintaanDarahId": "PD04071430001",
       "adminId": "ADM-001",
       "adminNama": "Admin One",
+      "statusFrom": "diproses",
       "statusTo": "bisa_diambil",
       "notes": "Status berubah dari diproses menjadi bisa_diambil",
       "createdAt": "2026-04-07T15:30:00Z"
@@ -74,7 +76,7 @@ Authorization: Bearer {token}
 
 **Query Parameters:**
 
-- `limit` (optional): default 20, max 100
+- `limit` (optional): default 20
 - `offset` (optional): default 0
 
 **Purpose:** View complete audit trail of all admin actions
@@ -84,7 +86,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "System logs retrieved successfully",
+  "message": "Operation successful",
   "data": [
     {
       "sysLogId": 1001,
@@ -132,9 +134,16 @@ Authorization: Bearer {token}
 
 ```json
 {
-  "success": true,
-  "message": "System log retrieved successfully",
-  "data": {...}
+  "sysLogId": 1001,
+  "sysUserId": "ADM-001",
+  "sysUserNama": "Admin One",
+  "sysUserRole": "superadmin",
+  "sysAction": "LOGIN",
+  "sysTargetTable": null,
+  "sysTargetId": null,
+  "sysNotes": "Admin Admin One login successfully",
+  "sysUserAgent": null,
+  "createdAt": "2026-04-07T14:00:00Z"
 }
 ```
 
@@ -148,7 +157,7 @@ Authorization: Bearer {token}
 
 **Query Parameters:**
 
-- `limit` (optional): default 20, max 100
+- `limit` (optional): default 20
 - `offset` (optional): default 0
 
 **Purpose:** View all actions performed by a specific user
@@ -158,7 +167,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "User logs retrieved successfully",
+  "message": "Operation successful",
   "data": [...],
   "pagination": {...}
 }
@@ -174,12 +183,12 @@ Authorization: Bearer {token}
 
 **Query Parameters:**
 
-- `limit` (optional): default 20, max 100
+- `limit` (optional): default 20
 - `offset` (optional): default 0
 
 **Path Parameters:**
 
-- `action` (required): CREATE | UPDATE | DELETE | RESTORE | LOGIN | LOGIN_FAILED
+- `action` (required): examples include CREATE | UPDATE | DELETE | SOFT_DELETE | RESTORE | LOGIN | LOGIN_FAILED | UPDATE_STATUS | ACTIVATE | DEACTIVATE
 
 **Purpose:** View all logs for a specific action type
 
@@ -188,7 +197,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Action logs retrieved successfully",
+  "message": "Operation successful",
   "data": [...],
   "pagination": {...}
 }
@@ -204,7 +213,7 @@ Authorization: Bearer {token}
 
 **Query Parameters:**
 
-- `limit` (optional): default 20, max 100
+- `limit` (optional): default 20
 - `offset` (optional): default 0
 
 **Path Parameters:**
@@ -218,7 +227,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Table logs retrieved successfully",
+  "message": "Operation successful",
   "data": [...],
   "pagination": {...}
 }
@@ -234,7 +243,7 @@ Authorization: Bearer {token}
 
 **Query Parameters:**
 
-- `limit` (optional): default 20, max 100
+- `limit` (optional): default 20
 - `offset` (optional): default 0
 
 **Path Parameters:**
@@ -248,7 +257,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Target logs retrieved successfully",
+  "message": "Operation successful",
   "data": [...],
   "pagination": {...}
 }
@@ -268,18 +277,20 @@ Authorization: Bearer {token}
 | LOGIN        | Successful user login          |
 | LOGIN_FAILED | Failed login attempt           |
 | UPDATE_STATUS| Status change (for requests)   |
+| ACTIVATE     | Component activated            |
+| DEACTIVATE   | Component deactivated          |
 
 ---
 
 ## Notes
 
 - Status logs track status changes with before/after states
-- System logs track ALL actions (CREATE, UPDATE, DELETE, LOGIN)
-- Both logs capture IP address and user agent for security
+- System logs track actions such as CREATE, UPDATE, DELETE, LOGIN, UPDATE_STATUS, ACTIVATE, and DEACTIVATE
+- System logs capture user agent; `sys_ip_address` exists in the SQL schema but is not mapped in the current Go model/DTO
 - Logs are immutable (cannot be edited or deleted)
 - Used for compliance and security audits
 - Admin names are captured at time of action (preserved even if admin is deleted)
 
 ---
 
-**Last Updated:** 2026-04-07
+**Last Updated:** 2026-04-27

@@ -33,7 +33,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Blood component created successfully",
+  "message": "Created successfully",
   "data": {
     "komponenId": 2,
     "komponenDarah": "Packed Red Cell (PRC)",
@@ -53,7 +53,7 @@ Authorization: Bearer {token}
 
 **Query Parameters:**
 
-- `limit` (optional): default 20, max 100
+- `limit` (optional): default 20
 - `offset` (optional): default 0
 
 **Response (200 OK):**
@@ -61,7 +61,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Blood components retrieved successfully",
+  "message": "Data retrieved successfully",
   "data": [
     {
       "komponenId": 1,
@@ -108,7 +108,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Blood component retrieved successfully",
+  "message": "Data retrieved successfully",
   "data": {
     "komponenId": 1,
     "komponenDarah": "Whole Blood",
@@ -154,7 +154,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Blood component updated successfully",
+  "message": "Updated successfully",
   "data": {
     "komponenId": 1,
     "komponenDarah": "Whole Blood - Updated",
@@ -183,7 +183,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Blood component activated successfully",
+  "message": "Komponen activated successfuly",
   "data": {
     "komponenId": 1,
     "komponenDarah": "Whole Blood",
@@ -212,7 +212,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Blood component deactivated successfully",
+  "message": "Komponen deactivated successfuly",
   "data": {
     "komponenId": 1,
     "komponenDarah": "Whole Blood",
@@ -238,9 +238,7 @@ Authorization: Bearer {token}
 
 ```json
 {
-  "success": true,
-  "message": "Blood component deleted successfully",
-  "data": null
+  "message": "deleted"
 }
 ```
 
@@ -268,10 +266,10 @@ Authorization: Bearer {token}
 ## Notes
 
 - Components are used in blood requests (detail_permintaan_darah)
-- Only active components can be used in new requests
+- The current create-request flow does not enforce `isActive`; the frontend should avoid presenting inactive components where needed
 - Component activation/deactivation affects availability without hard delete
 - All operations are logged in system_access_logs
 
 ---
 
-**Last Updated:** 2026-04-07
+**Last Updated:** 2026-04-27

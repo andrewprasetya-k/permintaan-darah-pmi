@@ -38,7 +38,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Hospital created successfully",
+  "message": "Created successfully",
   "data": {
     "rumahSakitId": "RS001",
     "nama": "Rumah Sakit Pusat",
@@ -46,6 +46,7 @@ Authorization: Bearer {token}
     "alamat": "Jl. Merdeka No. 10, Jakarta",
     "email": "info@rspusat.com",
     "username": "rspusat",
+    "isDeleted": false,
     "createdAt": "2026-04-07T10:30:45Z",
     "updatedAt": "2026-04-07T10:30:45Z"
   }
@@ -56,21 +57,22 @@ Authorization: Bearer {token}
 
 ## Get All Rumah Sakit (Admin Only)
 
-**GET** `/rumah-sakit?limit=20&offset=0`
+**GET** `/rumah-sakit?limit=20&offset=0&status=active`
 
 **Access:** Admin or Superadmin only
 
 **Query Parameters:**
 
-- `limit` (optional): default 20, max 100
+- `limit` (optional): default 20
 - `offset` (optional): default 0
+- `status` (optional): `active` | `deleted` | `all` (default `active`)
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Hospitals retrieved successfully",
+  "message": "Data retrieved successfully",
   "data": [
     {
       "rumahSakitId": "RS001",
@@ -79,6 +81,7 @@ Authorization: Bearer {token}
       "alamat": "Jl. Merdeka No. 10, Jakarta",
       "email": "info@rspusat.com",
       "username": "rspusat",
+      "isDeleted": false,
       "createdAt": "2026-04-01T10:00:00Z",
       "updatedAt": "2026-04-07T10:30:45Z"
     }
@@ -105,7 +108,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Hospital retrieved successfully",
+  "message": "Data retrieved successfully",
   "data": {
     "rumahSakitId": "RS001",
     "nama": "Rumah Sakit Pusat",
@@ -113,6 +116,7 @@ Authorization: Bearer {token}
     "alamat": "Jl. Merdeka No. 10, Jakarta",
     "email": "info@rspusat.com",
     "username": "rspusat",
+    "isDeleted": false,
     "createdAt": "2026-04-01T10:00:00Z",
     "updatedAt": "2026-04-07T10:30:45Z"
   }
@@ -144,7 +148,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Hospital updated successfully",
+  "message": "Data updated successfully",
   "data": {
     "rumahSakitId": "RS001",
     "nama": "Rumah Sakit Pusat - Updated",
@@ -152,6 +156,7 @@ Authorization: Bearer {token}
     "alamat": "Jl. Merdeka No. 10, Jakarta Pusat",
     "email": "updated@rspusat.com",
     "username": "rspusat",
+    "isDeleted": false,
     "createdAt": "2026-04-01T10:00:00Z",
     "updatedAt": "2026-04-07T11:00:00Z"
   }
@@ -171,7 +176,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Hospital deleted successfully",
+  "message": "Operation successful",
   "data": null
 }
 ```
@@ -189,7 +194,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Hospital restored successfully",
+  "message": "Operation successful",
   "data": null
 }
 ```
@@ -207,7 +212,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Profile retrieved successfully",
+  "message": "Data retrieved successfully",
   "data": {
     "rumahSakitId": "RS001",
     "nama": "Rumah Sakit Pusat",
@@ -215,6 +220,7 @@ Authorization: Bearer {token}
     "alamat": "Jl. Merdeka No. 10, Jakarta",
     "email": "info@rspusat.com",
     "username": "rspusat",
+    "isDeleted": false,
     "createdAt": "2026-04-01T10:00:00Z",
     "updatedAt": "2026-04-07T10:30:45Z"
   }
@@ -246,7 +252,7 @@ Authorization: Bearer {token}
 ```json
 {
   "success": true,
-  "message": "Profile updated successfully",
+  "message": "Data updated successfully",
   "data": {
     "rumahSakitId": "RS001",
     "nama": "Rumah Sakit Pusat",
@@ -254,6 +260,7 @@ Authorization: Bearer {token}
     "alamat": "Jl. Merdeka No. 10, Jakarta Selatan",
     "email": "newemail@rspusat.com",
     "username": "rspusat",
+    "isDeleted": false,
     "createdAt": "2026-04-01T10:00:00Z",
     "updatedAt": "2026-04-07T11:30:00Z"
   }
@@ -268,22 +275,27 @@ Authorization: Bearer {token}
 
 **Access:** Admin or Superadmin only
 
-**Purpose:** Get list of all unique hospital names for filtering
+**Purpose:** Get list of hospital ID/name pairs for filters
 
 **Response (200 OK):**
 
 ```json
 {
   "success": true,
-  "message": "Hospital names retrieved successfully",
+  "message": "Data retrieved successfully",
   "data": [
-    "Rumah Sakit Pusat",
-    "Rumah Sakit Cabang",
-    "Rumah Sakit Satelit"
+    {
+      "rumahSakitId": "RS001",
+      "nama": "Rumah Sakit Pusat"
+    },
+    {
+      "rumahSakitId": "RS002",
+      "nama": "Rumah Sakit Cabang"
+    }
   ]
 }
 ```
 
 ---
 
-**Last Updated:** 2026-04-07
+**Last Updated:** 2026-04-27
