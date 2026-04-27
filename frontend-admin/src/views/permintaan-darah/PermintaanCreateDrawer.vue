@@ -3,7 +3,6 @@ import { computed, ref, watch } from 'vue'
 import { usePermintaanStore } from '@/stores/permintaan'
 import { useKomponenStore } from '@/stores/komponen'
 import { useRumahSakitStore } from '@/stores/rumah-sakit'
-import { useAuthStore } from '@/stores/auth'
 import type { CreatePermintaanRequest, CreateDetailRequestPayload } from '@/api/permintaan'
 import { X, AlertCircle, Plus, Trash2 } from '@lucide/vue'
 
@@ -17,7 +16,6 @@ const emit = defineEmits<{
 const permintaanStore = usePermintaanStore()
 const komponenStore = useKomponenStore()
 const rumahSakitStore = useRumahSakitStore()
-const authStore = useAuthStore()
 const isSubmitting = ref(false)
 const formData = ref<CreatePermintaanRequest>({
   rumahSakitId: '',
@@ -85,7 +83,7 @@ const loadReferenceData = async () => {
   if (komponenStore.komponens.length === 0) {
     await komponenStore.fetchAll({ limit: 100, offset: 0 })
   }
-  if (umahSakitStore.hospitals.length === 0) {
+  if (rumahSakitStore.hospitals.length === 0) {
     await rumahSakitStore.fetchAll({ status: 'active', limit: 500, offset: 0 })
   }
 }
@@ -128,6 +126,7 @@ const handleSubmit = async () => {
   isSubmitting.value = true
   try {
     const payload: CreatePermintaanRequest = {
+      rumahSakitId: formData.value.rumahSakitId,
       namaPasien: formData.value.namaPasien.trim(),
       noRM: normalizeOptionalString(formData.value.noRM),
       tempatLahir: formData.value.tempatLahir.trim(),
