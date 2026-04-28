@@ -16,6 +16,8 @@ import PermintaanCreateDrawer from './PermintaanCreateDrawer.vue'
 import PermintaanEditDrawer from './PermintaanEditDrawer.vue'
 import PermintaanDetailDrawer from './PermintaanDetailDrawer.vue'
 import type { PermintaanDarah } from '@/types/models'
+import AppModal from '@/components/feedback/AppModal.vue'
+import AppFlag from '@/components/feedback/AppFlag.vue'
 
 const permintaanStore = usePermintaanStore()
 const showCreateDrawer = ref(false)
@@ -27,6 +29,7 @@ const currentPage = ref(1)
 const itemsPerPage = 8
 const deleteTarget = ref<PermintaanDarah | null>(null)
 const deleting = ref(false)
+const flag = ref<{ variant: 'success' | 'error'; title: string; message?: string } | null>(null)
 let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null
 
 const loadRequests = async (page = currentPage.value) => {
@@ -138,9 +141,15 @@ const confirmDelete = async () => {
   if (!deleteTarget.value) return
 
   deleting.value = true
+  const targetName = deleteTarget.value.namaPasien
   try {
     await permintaanStore.deleteRequest(deleteTarget.value.permintaanDarahId)
     deleteTarget.value = null
+    flag.value = {
+      variant: 'success',
+      title: 'Permintaan dihapus',
+      message: `Permintaan darah untuk ${targetName} berhasil dihapus.`,
+    }
     const maxPage = Math.max(
       1,
       Math.ceil(Math.max((permintaanStore.pagination?.total ?? 1) - 1, 1) / itemsPerPage),
@@ -149,6 +158,12 @@ const confirmDelete = async () => {
       currentPage.value = maxPage
     } else {
       await loadRequests(currentPage.value)
+    }
+  } catch (error) {
+    flag.value = {
+      variant: 'error',
+      title: 'Operasi gagal',
+      message: error instanceof Error ? error.message : 'Gagal menghapus permintaan darah.',
     }
   } finally {
     deleting.value = false
@@ -170,6 +185,14 @@ const handleDetailUpdated = async () => {
 
 <template>
   <div class="flex h-full min-h-0 flex-col">
+    <AppFlag
+      v-if="flag"
+      :variant="flag.variant"
+      :title="flag.title"
+      :message="flag.message"
+      @close="flag = null"
+    />
+
     <PermintaanCreateDrawer
       :is-open="showCreateDrawer"
       @close="showCreateDrawer = false"
@@ -186,50 +209,40 @@ const handleDetailUpdated = async () => {
       @updated="handleDetailUpdated"
     />
 
-    <Teleport to="body">
-      <Transition name="backdrop">
-        <div
-          v-if="deleteTarget"
-          class="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
-          @click="cancelDelete"
-        />
-      </Transition>
-      <Transition name="drawer">
-        <div
-          v-if="deleteTarget"
-          class="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-2xl"
-        >
-          <div
-            class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600"
-          >
-            <Trash2 :size="20" />
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900">Hapus Permintaan Darah</h3>
-          <p class="mt-2 text-sm leading-6 text-gray-500">
-            Apakah Anda yakin ingin menghapus permintaan untuk
-            <span class="font-semibold text-gray-900">{{ deleteTarget.namaPasien }}</span
-            >? Data yang dihapus tidak dapat dikembalikan dari halaman ini.
-          </p>
-          <div class="mt-6 flex gap-3">
-            <button
-              type="button"
-              @click="cancelDelete"
-              class="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
-            >
-              Batal
-            </button>
-            <button
-              type="button"
-              :disabled="deleting"
-              @click="confirmDelete"
-              class="flex-1 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-60"
-            >
-              {{ deleting ? 'Menghapus...' : 'Hapus' }}
-            </button>
-          </div>
+    <AppModal
+      :is-open="!!deleteTarget"
+      title="Hapus Permintaan Darah"
+      :description="
+        deleteTarget
+          ? `Permintaan darah untuk ${deleteTarget.namaPasien} akan dihapus dari sistem.`
+          : ''
+      "
+      @close="cancelDelete"
+    >
+      <template #icon>
+        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600">
+          <Trash2 :size="20" />
         </div>
-      </Transition>
-    </Teleport>
+      </template>
+
+      <template #footer>
+        <button
+          type="button"
+          @click="cancelDelete"
+          class="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          :disabled="deleting"
+          @click="confirmDelete"
+          class="flex-1 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-60"
+        >
+          {{ deleting ? 'Menghapus...' : 'Hapus' }}
+        </button>
+      </template>
+    </AppModal>
 
     <div
       class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden"

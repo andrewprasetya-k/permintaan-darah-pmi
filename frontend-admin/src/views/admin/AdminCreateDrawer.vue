@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { useAdminStore } from '@/stores/admin'
 import { X, AlertCircle, Eye, EyeOff } from '@lucide/vue'
+import AppModal from '@/components/feedback/AppModal.vue'
+import AppFlag from '@/components/feedback/AppFlag.vue'
 
 interface AdminData {
   adminUsername: string
@@ -21,6 +23,8 @@ const emit = defineEmits<{
 const adminStore = useAdminStore()
 const showPassword = ref(false)
 const isSubmitting = ref(false)
+const showSubmitDialog = ref(false)
+const flag = ref<{ variant: 'success' | 'error'; title: string; message?: string } | null>(null)
 const formData = ref<AdminData>({
   adminUsername: '',
   adminPassword: '',
@@ -41,25 +45,56 @@ const resetForm = () => {
 }
 
 const handleClose = () => {
+  if (isSubmitting.value) return
+  showSubmitDialog.value = false
   resetForm()
   emit('close')
+}
+
+const openSubmitDialog = () => {
+  showSubmitDialog.value = true
+}
+
+const closeSubmitDialog = () => {
+  if (isSubmitting.value) return
+  showSubmitDialog.value = false
 }
 
 const handleSubmit = async () => {
   isSubmitting.value = true
   try {
     await adminStore.create(formData.value)
+    flag.value = {
+      variant: 'success',
+      title: 'Admin dibuat',
+      message: `${formData.value.adminName} berhasil ditambahkan ke sistem.`,
+    }
     emit('submit')
     resetForm()
     emit('close')
+  } catch (error) {
+    flag.value = {
+      variant: 'error',
+      title: 'Operasi gagal',
+      message: error instanceof Error ? error.message : 'Gagal membuat admin baru.',
+    }
   } finally {
     isSubmitting.value = false
+    showSubmitDialog.value = false
   }
 }
 </script>
 
 <template>
   <Teleport to="body">
+    <AppFlag
+      v-if="flag"
+      :variant="flag.variant"
+      :title="flag.title"
+      :message="flag.message"
+      @close="flag = null"
+    />
+
     <Transition name="backdrop">
       <div
         v-if="isOpen"
@@ -89,7 +124,7 @@ const handleSubmit = async () => {
 
         <!-- Content -->
         <div class="flex-1 overflow-y-auto px-10 py-8">
-          <form @submit.prevent="handleSubmit" class="space-y-5 max-w-full">
+          <form @submit.prevent="openSubmitDialog" class="space-y-5 max-w-full">
             <div
               v-for="field in [
                 { key: 'adminUsername', label: 'Username', type: 'text' },
@@ -176,6 +211,31 @@ const handleSubmit = async () => {
         </div>
       </div>
     </Transition>
+
+    <AppModal
+      :is-open="showSubmitDialog"
+      title="Simpan Admin Baru"
+      :description="`Admin ${formData.adminName || formData.adminUsername || 'baru'} akan ditambahkan ke sistem.`"
+      @close="closeSubmitDialog"
+    >
+      <template #footer>
+        <button
+          type="button"
+          class="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+          @click="closeSubmitDialog"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          :disabled="isSubmitting"
+          class="flex-1 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+          @click="handleSubmit"
+        >
+          {{ isSubmitting ? 'Menyimpan...' : 'Simpan' }}
+        </button>
+      </template>
+    </AppModal>
   </Teleport>
 </template>
 

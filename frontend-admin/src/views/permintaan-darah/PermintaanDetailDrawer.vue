@@ -46,21 +46,29 @@ const validNextStatuses = computed(() => {
   return transitions[current || 'dibuat'] || []
 })
 
+const statusLabels: Record<string, string> = {
+  dibuat: 'Dibuat',
+  diproses: 'Diproses',
+  bisa_diambil: 'Bisa Diambil',
+  selesai: 'Selesai',
+  dibatalkan: 'Dibatalkan',
+}
+
+const pendingStatusLabel = computed(() =>
+  pendingStatus.value ? statusLabels[pendingStatus.value] : '',
+)
+
 const updateStatus = async (newStatus: string) => {
   if (!permintaanStore.selectedRequest) return
 
-  if (newStatus === 'dibatalkan') {
-    pendingStatus.value = newStatus
-    cancelReason.value = ''
-    statusError.value = null
-    showStatusDropdown.value = false
-    return
-  }
-
-  await submitStatusUpdate(newStatus)
+  pendingStatus.value = newStatus
+  cancelReason.value = ''
+  statusError.value = null
+  showStatusDropdown.value = false
 }
 
-const closeCancellationDialog = () => {
+const closeStatusDialog = () => {
+  if (isUpdatingStatus.value) return
   pendingStatus.value = null
   cancelReason.value = ''
   statusError.value = null
@@ -79,7 +87,9 @@ const submitStatusUpdate = async (newStatus: string, reason?: string) => {
     )
     permintaanStore.selectedRequest = response.data
     showStatusDropdown.value = false
-    closeCancellationDialog()
+    pendingStatus.value = null
+    cancelReason.value = ''
+    statusError.value = null
     flag.value = {
       variant: 'success',
       title: 'Status diperbarui',
@@ -96,20 +106,27 @@ const submitStatusUpdate = async (newStatus: string, reason?: string) => {
       variant: 'error',
       title: 'Operasi gagal',
       message:
-        error instanceof Error && error.message ? error.message : 'Gagal mengubah status permintaan darah.',
+        error instanceof Error && error.message
+          ? error.message
+          : 'Gagal mengubah status permintaan darah.',
     }
   } finally {
     isUpdatingStatus.value = false
   }
 }
 
-const submitCancellation = async () => {
-  if (!cancelReason.value.trim()) {
+const submitPendingStatus = async () => {
+  if (!pendingStatus.value) return
+
+  if (pendingStatus.value === 'dibatalkan' && !cancelReason.value.trim()) {
     statusError.value = 'Alasan pembatalan harus diisi'
     return
   }
 
-  await submitStatusUpdate('dibatalkan', cancelReason.value.trim())
+  await submitStatusUpdate(
+    pendingStatus.value,
+    pendingStatus.value === 'dibatalkan' ? cancelReason.value.trim() : undefined,
+  )
 }
 </script>
 
@@ -124,12 +141,19 @@ const submitCancellation = async () => {
     />
 
     <AppModal
-      :is-open="pendingStatus === 'dibatalkan'"
-      title="Batalkan Permintaan Darah"
-      description="Status dibatalkan memerlukan alasan yang akan dikirim ke payload backend."
-      @close="closeCancellationDialog"
+      :is-open="!!pendingStatus"
+      :title="
+        pendingStatus === 'dibatalkan' ? 'Batalkan Permintaan Darah' : 'Ubah Status Permintaan'
+      "
+      :description="
+        pendingStatus === 'dibatalkan'
+          ? 'Status dibatalkan memerlukan alasan yang akan dikirim ke payload backend.'
+          : `Status permintaan darah akan diubah menjadi ${pendingStatusLabel}.`
+      "
+      @close="closeStatusDialog"
     >
       <textarea
+        v-if="pendingStatus === 'dibatalkan'"
         v-model="cancelReason"
         rows="4"
         placeholder="Masukkan alasan pembatalan"
@@ -137,7 +161,7 @@ const submitCancellation = async () => {
       />
 
       <div
-        v-if="statusError && pendingStatus === 'dibatalkan'"
+        v-if="statusError && pendingStatus"
         class="mt-3 flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 p-3 text-xs text-red-600"
       >
         <AlertCircle :size="14" class="shrink-0" />
@@ -148,17 +172,28 @@ const submitCancellation = async () => {
         <button
           type="button"
           class="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
-          @click="closeCancellationDialog"
+          @click="closeStatusDialog"
         >
           Tutup
         </button>
         <button
           type="button"
           :disabled="isUpdatingStatus"
-          class="flex-1 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
-          @click="submitCancellation"
+          class="flex-1 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition-colors disabled:opacity-50"
+          :class="
+            pendingStatus === 'dibatalkan'
+              ? 'bg-red-600 hover:bg-red-700'
+              : 'bg-blue-600 hover:bg-blue-700'
+          "
+          @click="submitPendingStatus"
         >
-          {{ isUpdatingStatus ? 'Memproses...' : 'Batalkan Permintaan' }}
+          {{
+            isUpdatingStatus
+              ? 'Memproses...'
+              : pendingStatus === 'dibatalkan'
+                ? 'Batalkan Permintaan'
+                : 'Ubah Status'
+          }}
         </button>
       </template>
     </AppModal>

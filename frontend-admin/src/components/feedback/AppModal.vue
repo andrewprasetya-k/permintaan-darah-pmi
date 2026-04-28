@@ -16,7 +16,7 @@ defineEmits<{
     <Transition name="backdrop">
       <div
         v-if="isOpen"
-        class="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+        class="fixed inset-0 z-[80] bg-black/30 backdrop-blur-sm"
         @click="$emit('close')"
       />
     </Transition>
@@ -24,7 +24,7 @@ defineEmits<{
     <Transition name="modal">
       <div
         v-if="isOpen"
-        class="fixed left-1/2 top-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-2xl"
+        class="fixed left-1/2 top-1/2 z-[90] w-full -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-2xl"
         :class="widthClass || 'max-w-lg'"
       >
         <div class="flex items-start gap-4">
@@ -62,7 +62,9 @@ defineEmits<{
 
 .modal-enter-active,
 .modal-leave-active {
-  transition: transform 0.25s ease, opacity 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
 }
 
 .modal-enter-from,

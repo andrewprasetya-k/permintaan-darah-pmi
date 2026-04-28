@@ -5,6 +5,8 @@ import { useKomponenStore } from '@/stores/komponen'
 import { useRumahSakitStore } from '@/stores/rumah-sakit'
 import type { CreatePermintaanRequest, CreateDetailRequestPayload } from '@/api/permintaan'
 import { X, AlertCircle, Plus, Trash2 } from '@lucide/vue'
+import AppModal from '@/components/feedback/AppModal.vue'
+import AppFlag from '@/components/feedback/AppFlag.vue'
 
 const props = defineProps<{ isOpen: boolean }>()
 
@@ -17,6 +19,8 @@ const permintaanStore = usePermintaanStore()
 const komponenStore = useKomponenStore()
 const rumahSakitStore = useRumahSakitStore()
 const isSubmitting = ref(false)
+const showSubmitDialog = ref(false)
+const flag = ref<{ variant: 'success' | 'error'; title: string; message?: string } | null>(null)
 const formData = ref<CreatePermintaanRequest>({
   rumahSakitId: '',
   namaPasien: '',
@@ -112,9 +116,7 @@ const removeDetail = (index: number) => {
   formData.value.details?.splice(index, 1)
 }
 
-const activeKomponen = computed(() => 
-  komponenStore.komponens.filter((k) => k.isActive)
-)
+const activeKomponen = computed(() => komponenStore.komponens.filter((k) => k.isActive))
 
 const toIsoDateString = (value?: string) => {
   if (!value) return undefined
@@ -122,8 +124,19 @@ const toIsoDateString = (value?: string) => {
 }
 
 const handleClose = () => {
+  if (isSubmitting.value) return
+  showSubmitDialog.value = false
   resetForm()
   emit('close')
+}
+
+const openSubmitDialog = () => {
+  showSubmitDialog.value = true
+}
+
+const closeSubmitDialog = () => {
+  if (isSubmitting.value) return
+  showSubmitDialog.value = false
 }
 
 const handleSubmit = async () => {
@@ -150,17 +163,37 @@ const handleSubmit = async () => {
       details: formData.value.details,
     }
     await permintaanStore.create(payload)
+    flag.value = {
+      variant: 'success',
+      title: 'Permintaan dibuat',
+      message: `Permintaan darah untuk ${formData.value.namaPasien} berhasil ditambahkan.`,
+    }
     emit('submit')
     resetForm()
     emit('close')
+  } catch (error) {
+    flag.value = {
+      variant: 'error',
+      title: 'Operasi gagal',
+      message: error instanceof Error ? error.message : 'Gagal membuat permintaan darah.',
+    }
   } finally {
     isSubmitting.value = false
+    showSubmitDialog.value = false
   }
 }
 </script>
 
 <template>
   <Teleport to="body">
+    <AppFlag
+      v-if="flag"
+      :variant="flag.variant"
+      :title="flag.title"
+      :message="flag.message"
+      @close="flag = null"
+    />
+
     <Transition name="backdrop">
       <div
         v-if="isOpen"
@@ -190,7 +223,7 @@ const handleSubmit = async () => {
 
         <!-- Content -->
         <div class="flex-1 overflow-y-auto px-10 py-8">
-          <form @submit.prevent="handleSubmit" class="space-y-5 max-w-full">
+          <form @submit.prevent="openSubmitDialog" class="space-y-5 max-w-full">
             <div>
               <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
                 Rumah Sakit
@@ -535,6 +568,31 @@ const handleSubmit = async () => {
         </div>
       </div>
     </Transition>
+
+    <AppModal
+      :is-open="showSubmitDialog"
+      title="Simpan Permintaan Darah"
+      :description="`Permintaan darah untuk ${formData.namaPasien || 'pasien ini'} akan dikirim ke sistem.`"
+      @close="closeSubmitDialog"
+    >
+      <template #footer>
+        <button
+          type="button"
+          class="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+          @click="closeSubmitDialog"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          :disabled="isSubmitting"
+          class="flex-1 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+          @click="handleSubmit"
+        >
+          {{ isSubmitting ? 'Menyimpan...' : 'Simpan' }}
+        </button>
+      </template>
+    </AppModal>
   </Teleport>
 </template>
 

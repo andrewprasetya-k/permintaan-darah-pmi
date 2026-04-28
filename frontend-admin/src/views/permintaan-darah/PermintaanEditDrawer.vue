@@ -3,6 +3,8 @@ import { computed, ref, watch } from 'vue'
 import { usePermintaanStore } from '@/stores/permintaan'
 import type { UpdatePermintaanRequest } from '@/api/permintaan'
 import { X, AlertCircle } from '@lucide/vue'
+import AppModal from '@/components/feedback/AppModal.vue'
+import AppFlag from '@/components/feedback/AppFlag.vue'
 
 const props = defineProps<{
   isOpen: boolean
@@ -15,6 +17,8 @@ const emit = defineEmits<{
 
 const permintaanStore = usePermintaanStore()
 const isSubmitting = ref(false)
+const showSubmitDialog = ref(false)
+const flag = ref<{ variant: 'success' | 'error'; title: string; message?: string } | null>(null)
 const formData = ref<UpdatePermintaanRequest>({
   rumahSakitId: '',
   namaPasien: '',
@@ -46,7 +50,12 @@ watch(
         pernahTransfusi: permintaanStore.selectedRequest.pernahTransfusi,
         indikasiTransfusi: permintaanStore.selectedRequest.indikasiTransfusi || '',
         pernahHamil: permintaanStore.selectedRequest.pernahHamil || '',
-        status: permintaanStore.selectedRequest.status as 'dibuat' | 'diproses' | 'bisa_diambil' | 'selesai' | 'dibatalkan',
+        status: permintaanStore.selectedRequest.status as
+          | 'dibuat'
+          | 'diproses'
+          | 'bisa_diambil'
+          | 'selesai'
+          | 'dibatalkan',
         tanggalPermintaan: permintaanStore.selectedRequest.tanggalPermintaan,
         cancelReason: permintaanStore.selectedRequest.cancelReason || '',
       }
@@ -55,25 +64,59 @@ watch(
 )
 
 const handleClose = () => {
+  if (isSubmitting.value) return
+  showSubmitDialog.value = false
   emit('close')
+}
+
+const openSubmitDialog = () => {
+  showSubmitDialog.value = true
+}
+
+const closeSubmitDialog = () => {
+  if (isSubmitting.value) return
+  showSubmitDialog.value = false
 }
 
 const handleSubmit = async () => {
   isSubmitting.value = true
   try {
     if (permintaanStore.selectedRequest) {
-      await permintaanStore.update(permintaanStore.selectedRequest.permintaanDarahId, formData.value)
+      await permintaanStore.update(
+        permintaanStore.selectedRequest.permintaanDarahId,
+        formData.value,
+      )
+      flag.value = {
+        variant: 'success',
+        title: 'Permintaan diperbarui',
+        message: `Permintaan darah untuk ${formData.value.namaPasien} berhasil diperbarui.`,
+      }
       emit('submit')
       emit('close')
     }
+  } catch (error) {
+    flag.value = {
+      variant: 'error',
+      title: 'Operasi gagal',
+      message: error instanceof Error ? error.message : 'Gagal memperbarui permintaan darah.',
+    }
   } finally {
     isSubmitting.value = false
+    showSubmitDialog.value = false
   }
 }
 </script>
 
 <template>
   <Teleport to="body">
+    <AppFlag
+      v-if="flag"
+      :variant="flag.variant"
+      :title="flag.title"
+      :message="flag.message"
+      @close="flag = null"
+    />
+
     <Transition name="backdrop">
       <div
         v-if="isOpen"
@@ -103,11 +146,13 @@ const handleSubmit = async () => {
 
         <!-- Content -->
         <div class="flex-1 overflow-y-auto px-10 py-8">
-          <form @submit.prevent="handleSubmit" class="space-y-5 max-w-full">
+          <form @submit.prevent="openSubmitDialog" class="space-y-5 max-w-full">
             <!-- Row 1: Nama Pasien & No. RM -->
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >
                   Nama Pasien
                 </label>
                 <input
@@ -118,7 +163,9 @@ const handleSubmit = async () => {
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >
                   No. Rekam Medis
                 </label>
                 <input
@@ -133,7 +180,9 @@ const handleSubmit = async () => {
             <!-- Row 2: Tempat Lahir & Tanggal Lahir -->
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >
                   Tempat Lahir
                 </label>
                 <input
@@ -144,7 +193,9 @@ const handleSubmit = async () => {
                 />
               </div>
               <div>
-                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >
                   Tanggal Lahir
                 </label>
                 <input
@@ -159,7 +210,9 @@ const handleSubmit = async () => {
             <!-- Row 3: Jenis Kelamin & Golongan Darah -->
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >
                   Jenis Kelamin
                 </label>
                 <select
@@ -171,7 +224,9 @@ const handleSubmit = async () => {
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >
                   Golongan Darah
                 </label>
                 <select
@@ -189,7 +244,9 @@ const handleSubmit = async () => {
             <!-- Row 4: Rhesus & Hemoglobin -->
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >
                   Rhesus Darah
                 </label>
                 <select
@@ -201,7 +258,9 @@ const handleSubmit = async () => {
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >
                   Hemoglobin
                 </label>
                 <input
@@ -311,6 +370,31 @@ const handleSubmit = async () => {
         </div>
       </div>
     </Transition>
+
+    <AppModal
+      :is-open="showSubmitDialog"
+      title="Simpan Perubahan Permintaan"
+      :description="`Perubahan permintaan darah untuk ${formData.namaPasien || 'pasien ini'} akan disimpan.`"
+      @close="closeSubmitDialog"
+    >
+      <template #footer>
+        <button
+          type="button"
+          class="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+          @click="closeSubmitDialog"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          :disabled="isSubmitting"
+          class="flex-1 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+          @click="handleSubmit"
+        >
+          {{ isSubmitting ? 'Menyimpan...' : 'Simpan' }}
+        </button>
+      </template>
+    </AppModal>
   </Teleport>
 </template>
 
