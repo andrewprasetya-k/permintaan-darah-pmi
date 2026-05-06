@@ -17,6 +17,7 @@ import type {
   UpdatePermintaanRequest,
 } from '@/types/models'
 import { toDateInputValue, toIsoDate } from '@/utils/format'
+import { btn, ui } from '@/utils/ui'
 
 interface DetailFormRow {
   key: number
@@ -247,134 +248,147 @@ watch(requestId, load)
 
 <template>
   <section>
-    <div class="page-header">
+    <div :class="ui.pageHeader">
       <div>
-        <p class="page-eyebrow">Permintaan</p>
-        <h1 class="page-title">{{ title }}</h1>
-        <p class="page-subtitle">
+        <p :class="ui.pageEyebrow">Permintaan</p>
+        <h1 :class="ui.pageTitle">{{ title }}</h1>
+        <p :class="ui.pageSubtitle">
           Isi data pasien dan kebutuhan komponen darah sesuai kontrak backend permintaan darah.
         </p>
       </div>
-      <RouterLink class="btn btn-secondary" :to="isEdit ? `/requests/${requestId}` : '/requests'">
+      <RouterLink
+        :class="btn('btnSecondary')"
+        :to="isEdit ? `/requests/${requestId}` : '/requests'"
+      >
         Batal
       </RouterLink>
     </div>
 
-    <form class="request-form" @submit.prevent="openConfirm">
-      <section class="card form-section">
-        <h2 class="section-title">Data Pasien</h2>
-        <div class="form-grid">
-          <div class="form-field">
-            <label class="form-label" for="namaPasien">Nama pasien</label>
-            <input id="namaPasien" v-model="form.namaPasien" class="form-input" required />
+    <form class="grid gap-[18px]" @submit.prevent="openConfirm">
+      <section :class="[ui.card, 'p-6']">
+        <h2 :class="[ui.sectionTitle, 'mb-4']">Data Pasien</h2>
+        <div :class="ui.formGrid">
+          <div :class="ui.formField">
+            <label :class="ui.formLabel" for="namaPasien">Nama pasien</label>
+            <input id="namaPasien" v-model="form.namaPasien" :class="ui.formControl" required />
           </div>
-          <div class="form-field">
-            <label class="form-label" for="noRM">No. RM</label>
-            <input id="noRM" v-model="form.noRM" class="form-input" />
+          <div :class="ui.formField">
+            <label :class="ui.formLabel" for="noRM">No. RM</label>
+            <input id="noRM" v-model="form.noRM" :class="ui.formControl" />
           </div>
-          <div class="form-field">
-            <label class="form-label" for="tempatLahir">Tempat lahir</label>
-            <input id="tempatLahir" v-model="form.tempatLahir" class="form-input" required />
+          <div :class="ui.formField">
+            <label :class="ui.formLabel" for="tempatLahir">Tempat lahir</label>
+            <input id="tempatLahir" v-model="form.tempatLahir" :class="ui.formControl" required />
           </div>
-          <div class="form-field">
-            <label class="form-label" for="tanggalLahir">Tanggal lahir</label>
+          <div :class="ui.formField">
+            <label :class="ui.formLabel" for="tanggalLahir">Tanggal lahir</label>
             <input
               id="tanggalLahir"
               v-model="form.tanggalLahir"
-              class="form-input"
+              :class="ui.formControl"
               type="date"
               required
             />
           </div>
-          <div class="form-field">
-            <label class="form-label" for="jenisKelamin">Jenis kelamin</label>
-            <select id="jenisKelamin" v-model="form.jenisKelamin" class="form-select" required>
+          <div :class="ui.formField">
+            <label :class="ui.formLabel" for="jenisKelamin">Jenis kelamin</label>
+            <select id="jenisKelamin" v-model="form.jenisKelamin" :class="ui.formControl" required>
               <option value="" disabled>Pilih jenis kelamin</option>
               <option value="L">Laki-laki</option>
               <option value="P">Perempuan</option>
             </select>
           </div>
-          <div class="form-field blood-fields">
-            <div>
-              <label class="form-label" for="golonganDarah">Golongan darah</label>
-              <select id="golonganDarah" v-model="form.golonganDarah" class="form-select">
-                <option value="">Belum diketahui</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="AB">AB</option>
-                <option value="O">O</option>
-              </select>
-            </div>
-            <div>
-              <label class="form-label" for="rhesusDarah">Rhesus</label>
-              <select id="rhesusDarah" v-model="form.rhesusDarah" class="form-select">
-                <option value="">-</option>
-                <option value="+">+</option>
-                <option value="-">-</option>
-              </select>
+          <div :class="ui.formField">
+            <div class="grid grid-cols-[minmax(0,1fr)_120px] gap-2.5 max-sm:grid-cols-1">
+              <div :class="ui.formField">
+                <label :class="ui.formLabel" for="golonganDarah">Golongan darah</label>
+                <select id="golonganDarah" v-model="form.golonganDarah" :class="ui.formControl">
+                  <option value="">Belum diketahui</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="AB">AB</option>
+                  <option value="O">O</option>
+                </select>
+              </div>
+              <div :class="ui.formField">
+                <label :class="ui.formLabel" for="rhesusDarah">Rhesus</label>
+                <select id="rhesusDarah" v-model="form.rhesusDarah" :class="ui.formControl">
+                  <option value="">-</option>
+                  <option value="+">+</option>
+                  <option value="-">-</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="card form-section">
-        <h2 class="section-title">Data Medis</h2>
-        <div class="form-grid">
-          <div class="form-field">
-            <label class="form-label" for="hemoglobin">Hemoglobin</label>
+      <section :class="[ui.card, 'p-6']">
+        <h2 :class="[ui.sectionTitle, 'mb-4']">Data Medis</h2>
+        <div :class="ui.formGrid">
+          <div :class="ui.formField">
+            <label :class="ui.formLabel" for="hemoglobin">Hemoglobin</label>
             <input
               id="hemoglobin"
               v-model="form.hemoglobin"
-              class="form-input"
+              :class="ui.formControl"
               type="number"
               step="0.1"
               min="0"
             />
           </div>
-          <div class="form-field">
-            <label class="form-label" for="ruangBagianKelas">Ruang/Bagian/Kelas</label>
-            <input id="ruangBagianKelas" v-model="form.ruangBagianKelas" class="form-input" />
+          <div :class="ui.formField">
+            <label :class="ui.formLabel" for="ruangBagianKelas">Ruang/Bagian/Kelas</label>
+            <input id="ruangBagianKelas" v-model="form.ruangBagianKelas" :class="ui.formControl" />
           </div>
-          <div class="form-field">
-            <label class="form-label" for="tanggalPermintaan">Tanggal permintaan</label>
+          <div :class="ui.formField">
+            <label :class="ui.formLabel" for="tanggalPermintaan">Tanggal permintaan</label>
             <input
               id="tanggalPermintaan"
               v-model="form.tanggalPermintaan"
-              class="form-input"
+              :class="ui.formControl"
               type="date"
               required
             />
           </div>
-          <div class="form-field checkbox-field">
-            <label class="checkbox-label" for="pernahTransfusi">
-              <input id="pernahTransfusi" v-model="form.pernahTransfusi" type="checkbox" />
+          <div :class="[ui.formField, 'justify-end']">
+            <label
+              class="flex min-h-10 items-center gap-2.5 font-semibold text-gray-900"
+              for="pernahTransfusi"
+            >
+              <input
+                id="pernahTransfusi"
+                v-model="form.pernahTransfusi"
+                class="h-[18px] w-[18px] accent-blue-600"
+                type="checkbox"
+              />
               Pernah transfusi
             </label>
           </div>
-          <div class="form-field form-field-full">
-            <label class="form-label" for="indikasiTransfusi">Indikasi transfusi</label>
+          <div :class="[ui.formField, ui.formFieldFull]">
+            <label :class="ui.formLabel" for="indikasiTransfusi">Indikasi transfusi</label>
             <textarea
               id="indikasiTransfusi"
               v-model="form.indikasiTransfusi"
-              class="form-textarea"
+              :class="ui.formTextarea"
             />
           </div>
-          <div class="form-field form-field-full">
-            <label class="form-label" for="pernahHamil">Riwayat hamil</label>
-            <input id="pernahHamil" v-model="form.pernahHamil" class="form-input" />
+          <div :class="[ui.formField, ui.formFieldFull]">
+            <label :class="ui.formLabel" for="pernahHamil">Riwayat hamil</label>
+            <input id="pernahHamil" v-model="form.pernahHamil" :class="ui.formControl" />
           </div>
         </div>
       </section>
 
-      <section v-if="!isEdit" class="card form-section">
-        <div class="component-header">
+      <section v-if="!isEdit" :class="[ui.card, 'p-6']">
+        <div class="mb-3.5 flex items-start justify-between gap-4 max-sm:flex-col">
           <div>
-            <h2 class="section-title">Komponen Darah</h2>
-            <p class="form-help">Tambahkan kebutuhan komponen bila data sudah tersedia.</p>
+            <h2 :class="ui.sectionTitle">Komponen Darah</h2>
+            <p :class="ui.formHelp">Tambahkan kebutuhan komponen bila data sudah tersedia.</p>
           </div>
           <button
             type="button"
-            class="btn btn-secondary"
+            :class="[btn('btnSecondary'), 'max-sm:w-full']"
             :disabled="komponenStore.isLoading || activeComponents.length === 0"
             @click="addDetailRow"
           >
@@ -382,22 +396,32 @@ watch(requestId, load)
           </button>
         </div>
 
-        <div v-if="komponenStore.error" class="inline-error">
+        <div
+          v-if="komponenStore.error"
+          class="mb-3 rounded-2xl border border-red-200 bg-red-50 p-3.5 text-sm text-red-800"
+        >
           {{ komponenStore.error }}
         </div>
 
-        <div v-if="detailRows.length === 0" class="empty-row">
+        <div
+          v-if="detailRows.length === 0"
+          class="rounded-2xl border border-dashed border-gray-200 p-3.5 text-sm text-gray-600"
+        >
           Belum ada detail komponen pada permintaan ini.
         </div>
 
-        <div v-else class="detail-row-list">
-          <div v-for="row in detailRows" :key="row.key" class="detail-row">
-            <div class="form-field">
-              <label class="form-label" :for="`komponen-${row.key}`">Komponen</label>
+        <div v-else class="grid gap-3">
+          <div
+            v-for="row in detailRows"
+            :key="row.key"
+            class="grid grid-cols-[minmax(220px,1fr)_120px_100px_120px_44px] items-end gap-2.5 rounded-2xl border border-gray-100 p-3 max-lg:grid-cols-2 max-sm:grid-cols-1"
+          >
+            <div :class="ui.formField">
+              <label :class="ui.formLabel" :for="`komponen-${row.key}`">Komponen</label>
               <select
                 :id="`komponen-${row.key}`"
                 v-model="row.komponenDarahId"
-                class="form-select"
+                :class="ui.formControl"
                 required
               >
                 <option value="" disabled>Pilih komponen</option>
@@ -410,12 +434,12 @@ watch(requestId, load)
                 </option>
               </select>
             </div>
-            <div class="form-field">
-              <label class="form-label" :for="`detail-gol-${row.key}`">Golongan</label>
+            <div :class="ui.formField">
+              <label :class="ui.formLabel" :for="`detail-gol-${row.key}`">Golongan</label>
               <select
                 :id="`detail-gol-${row.key}`"
                 v-model="row.golonganDarah"
-                class="form-select"
+                :class="ui.formControl"
                 required
               >
                 <option value="A">A</option>
@@ -424,24 +448,24 @@ watch(requestId, load)
                 <option value="O">O</option>
               </select>
             </div>
-            <div class="form-field">
-              <label class="form-label" :for="`detail-rhesus-${row.key}`">Rhesus</label>
+            <div :class="ui.formField">
+              <label :class="ui.formLabel" :for="`detail-rhesus-${row.key}`">Rhesus</label>
               <select
                 :id="`detail-rhesus-${row.key}`"
                 v-model="row.rhesusDarah"
-                class="form-select"
+                :class="ui.formControl"
                 required
               >
                 <option value="+">+</option>
                 <option value="-">-</option>
               </select>
             </div>
-            <div class="form-field">
-              <label class="form-label" :for="`jumlah-${row.key}`">Kantong</label>
+            <div :class="ui.formField">
+              <label :class="ui.formLabel" :for="`jumlah-${row.key}`">Kantong</label>
               <input
                 :id="`jumlah-${row.key}`"
                 v-model="row.jumlahKantong"
-                class="form-input"
+                :class="ui.formControl"
                 min="1"
                 type="number"
                 required
@@ -449,7 +473,7 @@ watch(requestId, load)
             </div>
             <button
               type="button"
-              class="btn btn-danger btn-icon remove-row"
+              :class="[btn('btnDanger'), ui.btnIcon, 'max-lg:w-full']"
               @click="removeDetailRow(row.key)"
             >
               x
@@ -458,11 +482,18 @@ watch(requestId, load)
         </div>
       </section>
 
-      <div class="form-actions">
-        <RouterLink class="btn btn-secondary" :to="isEdit ? `/requests/${requestId}` : '/requests'">
+      <div class="flex justify-end gap-2.5 max-sm:flex-col">
+        <RouterLink
+          :class="[btn('btnSecondary'), 'max-sm:w-full']"
+          :to="isEdit ? `/requests/${requestId}` : '/requests'"
+        >
           Batal
         </RouterLink>
-        <button type="submit" class="btn btn-primary" :disabled="requestsStore.isSubmitting">
+        <button
+          type="submit"
+          :class="[btn('btnPrimary'), 'max-sm:w-full']"
+          :disabled="requestsStore.isSubmitting"
+        >
           {{ requestsStore.isSubmitting ? 'Menyimpan...' : submitLabel }}
         </button>
       </div>
@@ -480,12 +511,16 @@ watch(requestId, load)
       @close="isConfirmOpen = false"
     >
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="isConfirmOpen = false">
+        <button
+          type="button"
+          :class="[btn('btnSecondary'), 'flex-1']"
+          @click="isConfirmOpen = false"
+        >
           Batal
         </button>
         <button
           type="button"
-          class="btn btn-primary"
+          :class="[btn('btnPrimary'), 'flex-1']"
           :disabled="requestsStore.isSubmitting"
           @click="submit"
         >
@@ -495,118 +530,3 @@ watch(requestId, load)
     </AppModal>
   </section>
 </template>
-
-<style scoped>
-.request-form {
-  display: grid;
-  gap: 18px;
-}
-
-.form-section {
-  padding: 24px;
-}
-
-.form-section .section-title {
-  margin-bottom: 16px;
-}
-
-.blood-fields {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 120px;
-  gap: 10px;
-}
-
-.checkbox-field {
-  justify-content: end;
-}
-
-.checkbox-label {
-  display: flex;
-  min-height: 42px;
-  align-items: center;
-  gap: 10px;
-  color: var(--text);
-  font-weight: 600;
-}
-
-.checkbox-label input {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--blue);
-}
-
-.component-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 14px;
-}
-
-.inline-error,
-.empty-row {
-  border: 1px dashed var(--line-strong);
-  border-radius: 16px;
-  padding: 14px;
-  color: var(--text-soft);
-}
-
-.inline-error {
-  margin-bottom: 12px;
-  border-color: #fecaca;
-  background: #fef2f2;
-  color: #991b1b;
-}
-
-.detail-row-list {
-  display: grid;
-  gap: 12px;
-}
-
-.detail-row {
-  display: grid;
-  grid-template-columns: minmax(220px, 1fr) 120px 100px 120px 44px;
-  gap: 10px;
-  align-items: end;
-  border: 1px solid #f3f4f6;
-  border-radius: 16px;
-  padding: 12px;
-}
-
-.remove-row {
-  margin-bottom: 1px;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-@media (max-width: 980px) {
-  .detail-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .remove-row {
-    width: 100%;
-  }
-}
-
-@media (max-width: 640px) {
-  .component-header,
-  .form-actions {
-    flex-direction: column;
-  }
-
-  .component-header .btn,
-  .form-actions .btn {
-    width: 100%;
-  }
-
-  .blood-fields,
-  .detail-row {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

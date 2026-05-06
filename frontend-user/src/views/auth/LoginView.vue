@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useFeedbackStore } from '@/stores/feedback'
 import { useMyProfileStore } from '@/stores/my-profile'
+import { btn, ui } from '@/utils/ui'
 
 const authStore = useAuthStore()
 const profileStore = useMyProfileStore()
@@ -38,23 +39,27 @@ const submit = async () => {
 </script>
 
 <template>
-  <main class="login-page">
-    <section class="login-panel">
-      <div class="login-brand">
-        <div class="login-mark">PMI</div>
+  <main class="grid min-h-screen place-items-center bg-gray-50 p-6">
+    <section class="w-[min(430px,100%)] rounded-2xl border border-gray-100 bg-white p-7 shadow-2xl">
+      <div class="mb-7 flex items-center gap-3.5">
+        <div
+          class="grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 font-bold text-blue-600"
+        >
+          PMI
+        </div>
         <div>
-          <p>Permintaan Darah</p>
-          <h1>Portal Rumah Sakit</h1>
+          <p class="m-0 text-[13px] font-medium text-gray-500">Permintaan Darah</p>
+          <h1 class="m-0 text-2xl font-semibold text-gray-900">Portal Rumah Sakit</h1>
         </div>
       </div>
 
-      <form class="login-form" @submit.prevent="submit">
-        <div class="form-field">
-          <label class="form-label" for="username">Username</label>
+      <form class="grid gap-4" @submit.prevent="submit">
+        <div :class="ui.formField">
+          <label :class="ui.formLabel" for="username">Username</label>
           <input
             id="username"
             v-model="form.username"
-            class="form-input"
+            :class="ui.formControl"
             type="text"
             autocomplete="username"
             required
@@ -62,85 +67,26 @@ const submit = async () => {
           />
         </div>
 
-        <div class="form-field">
-          <label class="form-label" for="password">Password</label>
+        <div :class="ui.formField">
+          <label :class="ui.formLabel" for="password">Password</label>
           <input
             id="password"
             v-model="form.password"
-            class="form-input"
+            :class="ui.formControl"
             type="password"
             autocomplete="current-password"
             required
           />
         </div>
 
-        <button type="submit" class="btn btn-primary login-submit" :disabled="authStore.isLoading">
+        <button
+          type="submit"
+          :class="[btn('btnPrimary'), 'mt-1.5 w-full']"
+          :disabled="authStore.isLoading"
+        >
           {{ authStore.isLoading ? 'Masuk...' : 'Masuk' }}
         </button>
       </form>
     </section>
   </main>
 </template>
-
-<style scoped>
-.login-page {
-  display: grid;
-  min-height: 100vh;
-  place-items: center;
-  padding: 24px;
-  background: #f9fafb;
-}
-
-.login-panel {
-  width: min(430px, 100%);
-  border: 1px solid #f3f4f6;
-  border-radius: 16px;
-  background: var(--surface);
-  padding: 28px;
-  box-shadow: var(--shadow-lg);
-}
-
-.login-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 28px;
-}
-
-.login-mark {
-  display: grid;
-  width: 54px;
-  height: 54px;
-  place-items: center;
-  border-radius: 16px;
-  background: #eff6ff;
-  color: #2563eb;
-  font-weight: 700;
-}
-
-.login-brand p,
-.login-brand h1 {
-  margin: 0;
-}
-
-.login-brand p {
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.login-brand h1 {
-  font-size: 24px;
-  font-weight: 600;
-}
-
-.login-form {
-  display: grid;
-  gap: 16px;
-}
-
-.login-submit {
-  margin-top: 6px;
-  width: 100%;
-}
-</style>

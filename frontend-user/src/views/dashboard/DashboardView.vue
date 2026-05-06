@@ -8,6 +8,7 @@ import { useDashboardStore } from '@/stores/dashboard'
 import { useMyRequestsStore } from '@/stores/my-requests'
 import type { PermintaanStatus } from '@/types/models'
 import { bloodLabel, formatDate, statusLabels } from '@/utils/format'
+import { btn, ui } from '@/utils/ui'
 
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
@@ -57,66 +58,77 @@ onMounted(async () => {
 
 <template>
   <section>
-    <div class="page-header">
+    <div :class="ui.pageHeader">
       <div>
-        <p class="page-eyebrow">Ringkasan</p>
-        <h1 class="page-title">Dashboard Permintaan Darah</h1>
-        <p class="page-subtitle">
+        <p :class="ui.pageEyebrow">Ringkasan</p>
+        <h1 :class="ui.pageTitle">Dashboard Permintaan Darah</h1>
+        <p :class="ui.pageSubtitle">
           Pantau status permintaan aktif dan lanjutkan permintaan yang siap diproses.
         </p>
       </div>
-      <RouterLink class="btn btn-primary" to="/requests/new">
+      <RouterLink :class="btn('btnPrimary')" to="/requests/new">
         <Plus :size="16" />
         Buat Permintaan
       </RouterLink>
     </div>
 
-    <div class="summary-grid">
-      <article v-for="item in summaryCards" :key="item.key" class="summary-card card">
-        <span>{{ item.label }}</span>
-        <strong :style="{ color: item.color }">{{ item.value }}</strong>
+    <div
+      class="mb-6 grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 max-xl:grid-cols-3 max-md:grid-cols-2"
+    >
+      <article v-for="item in summaryCards" :key="item.key" :class="[ui.card, 'min-h-32 p-6']">
+        <span class="text-sm text-gray-500">{{ item.label }}</span>
+        <strong
+          class="mt-2 block text-[40px] font-bold leading-none max-sm:text-[28px]"
+          :style="{ color: item.color }"
+        >
+          {{ item.value }}
+        </strong>
       </article>
     </div>
 
-    <div class="dashboard-grid">
-      <section class="card dashboard-panel">
-        <div class="panel-header">
+    <div class="grid grid-cols-[minmax(0,1fr)_320px] gap-5 max-xl:grid-cols-1">
+      <section :class="[ui.card, 'p-6']">
+        <div class="mb-2 flex items-start justify-between gap-4">
           <div>
-            <h2 class="section-title">Permintaan Terbaru</h2>
-            <p>Data dari daftar permintaan milik rumah sakit.</p>
+            <h2 :class="ui.sectionTitle">Permintaan Terbaru</h2>
+            <p class="mt-1 text-sm text-gray-600">Data dari daftar permintaan milik rumah sakit.</p>
           </div>
-          <RouterLink class="btn btn-secondary" to="/requests">Lihat Semua</RouterLink>
+          <RouterLink :class="btn('btnSecondary')" to="/requests">Lihat Semua</RouterLink>
         </div>
 
-        <div v-if="requestsStore.recentRequests.length === 0" class="empty-state compact-empty">
+        <div v-if="requestsStore.recentRequests.length === 0" :class="[ui.emptyState, 'min-h-44']">
           <div>
-            <h3>Belum ada permintaan</h3>
-            <p>Buat permintaan darah baru saat data pasien sudah siap.</p>
+            <h3 :class="ui.emptyTitle">Belum ada permintaan</h3>
+            <p :class="ui.emptyCopy">Buat permintaan darah baru saat data pasien sudah siap.</p>
           </div>
         </div>
 
-        <div v-else class="table-wrap">
-          <table class="data-table">
+        <div v-else :class="ui.tableWrap">
+          <table :class="ui.table">
             <thead>
               <tr>
-                <th>Pasien</th>
-                <th>Darah</th>
-                <th>Tanggal</th>
-                <th>Status</th>
-                <th></th>
+                <th :class="ui.th">Pasien</th>
+                <th :class="ui.th">Darah</th>
+                <th :class="ui.th">Tanggal</th>
+                <th :class="ui.th">Status</th>
+                <th :class="ui.th"></th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="request in requestsStore.recentRequests" :key="request.permintaanDarahId">
-                <td>
+              <tr
+                v-for="request in requestsStore.recentRequests"
+                :key="request.permintaanDarahId"
+                class="transition-colors hover:bg-gray-50"
+              >
+                <td :class="ui.td">
                   <strong>{{ request.namaPasien }}</strong>
                 </td>
-                <td>{{ bloodLabel(request.golonganDarah, request.rhesusDarah) }}</td>
-                <td>{{ formatDate(request.tanggalPermintaan) }}</td>
-                <td><StatusBadge :status="request.status" /></td>
-                <td>
+                <td :class="ui.td">{{ bloodLabel(request.golonganDarah, request.rhesusDarah) }}</td>
+                <td :class="ui.td">{{ formatDate(request.tanggalPermintaan) }}</td>
+                <td :class="ui.td"><StatusBadge :status="request.status" /></td>
+                <td :class="ui.td">
                   <RouterLink
-                    class="btn btn-secondary"
+                    :class="btn('btnSecondary')"
                     :to="`/requests/${request.permintaanDarahId}`"
                   >
                     Detail
@@ -128,138 +140,42 @@ onMounted(async () => {
         </div>
       </section>
 
-      <section class="card dashboard-panel action-panel">
-        <h2 class="section-title">Tindak Lanjut</h2>
-        <RouterLink class="action-link" to="/requests?status=bisa_diambil">
-          <strong>{{ dashboardStore.summary.bisaDiambil }}</strong>
-          <span>Permintaan bisa diambil</span>
+      <section :class="[ui.card, 'grid content-start gap-3 p-6']">
+        <h2 :class="ui.sectionTitle">Tindak Lanjut</h2>
+        <RouterLink
+          class="flex items-center gap-3 rounded-xl border border-gray-100 p-3.5 transition hover:bg-gray-50"
+          to="/requests?status=bisa_diambil"
+        >
+          <strong
+            class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-lg font-bold text-blue-600"
+          >
+            {{ dashboardStore.summary.bisaDiambil }}
+          </strong>
+          <span class="font-semibold text-gray-600">Permintaan bisa diambil</span>
         </RouterLink>
-        <RouterLink class="action-link" to="/requests?status=diproses">
-          <strong>{{ dashboardStore.summary.diproses }}</strong>
-          <span>Permintaan sedang diproses</span>
+        <RouterLink
+          class="flex items-center gap-3 rounded-xl border border-gray-100 p-3.5 transition hover:bg-gray-50"
+          to="/requests?status=diproses"
+        >
+          <strong
+            class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-lg font-bold text-blue-600"
+          >
+            {{ dashboardStore.summary.diproses }}
+          </strong>
+          <span class="font-semibold text-gray-600">Permintaan sedang diproses</span>
         </RouterLink>
-        <RouterLink class="action-link" to="/requests?status=dibuat">
-          <strong>{{ dashboardStore.summary.dibuat }}</strong>
-          <span>Permintaan baru dibuat</span>
+        <RouterLink
+          class="flex items-center gap-3 rounded-xl border border-gray-100 p-3.5 transition hover:bg-gray-50"
+          to="/requests?status=dibuat"
+        >
+          <strong
+            class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-lg font-bold text-blue-600"
+          >
+            {{ dashboardStore.summary.dibuat }}
+          </strong>
+          <span class="font-semibold text-gray-600">Permintaan baru dibuat</span>
         </RouterLink>
       </section>
     </div>
   </section>
 </template>
-
-<style scoped>
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.summary-card {
-  min-height: 132px;
-  padding: 24px;
-}
-
-.summary-card span {
-  color: var(--text-muted);
-  font-size: 14px;
-  font-weight: 400;
-}
-
-.summary-card strong {
-  display: block;
-  margin-top: 8px;
-  font-size: 40px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  gap: 20px;
-}
-
-.dashboard-panel {
-  padding: 24px;
-}
-
-.panel-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 8px;
-}
-
-.panel-header p {
-  margin: 5px 0 0;
-  color: var(--text-soft);
-}
-
-.compact-empty {
-  min-height: 180px;
-}
-
-.action-panel {
-  display: grid;
-  align-content: start;
-  gap: 12px;
-}
-
-.action-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border: 1px solid #f3f4f6;
-  border-radius: 12px;
-  padding: 14px;
-}
-
-.action-link:hover {
-  border-color: var(--line-strong);
-  background: var(--surface-muted);
-}
-
-.action-link strong {
-  display: flex;
-  width: 44px;
-  height: 44px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background: #eff6ff;
-  color: #2563eb;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.action-link span {
-  color: var(--text-soft);
-  font-weight: 800;
-}
-
-@media (max-width: 1120px) {
-  .summary-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 680px) {
-  .summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .summary-card {
-    min-height: 118px;
-  }
-
-  .summary-card strong {
-    font-size: 28px;
-  }
-}
-</style>

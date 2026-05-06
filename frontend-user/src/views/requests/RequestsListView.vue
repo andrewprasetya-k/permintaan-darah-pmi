@@ -8,6 +8,7 @@ import { useFeedbackStore } from '@/stores/feedback'
 import { useMyRequestsStore } from '@/stores/my-requests'
 import type { PermintaanDarahListItem, PermintaanStatus } from '@/types/models'
 import { bloodLabel, formatDate, statusLabels } from '@/utils/format'
+import { btn, ui } from '@/utils/ui'
 
 const route = useRoute()
 const requestsStore = useMyRequestsStore()
@@ -55,9 +56,7 @@ const openPickup = (request: PermintaanDarahListItem) => {
 }
 
 const confirmCancel = async () => {
-  if (!selectedRequest.value || !cancelReason.value.trim()) {
-    return
-  }
+  if (!selectedRequest.value || !cancelReason.value.trim()) return
 
   try {
     await requestsStore.cancelRequest(
@@ -80,9 +79,7 @@ const confirmCancel = async () => {
 }
 
 const confirmPickup = async () => {
-  if (!selectedRequest.value) {
-    return
-  }
+  if (!selectedRequest.value) return
 
   try {
     await requestsStore.confirmPickup(selectedRequest.value.permintaanDarahId)
@@ -125,34 +122,39 @@ onMounted(async () => {
 
 <template>
   <section>
-    <div class="page-header">
+    <div :class="ui.pageHeader">
       <div>
-        <p class="page-eyebrow">Permintaan</p>
-        <h1 class="page-title">Permintaan Saya</h1>
-        <p class="page-subtitle">Daftar permintaan darah milik rumah sakit yang sedang login.</p>
+        <p :class="ui.pageEyebrow">Permintaan</p>
+        <h1 :class="ui.pageTitle">Permintaan Saya</h1>
+        <p :class="ui.pageSubtitle">Daftar permintaan darah milik rumah sakit yang sedang login.</p>
       </div>
-      <RouterLink class="btn btn-primary" to="/requests/new">
+      <RouterLink :class="btn('btnPrimary')" to="/requests/new">
         <Plus :size="16" />
         Buat Permintaan
       </RouterLink>
     </div>
 
-    <section class="card list-panel">
-      <div class="filters">
-        <div class="form-field search-field">
+    <section :class="[ui.card, 'overflow-hidden']">
+      <div
+        class="grid grid-cols-[minmax(0,1fr)_220px] gap-3.5 border-b border-gray-100 p-5 max-md:grid-cols-1"
+      >
+        <div class="relative">
           <label class="sr-only" for="search">Cari</label>
-          <Search :size="16" />
+          <Search
+            :size="16"
+            class="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-gray-400"
+          />
           <input
             id="search"
             v-model="search"
-            class="form-input"
+            :class="[ui.formControl, 'pl-9']"
             type="search"
             placeholder="Nama pasien atau ID permintaan"
           />
         </div>
-        <div class="form-field">
-          <label class="form-label" for="status">Status</label>
-          <select id="status" v-model="statusFilter" class="form-select">
+        <div :class="ui.formField">
+          <label :class="ui.formLabel" for="status">Status</label>
+          <select id="status" v-model="statusFilter" :class="ui.formControl">
             <option v-for="status in statuses" :key="status.value" :value="status.value">
               {{ status.label }}
             </option>
@@ -160,52 +162,58 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div v-if="requestsStore.isLoading" class="empty-state">
+      <div v-if="requestsStore.isLoading" :class="[ui.emptyState, 'm-5']">
         <div>
-          <h2>Memuat permintaan</h2>
-          <p>Data sedang diambil dari backend.</p>
+          <h2 :class="ui.emptyTitle">Memuat permintaan</h2>
+          <p :class="ui.emptyCopy">Data sedang diambil dari backend.</p>
         </div>
       </div>
 
-      <div v-else-if="filteredRequests.length === 0" class="empty-state">
+      <div v-else-if="filteredRequests.length === 0" :class="[ui.emptyState, 'm-5']">
         <div>
-          <h2>Tidak ada data</h2>
-          <p>Ubah filter atau buat permintaan baru.</p>
+          <h2 :class="ui.emptyTitle">Tidak ada data</h2>
+          <p :class="ui.emptyCopy">Ubah filter atau buat permintaan baru.</p>
         </div>
       </div>
 
       <template v-else>
-        <div class="table-wrap desktop-list">
-          <table class="data-table">
+        <div :class="[ui.tableWrap, 'max-md:hidden']">
+          <table :class="ui.table">
             <thead>
               <tr>
-                <th>Pasien</th>
-                <th>Darah</th>
-                <th>Tanggal</th>
-                <th>Status</th>
-                <th>Aksi</th>
+                <th :class="ui.th">Pasien</th>
+                <th :class="ui.th">Darah</th>
+                <th :class="ui.th">Tanggal</th>
+                <th :class="ui.th">Status</th>
+                <th :class="ui.th">Aksi</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="request in filteredRequests" :key="request.permintaanDarahId">
-                <td>
+              <tr
+                v-for="request in filteredRequests"
+                :key="request.permintaanDarahId"
+                class="transition-colors hover:bg-gray-50"
+              >
+                <td :class="ui.td">
                   <strong>{{ request.namaPasien }}</strong>
-                  <span class="request-id">{{ request.permintaanDarahId }}</span>
+                  <span class="mt-1 block text-xs text-gray-500">{{
+                    request.permintaanDarahId
+                  }}</span>
                 </td>
-                <td>{{ bloodLabel(request.golonganDarah, request.rhesusDarah) }}</td>
-                <td>{{ formatDate(request.tanggalPermintaan) }}</td>
-                <td><StatusBadge :status="request.status" /></td>
-                <td>
-                  <div class="row-actions">
+                <td :class="ui.td">{{ bloodLabel(request.golonganDarah, request.rhesusDarah) }}</td>
+                <td :class="ui.td">{{ formatDate(request.tanggalPermintaan) }}</td>
+                <td :class="ui.td"><StatusBadge :status="request.status" /></td>
+                <td :class="ui.td">
+                  <div class="flex flex-wrap gap-2">
                     <RouterLink
-                      class="btn btn-secondary"
+                      :class="btn('btnSecondary')"
                       :to="`/requests/${request.permintaanDarahId}`"
                     >
                       Detail
                     </RouterLink>
                     <RouterLink
                       v-if="requestsStore.canEdit(request)"
-                      class="btn btn-secondary"
+                      :class="btn('btnSecondary')"
                       :to="`/requests/${request.permintaanDarahId}/edit`"
                     >
                       Edit
@@ -213,7 +221,7 @@ onMounted(async () => {
                     <button
                       v-if="requestsStore.canConfirmPickup(request)"
                       type="button"
-                      class="btn btn-success"
+                      :class="btn('btnSuccess')"
                       @click="openPickup(request)"
                     >
                       Selesai
@@ -221,7 +229,7 @@ onMounted(async () => {
                     <button
                       v-if="requestsStore.canCancel(request)"
                       type="button"
-                      class="btn btn-danger"
+                      :class="btn('btnDanger')"
                       @click="openCancel(request)"
                     >
                       Batal
@@ -233,36 +241,45 @@ onMounted(async () => {
           </table>
         </div>
 
-        <div class="mobile-list">
+        <div class="hidden p-5 max-md:block">
           <article
             v-for="request in filteredRequests"
             :key="request.permintaanDarahId"
-            class="request-card"
+            class="rounded-2xl border border-gray-100 bg-white p-4 [&+&]:mt-3"
           >
-            <div class="request-card-head">
+            <div class="flex items-start justify-between gap-3">
               <div>
-                <h2>{{ request.namaPasien }}</h2>
-                <p>{{ formatDate(request.tanggalPermintaan) }}</p>
+                <h2 class="m-0 text-base font-semibold text-gray-900">{{ request.namaPasien }}</h2>
+                <p class="mt-1 text-sm text-gray-500">
+                  {{ formatDate(request.tanggalPermintaan) }}
+                </p>
               </div>
               <StatusBadge :status="request.status" />
             </div>
-            <dl>
+            <dl class="my-3.5 grid gap-2.5">
               <div>
-                <dt>Darah</dt>
-                <dd>{{ bloodLabel(request.golonganDarah, request.rhesusDarah) }}</dd>
+                <dt class="text-xs font-semibold text-gray-500">Darah</dt>
+                <dd class="m-0 break-words font-semibold text-gray-900">
+                  {{ bloodLabel(request.golonganDarah, request.rhesusDarah) }}
+                </dd>
               </div>
               <div>
-                <dt>ID</dt>
-                <dd>{{ request.permintaanDarahId }}</dd>
+                <dt class="text-xs font-semibold text-gray-500">ID</dt>
+                <dd class="m-0 break-words font-semibold text-gray-900">
+                  {{ request.permintaanDarahId }}
+                </dd>
               </div>
             </dl>
-            <div class="card-actions">
-              <RouterLink class="btn btn-secondary" :to="`/requests/${request.permintaanDarahId}`">
+            <div class="flex flex-wrap gap-2">
+              <RouterLink
+                :class="btn('btnSecondary')"
+                :to="`/requests/${request.permintaanDarahId}`"
+              >
                 Detail
               </RouterLink>
               <RouterLink
                 v-if="requestsStore.canEdit(request)"
-                class="btn btn-secondary"
+                :class="btn('btnSecondary')"
                 :to="`/requests/${request.permintaanDarahId}/edit`"
               >
                 Edit
@@ -270,7 +287,7 @@ onMounted(async () => {
               <button
                 v-if="requestsStore.canConfirmPickup(request)"
                 type="button"
-                class="btn btn-success"
+                :class="btn('btnSuccess')"
                 @click="openPickup(request)"
               >
                 Selesai
@@ -278,7 +295,7 @@ onMounted(async () => {
               <button
                 v-if="requestsStore.canCancel(request)"
                 type="button"
-                class="btn btn-danger"
+                :class="btn('btnDanger')"
                 @click="openCancel(request)"
               >
                 Batal
@@ -296,15 +313,21 @@ onMounted(async () => {
       width="sm"
       @close="isCancelOpen = false"
     >
-      <div class="form-field">
-        <label class="form-label" for="cancelReason">Alasan pembatalan</label>
-        <textarea id="cancelReason" v-model="cancelReason" class="form-textarea" required />
+      <div :class="ui.formField">
+        <label :class="ui.formLabel" for="cancelReason">Alasan pembatalan</label>
+        <textarea id="cancelReason" v-model="cancelReason" :class="ui.formTextarea" required />
       </div>
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="isCancelOpen = false">Batal</button>
         <button
           type="button"
-          class="btn btn-danger"
+          :class="[btn('btnSecondary'), 'flex-1']"
+          @click="isCancelOpen = false"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          :class="[btn('btnDanger'), 'flex-1']"
           :disabled="requestsStore.isSubmitting || !cancelReason.trim()"
           @click="confirmCancel"
         >
@@ -321,10 +344,16 @@ onMounted(async () => {
       @close="isPickupOpen = false"
     >
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="isPickupOpen = false">Batal</button>
         <button
           type="button"
-          class="btn btn-success"
+          :class="[btn('btnSecondary'), 'flex-1']"
+          @click="isPickupOpen = false"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          :class="[btn('btnSuccess'), 'flex-1']"
           :disabled="requestsStore.isSubmitting"
           @click="confirmPickup"
         >
@@ -334,123 +363,3 @@ onMounted(async () => {
     </AppModal>
   </section>
 </template>
-
-<style scoped>
-.list-panel {
-  overflow: hidden;
-}
-
-.filters {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 220px;
-  gap: 14px;
-  border-bottom: 1px solid #f3f4f6;
-  padding: 20px;
-}
-
-.list-panel > .empty-state {
-  margin: 20px;
-}
-
-.search-field {
-  position: relative;
-}
-
-.search-field svg {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  z-index: 1;
-  color: #9ca3af;
-  transform: translateY(-50%);
-}
-
-.search-field .form-input {
-  padding-left: 38px;
-}
-
-.request-id {
-  display: block;
-  margin-top: 4px;
-  color: var(--text-muted);
-  font-size: 12px;
-}
-
-.row-actions,
-.card-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.mobile-list {
-  display: none;
-  padding: 20px;
-}
-
-.request-card {
-  border: 1px solid #f3f4f6;
-  border-radius: 16px;
-  padding: 16px;
-  background: #ffffff;
-}
-
-.request-card + .request-card {
-  margin-top: 12px;
-}
-
-.request-card-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.request-card h2,
-.request-card p,
-.request-card dl,
-.request-card dd {
-  margin: 0;
-}
-
-.request-card h2 {
-  font-size: 16px;
-  font-weight: 900;
-}
-
-.request-card p {
-  margin-top: 3px;
-  color: var(--text-muted);
-}
-
-.request-card dl {
-  display: grid;
-  gap: 10px;
-  margin: 14px 0;
-}
-
-.request-card dt {
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.request-card dd {
-  overflow-wrap: anywhere;
-  font-weight: 750;
-}
-
-@media (max-width: 780px) {
-  .filters {
-    grid-template-columns: 1fr;
-  }
-
-  .desktop-list {
-    display: none;
-  }
-
-  .mobile-list {
-    display: block;
-  }
-}
-</style>

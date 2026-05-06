@@ -92,89 +92,122 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="app-shell">
-    <aside class="sidebar" :class="{ 'sidebar-open': isMobileNavOpen }" aria-label="Navigasi utama">
-      <div class="brand">
-        <div class="brand-mark">
+  <div class="flex min-h-screen bg-gray-50">
+    <aside
+      class="fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col bg-white px-3 pb-4 pt-6 transition-transform duration-200 max-lg:w-[min(280px,88vw)] max-lg:-translate-x-full"
+      :class="{ 'max-lg:translate-x-0': isMobileNavOpen }"
+      aria-label="Navigasi utama"
+    >
+      <div class="flex min-h-12 items-center gap-3 px-3">
+        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
           <Hospital :size="20" />
         </div>
         <div>
-          <strong>PMI <span>Salatiga</span></strong>
-          <small>Portal Rumah Sakit</small>
+          <strong class="block text-sm font-bold text-gray-900"
+            >PMI <span class="text-red-500">Salatiga</span></strong
+          >
+          <small class="block text-xs text-gray-500">Portal Rumah Sakit</small>
         </div>
       </div>
 
-      <nav class="side-nav">
+      <nav class="mt-7 flex flex-1 flex-col gap-1 overflow-y-auto">
         <RouterLink
           v-for="item in navItems"
           :key="item.to"
           :to="item.to"
-          class="side-link"
-          :class="{ active: route.path === item.to }"
+          class="flex min-h-[42px] items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-600 transition-all hover:bg-blue-50 hover:text-blue-700"
+          :class="{
+            'translate-x-0.5 bg-blue-600 text-white shadow-sm hover:bg-blue-600 hover:text-white':
+              route.path === item.to,
+          }"
           @click="closeMobileNav"
         >
-          <component :is="item.icon" :size="18" class="side-link-icon" />
+          <component :is="item.icon" :size="18" class="shrink-0" />
           {{ item.label }}
         </RouterLink>
       </nav>
 
-      <div class="side-footer">
-        <div>
-          <button
-            type="button"
-            class="logout-button"
-            aria-label="Logout"
-            @click="isLogoutOpen = true"
-          >
-            <LogOut :size="18" />
-          </button>
-        </div>
-        <div>
+      <div
+        class="mt-auto flex flex-col gap-3 border-t border-gray-100 px-3 pt-4 text-xs text-gray-600"
+      >
+        <div class="flex items-center gap-2">
           <Activity :size="16" />
+          <span class="font-medium">Koneksi portal</span>
         </div>
-        <div>
-          <span class="connection-dot" :class="`connection-${realtimeStore.status}`" />
+        <div class="flex items-center gap-2">
+          <span
+            class="h-2.5 w-2.5 rounded-full"
+            :class="{
+              'bg-emerald-500': realtimeStore.status === 'connected',
+              'bg-amber-500': realtimeStore.status === 'connecting',
+              'bg-red-500':
+                realtimeStore.status === 'error' || realtimeStore.status === 'disconnected',
+              'bg-gray-400':
+                realtimeStore.status !== 'connected' &&
+                realtimeStore.status !== 'connecting' &&
+                realtimeStore.status !== 'error' &&
+                realtimeStore.status !== 'disconnected',
+            }"
+          />
           <span>{{ realtimeLabel }}</span>
         </div>
+        <button
+          type="button"
+          class="flex min-h-10 w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-red-50 hover:text-red-600"
+          @click="isLogoutOpen = true"
+        >
+          <LogOut :size="18" />
+          Logout
+        </button>
       </div>
     </aside>
 
     <button
       v-if="isMobileNavOpen"
       type="button"
-      class="nav-backdrop"
+      class="fixed inset-0 z-40 border-0 bg-slate-900/40 lg:hidden"
       aria-label="Tutup navigasi"
       @click="closeMobileNav"
     />
 
-    <div class="shell-main">
-      <header class="topbar">
+    <div class="min-h-screen flex-1 pl-[280px] max-lg:pl-0">
+      <header
+        class="sticky top-0 z-30 flex min-h-[88px] items-center justify-between gap-4 bg-white px-8 py-5 shadow-sm max-lg:min-h-[76px] max-lg:px-4 max-lg:py-3"
+      >
         <button
           type="button"
-          class="mobile-menu"
+          class="hidden h-10 w-10 items-center justify-center rounded-xl text-gray-600 transition hover:bg-gray-100 hover:text-gray-900 max-lg:inline-flex"
           aria-label="Buka navigasi"
           @click="isMobileNavOpen = true"
         >
           <Menu :size="24" />
         </button>
 
-        <div class="topbar-title">
-          <h1>{{ pageTitle }}</h1>
-          <p>{{ hospitalName }}</p>
+        <div class="min-w-0 flex-1">
+          <h1 class="truncate text-2xl font-semibold text-gray-900 max-sm:max-w-[180px]">
+            {{ pageTitle }}
+          </h1>
+          <p class="mt-1 truncate text-sm text-gray-500 max-sm:max-w-[180px]">{{ hospitalName }}</p>
         </div>
 
-        <div class="topbar-actions">
-          <div class="user-chip">
-            <div>
-              <strong>{{ hospitalName }}</strong>
-              <span>Rumah Sakit</span>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3">
+            <div class="hidden text-right xl:block">
+              <strong class="block max-w-48 truncate text-sm font-medium text-gray-900">{{
+                hospitalName
+              }}</strong>
+              <span class="block text-xs text-gray-500">Rumah Sakit</span>
             </div>
-            <div class="user-avatar">{{ getInitials(hospitalName) }}</div>
+            <div
+              class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 font-semibold text-blue-600"
+            >
+              {{ getInitials(hospitalName) }}
+            </div>
           </div>
         </div>
       </header>
 
-      <main class="content">
+      <main class="mx-auto w-full max-w-[1200px] px-8 py-6 max-lg:px-4 max-lg:py-5">
         <RouterView />
       </main>
     </div>
@@ -187,350 +220,26 @@ onMounted(async () => {
       @close="isLogoutOpen = false"
     >
       <template #icon>
-        <div class="modal-icon-danger">
+        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600">
           <LogOut :size="20" />
         </div>
       </template>
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="isLogoutOpen = false">Batal</button>
-        <button type="button" class="btn btn-danger" @click="confirmLogout">Logout</button>
+        <button
+          type="button"
+          class="inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+          @click="isLogoutOpen = false"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          class="inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-red-100 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:border-red-200"
+          @click="confirmLogout"
+        >
+          Logout
+        </button>
       </template>
     </AppModal>
   </div>
 </template>
-
-<style scoped>
-.app-shell {
-  display: flex;
-  min-height: 100vh;
-  background: #f9fafb;
-}
-
-.sidebar {
-  position: fixed;
-  inset: 0 auto 0 0;
-  z-index: 50;
-  display: flex;
-  width: 280px;
-  flex-direction: column;
-  background: #ffffff;
-  padding: 24px 12px 16px;
-  transition: transform 0.24s ease;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 48px;
-  padding: 0 12px;
-}
-
-.brand-mark {
-  display: flex;
-  width: 36px;
-  height: 36px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background: #eff6ff;
-  color: #2563eb;
-}
-
-.brand strong,
-.brand small {
-  display: block;
-}
-
-.brand strong {
-  color: #111827;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.brand strong span {
-  color: #ef4444;
-}
-
-.brand small {
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 400;
-}
-
-.side-nav {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 28px;
-  overflow-y: auto;
-}
-
-.side-link {
-  display: flex;
-  min-height: 42px;
-  align-items: center;
-  gap: 10px;
-  border-radius: 12px;
-  padding: 10px 12px;
-  color: #4b5563;
-  font-size: 14px;
-  font-weight: 500;
-  transition:
-    background-color 0.18s ease,
-    color 0.18s ease,
-    transform 0.18s ease;
-}
-
-.side-link:hover,
-.side-link.active {
-  background: #eff6ff;
-  color: #1d4ed8;
-}
-
-.side-link.active {
-  background: #2563eb;
-  color: #ffffff;
-  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.18);
-  transform: translateX(2px);
-}
-
-.side-link-icon {
-  flex: 0 0 auto;
-}
-
-.side-footer {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-top: auto;
-  border-top: 1px solid #f3f4f6;
-  padding: 16px 12px 0;
-  color: #4b5563;
-  font-size: 12px;
-}
-
-.side-footer > div {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.connection-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-  background: #9ca3af;
-}
-
-.connection-connected {
-  background: #10b981;
-}
-
-.connection-connecting {
-  background: #f59e0b;
-}
-
-.connection-error,
-.connection-disconnected {
-  background: #ef4444;
-}
-
-.shell-main {
-  min-height: 100vh;
-  flex: 1;
-  padding-left: 280px;
-}
-
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  display: flex;
-  min-height: 88px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  background: #ffffff;
-  padding: 20px 32px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
-}
-
-.topbar-title {
-  min-width: 0;
-}
-
-.topbar-title h1,
-.topbar-title p {
-  margin: 0;
-}
-
-.topbar-title h1 {
-  overflow: hidden;
-  max-width: 520px;
-  color: #111827;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 24px;
-  font-weight: 600;
-}
-
-.topbar-title p {
-  overflow: hidden;
-  max-width: 520px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: #6b7280;
-  font-size: 14px;
-  margin-top: 4px;
-}
-
-.topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.user-chip {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.user-chip div:first-child {
-  display: none;
-  text-align: right;
-}
-
-.user-chip strong,
-.user-chip span {
-  display: block;
-}
-
-.user-chip strong {
-  max-width: 190px;
-  overflow: hidden;
-  color: #111827;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.user-chip span {
-  color: #6b7280;
-  font-size: 12px;
-}
-
-.user-avatar {
-  display: flex;
-  width: 40px;
-  height: 40px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background: #dbeafe;
-  color: #2563eb;
-  font-weight: 600;
-}
-
-.logout-button,
-.mobile-menu {
-  display: inline-flex;
-  width: 40px;
-  height: 40px;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  color: #4b5563;
-  transition:
-    background-color 0.18s ease,
-    color 0.18s ease;
-}
-
-.logout-button:hover,
-.mobile-menu:hover {
-  background: #f3f4f6;
-  color: #111827;
-}
-
-.mobile-menu,
-.nav-backdrop {
-  display: none;
-}
-
-.content {
-  width: min(1200px, 100%);
-  margin: 0 auto;
-  padding: 24px 32px;
-}
-
-.modal-icon-danger {
-  display: flex;
-  height: 48px;
-  width: 48px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 16px;
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-@media (max-width: 920px) {
-  .sidebar {
-    transform: translateX(-100%);
-    width: min(280px, 88vw);
-  }
-
-  .sidebar-open {
-    transform: translateX(0);
-  }
-
-  .nav-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 45;
-    display: block;
-    border: 0;
-    background: rgba(15, 23, 42, 0.36);
-  }
-
-  .shell-main {
-    padding-left: 0;
-  }
-
-  .mobile-menu {
-    display: inline-flex;
-  }
-
-  .topbar {
-    min-height: 76px;
-    padding: 14px 16px;
-  }
-
-  .new-request-link,
-  .user-chip div:first-child {
-    display: none;
-  }
-
-  .content {
-    padding: 20px 16px;
-  }
-}
-
-@media (max-width: 560px) {
-  .topbar-title h1,
-  .topbar-title p {
-    max-width: 180px;
-  }
-}
-
-@media (min-width: 1180px) {
-  .user-chip div:first-child {
-    display: block;
-  }
-}
-</style>

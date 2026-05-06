@@ -6,6 +6,7 @@ import StatusBadge from '@/components/rs/StatusBadge.vue'
 import { useFeedbackStore } from '@/stores/feedback'
 import { useMyRequestsStore } from '@/stores/my-requests'
 import { bloodLabel, formatDate, formatDateTime, statusDescriptions } from '@/utils/format'
+import { btn, ui } from '@/utils/ui'
 
 const route = useRoute()
 const requestsStore = useMyRequestsStore()
@@ -19,9 +20,7 @@ const requestId = computed(() => String(route.params.id || ''))
 const request = computed(() => requestsStore.selectedRequest)
 
 const loadRequest = async () => {
-  if (!requestId.value) {
-    return
-  }
+  if (!requestId.value) return
 
   await requestsStore.fetchById(requestId.value).catch((err) => {
     feedbackStore.showFlag({
@@ -33,9 +32,7 @@ const loadRequest = async () => {
 }
 
 const confirmCancel = async () => {
-  if (!request.value || !cancelReason.value.trim()) {
-    return
-  }
+  if (!request.value || !cancelReason.value.trim()) return
 
   try {
     await requestsStore.cancelRequest(request.value.permintaanDarahId, cancelReason.value.trim())
@@ -55,9 +52,7 @@ const confirmCancel = async () => {
 }
 
 const confirmPickup = async () => {
-  if (!request.value) {
-    return
-  }
+  if (!request.value) return
 
   try {
     await requestsStore.confirmPickup(request.value.permintaanDarahId)
@@ -82,19 +77,19 @@ watch(requestId, loadRequest)
 
 <template>
   <section>
-    <div class="page-header">
+    <div :class="ui.pageHeader">
       <div>
-        <p class="page-eyebrow">Detail Permintaan</p>
-        <h1 class="page-title">{{ request?.namaPasien || 'Memuat detail' }}</h1>
-        <p v-if="request" class="page-subtitle">
+        <p :class="ui.pageEyebrow">Detail Permintaan</p>
+        <h1 :class="ui.pageTitle">{{ request?.namaPasien || 'Memuat detail' }}</h1>
+        <p v-if="request" :class="ui.pageSubtitle">
           {{ request.permintaanDarahId }} - {{ statusDescriptions[request.status] }}
         </p>
       </div>
-      <div v-if="request" class="detail-actions">
-        <RouterLink class="btn btn-secondary" to="/requests">Kembali</RouterLink>
+      <div v-if="request" class="flex flex-wrap gap-2.5 max-sm:w-full">
+        <RouterLink :class="btn('btnSecondary')" to="/requests">Kembali</RouterLink>
         <RouterLink
           v-if="requestsStore.canEdit(request)"
-          class="btn btn-secondary"
+          :class="btn('btnSecondary')"
           :to="`/requests/${request.permintaanDarahId}/edit`"
         >
           Edit
@@ -102,7 +97,7 @@ watch(requestId, loadRequest)
         <button
           v-if="requestsStore.canConfirmPickup(request)"
           type="button"
-          class="btn btn-success"
+          :class="btn('btnSuccess')"
           @click="isPickupOpen = true"
         >
           Konfirmasi Selesai
@@ -110,7 +105,7 @@ watch(requestId, loadRequest)
         <button
           v-if="requestsStore.canCancel(request)"
           type="button"
-          class="btn btn-danger"
+          :class="btn('btnDanger')"
           @click="isCancelOpen = true"
         >
           Batalkan
@@ -118,109 +113,138 @@ watch(requestId, loadRequest)
       </div>
     </div>
 
-    <div v-if="requestsStore.isLoading && !request" class="empty-state">
+    <div v-if="requestsStore.isLoading && !request" :class="ui.emptyState">
       <div>
-        <h2>Memuat detail</h2>
-        <p>Data permintaan sedang diambil dari backend.</p>
+        <h2 :class="ui.emptyTitle">Memuat detail</h2>
+        <p :class="ui.emptyCopy">Data permintaan sedang diambil dari backend.</p>
       </div>
     </div>
 
-    <div v-else-if="!request" class="empty-state">
+    <div v-else-if="!request" :class="ui.emptyState">
       <div>
-        <h2>Detail tidak tersedia</h2>
-        <p>Permintaan tidak ditemukan atau tidak dapat diakses.</p>
+        <h2 :class="ui.emptyTitle">Detail tidak tersedia</h2>
+        <p :class="ui.emptyCopy">Permintaan tidak ditemukan atau tidak dapat diakses.</p>
       </div>
     </div>
 
     <template v-else>
-      <section class="detail-grid">
-        <article class="card detail-card status-card">
+      <section
+        class="grid grid-cols-[280px_minmax(0,1fr)_minmax(0,1fr)] gap-4.5 max-xl:grid-cols-1"
+      >
+        <article :class="[ui.card, 'grid content-start gap-3.5 p-6']">
           <div>
-            <span>Status</span>
+            <span class="mb-2 block text-xs font-semibold uppercase text-gray-500">Status</span>
             <StatusBadge :status="request.status" />
           </div>
-          <p v-if="request.cancelReason">Alasan batal: {{ request.cancelReason }}</p>
-          <p>Dibuat {{ formatDateTime(request.createdAt) }}</p>
+          <p v-if="request.cancelReason" class="m-0 text-sm text-gray-600">
+            Alasan batal: {{ request.cancelReason }}
+          </p>
+          <p class="m-0 text-sm text-gray-600">Dibuat {{ formatDateTime(request.createdAt) }}</p>
         </article>
 
-        <article class="card detail-card">
-          <h2 class="section-title">Data Pasien</h2>
-          <dl class="detail-list">
-            <div>
-              <dt>Nama Pasien</dt>
-              <dd>{{ request.namaPasien }}</dd>
+        <article :class="[ui.card, 'p-6']">
+          <h2 :class="ui.sectionTitle">Data Pasien</h2>
+          <dl class="mt-4 grid gap-3.5">
+            <div class="grid gap-1">
+              <dt class="text-xs font-semibold text-gray-500">Nama Pasien</dt>
+              <dd class="m-0 break-words font-semibold text-gray-900">{{ request.namaPasien }}</dd>
             </div>
-            <div>
-              <dt>No. RM</dt>
-              <dd>{{ request.noRM || '-' }}</dd>
+            <div class="grid gap-1">
+              <dt class="text-xs font-semibold text-gray-500">No. RM</dt>
+              <dd class="m-0 break-words font-semibold text-gray-900">{{ request.noRM || '-' }}</dd>
             </div>
-            <div>
-              <dt>Tempat/Tanggal Lahir</dt>
-              <dd>{{ request.tempatLahir }}, {{ formatDate(request.tanggalLahir) }}</dd>
+            <div class="grid gap-1">
+              <dt class="text-xs font-semibold text-gray-500">Tempat/Tanggal Lahir</dt>
+              <dd class="m-0 break-words font-semibold text-gray-900">
+                {{ request.tempatLahir }}, {{ formatDate(request.tanggalLahir) }}
+              </dd>
             </div>
-            <div>
-              <dt>Jenis Kelamin</dt>
-              <dd>{{ request.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}</dd>
+            <div class="grid gap-1">
+              <dt class="text-xs font-semibold text-gray-500">Jenis Kelamin</dt>
+              <dd class="m-0 break-words font-semibold text-gray-900">
+                {{ request.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}
+              </dd>
             </div>
-            <div>
-              <dt>Golongan Darah</dt>
-              <dd>{{ bloodLabel(request.golonganDarah, request.rhesusDarah) }}</dd>
+            <div class="grid gap-1">
+              <dt class="text-xs font-semibold text-gray-500">Golongan Darah</dt>
+              <dd class="m-0 break-words font-semibold text-gray-900">
+                {{ bloodLabel(request.golonganDarah, request.rhesusDarah) }}
+              </dd>
             </div>
           </dl>
         </article>
 
-        <article class="card detail-card">
-          <h2 class="section-title">Data Medis</h2>
-          <dl class="detail-list">
-            <div>
-              <dt>Hemoglobin</dt>
-              <dd>{{ request.hemoglobin ? `${request.hemoglobin} g/dL` : '-' }}</dd>
+        <article :class="[ui.card, 'p-6']">
+          <h2 :class="ui.sectionTitle">Data Medis</h2>
+          <dl class="mt-4 grid gap-3.5">
+            <div class="grid gap-1">
+              <dt class="text-xs font-semibold text-gray-500">Hemoglobin</dt>
+              <dd class="m-0 break-words font-semibold text-gray-900">
+                {{ request.hemoglobin ? `${request.hemoglobin} g/dL` : '-' }}
+              </dd>
             </div>
-            <div>
-              <dt>Ruang/Bagian/Kelas</dt>
-              <dd>{{ request.ruangBagianKelas || '-' }}</dd>
+            <div class="grid gap-1">
+              <dt class="text-xs font-semibold text-gray-500">Ruang/Bagian/Kelas</dt>
+              <dd class="m-0 break-words font-semibold text-gray-900">
+                {{ request.ruangBagianKelas || '-' }}
+              </dd>
             </div>
-            <div>
-              <dt>Pernah Transfusi</dt>
-              <dd>{{ request.pernahTransfusi ? 'Ya' : 'Tidak' }}</dd>
+            <div class="grid gap-1">
+              <dt class="text-xs font-semibold text-gray-500">Pernah Transfusi</dt>
+              <dd class="m-0 break-words font-semibold text-gray-900">
+                {{ request.pernahTransfusi ? 'Ya' : 'Tidak' }}
+              </dd>
             </div>
-            <div>
-              <dt>Indikasi Transfusi</dt>
-              <dd>{{ request.indikasiTransfusi || '-' }}</dd>
+            <div class="grid gap-1">
+              <dt class="text-xs font-semibold text-gray-500">Indikasi Transfusi</dt>
+              <dd class="m-0 break-words font-semibold text-gray-900">
+                {{ request.indikasiTransfusi || '-' }}
+              </dd>
             </div>
-            <div>
-              <dt>Pernah Hamil</dt>
-              <dd>{{ request.pernahHamil || '-' }}</dd>
+            <div class="grid gap-1">
+              <dt class="text-xs font-semibold text-gray-500">Pernah Hamil</dt>
+              <dd class="m-0 break-words font-semibold text-gray-900">
+                {{ request.pernahHamil || '-' }}
+              </dd>
             </div>
-            <div>
-              <dt>Tanggal Permintaan</dt>
-              <dd>{{ formatDate(request.tanggalPermintaan) }}</dd>
+            <div class="grid gap-1">
+              <dt class="text-xs font-semibold text-gray-500">Tanggal Permintaan</dt>
+              <dd class="m-0 break-words font-semibold text-gray-900">
+                {{ formatDate(request.tanggalPermintaan) }}
+              </dd>
             </div>
           </dl>
         </article>
       </section>
 
-      <section class="card detail-card component-card">
-        <h2 class="section-title">Komponen Darah</h2>
-        <div v-if="!request.detailPermintaanDarah?.length" class="empty-row">
+      <section :class="[ui.card, 'mt-5 p-6']">
+        <h2 :class="ui.sectionTitle">Komponen Darah</h2>
+        <div
+          v-if="!request.detailPermintaanDarah?.length"
+          class="mt-4 rounded-2xl border border-dashed border-gray-200 p-4 text-sm text-gray-600"
+        >
           Tidak ada detail komponen pada permintaan ini.
         </div>
-        <div v-else class="table-wrap">
-          <table class="data-table">
+        <div v-else :class="ui.tableWrap">
+          <table :class="ui.table">
             <thead>
               <tr>
-                <th>Komponen</th>
-                <th>Darah</th>
-                <th>Jumlah</th>
-                <th>Diperlukan</th>
+                <th :class="ui.th">Komponen</th>
+                <th :class="ui.th">Darah</th>
+                <th :class="ui.th">Jumlah</th>
+                <th :class="ui.th">Diperlukan</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="detail in request.detailPermintaanDarah" :key="detail.detailId">
-                <td>{{ detail.komponenNama }}</td>
-                <td>{{ bloodLabel(detail.golonganDarah, detail.rhesusDarah) }}</td>
-                <td>{{ detail.jumlahKantong }} kantong</td>
-                <td>{{ formatDate(detail.tanggalDiperlukan) }}</td>
+              <tr
+                v-for="detail in request.detailPermintaanDarah"
+                :key="detail.detailId"
+                class="transition-colors hover:bg-gray-50"
+              >
+                <td :class="ui.td">{{ detail.komponenNama }}</td>
+                <td :class="ui.td">{{ bloodLabel(detail.golonganDarah, detail.rhesusDarah) }}</td>
+                <td :class="ui.td">{{ detail.jumlahKantong }} kantong</td>
+                <td :class="ui.td">{{ formatDate(detail.tanggalDiperlukan) }}</td>
               </tr>
             </tbody>
           </table>
@@ -235,15 +259,21 @@ watch(requestId, loadRequest)
       width="sm"
       @close="isCancelOpen = false"
     >
-      <div class="form-field">
-        <label class="form-label" for="cancelReason">Alasan pembatalan</label>
-        <textarea id="cancelReason" v-model="cancelReason" class="form-textarea" required />
+      <div :class="ui.formField">
+        <label :class="ui.formLabel" for="cancelReason">Alasan pembatalan</label>
+        <textarea id="cancelReason" v-model="cancelReason" :class="ui.formTextarea" required />
       </div>
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="isCancelOpen = false">Batal</button>
         <button
           type="button"
-          class="btn btn-danger"
+          :class="[btn('btnSecondary'), 'flex-1']"
+          @click="isCancelOpen = false"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          :class="[btn('btnDanger'), 'flex-1']"
           :disabled="requestsStore.isSubmitting || !cancelReason.trim()"
           @click="confirmCancel"
         >
@@ -260,10 +290,16 @@ watch(requestId, loadRequest)
       @close="isPickupOpen = false"
     >
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="isPickupOpen = false">Batal</button>
         <button
           type="button"
-          class="btn btn-success"
+          :class="[btn('btnSecondary'), 'flex-1']"
+          @click="isPickupOpen = false"
+        >
+          Batal
+        </button>
+        <button
+          type="button"
+          :class="[btn('btnSuccess'), 'flex-1']"
           :disabled="requestsStore.isSubmitting"
           @click="confirmPickup"
         >
@@ -273,92 +309,3 @@ watch(requestId, loadRequest)
     </AppModal>
   </section>
 </template>
-
-<style scoped>
-.detail-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.detail-grid {
-  display: grid;
-  grid-template-columns: 280px minmax(0, 1fr) minmax(0, 1fr);
-  gap: 18px;
-}
-
-.detail-card {
-  padding: 24px;
-}
-
-.status-card {
-  display: grid;
-  align-content: start;
-  gap: 14px;
-}
-
-.status-card span {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.status-card p {
-  margin: 0;
-  color: var(--text-soft);
-}
-
-.detail-list {
-  display: grid;
-  gap: 14px;
-  margin: 16px 0 0;
-}
-
-.detail-list div {
-  display: grid;
-  gap: 4px;
-}
-
-.detail-list dt {
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.detail-list dd {
-  margin: 0;
-  overflow-wrap: anywhere;
-  font-weight: 600;
-}
-
-.component-card {
-  margin-top: 18px;
-}
-
-.empty-row {
-  margin-top: 16px;
-  border: 1px dashed var(--line-strong);
-  border-radius: 8px;
-  padding: 18px;
-  color: var(--text-soft);
-}
-
-@media (max-width: 1120px) {
-  .detail-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 640px) {
-  .detail-actions {
-    width: 100%;
-  }
-
-  .detail-actions .btn {
-    flex: 1 1 150px;
-  }
-}
-</style>

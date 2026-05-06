@@ -17,15 +17,24 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="app-flag" :class="`app-flag-${props.variant}`" role="status" aria-live="polite">
-    <span class="app-flag-dot" />
-    <div class="app-flag-copy">
-      <p>{{ title }}</p>
-      <span v-if="message">{{ message }}</span>
+  <div
+    class="fixed right-5 top-5 z-[100] flex w-[min(384px,calc(100vw-32px))] items-start gap-3 rounded-2xl border px-4 py-3 shadow-lg max-sm:left-3.5 max-sm:right-3.5 max-sm:top-3.5 max-sm:w-auto"
+    :class="{
+      'border-emerald-100 bg-emerald-50 text-emerald-700': props.variant === 'success',
+      'border-red-100 bg-red-50 text-red-700': props.variant === 'error',
+      'border-blue-100 bg-blue-50 text-blue-700': props.variant === 'info',
+    }"
+    role="status"
+    aria-live="polite"
+  >
+    <span class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-current" />
+    <div class="min-w-0 flex-1">
+      <p class="m-0 text-sm font-semibold">{{ title }}</p>
+      <span v-if="message" class="mt-1 block text-sm leading-5 opacity-90">{{ message }}</span>
     </div>
     <button
       type="button"
-      class="app-flag-close"
+      class="h-6 w-6 shrink-0 rounded-lg text-xs font-semibold opacity-70 transition hover:bg-black/10 hover:opacity-100"
       aria-label="Tutup notifikasi"
       @click="$emit('close')"
     >
@@ -33,90 +42,3 @@ defineEmits<{
     </button>
   </div>
 </template>
-
-<style scoped>
-.app-flag {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
-  display: flex;
-  width: min(384px, calc(100vw - 32px));
-  align-items: flex-start;
-  gap: 12px;
-  border: 1px solid;
-  border-radius: 16px;
-  padding: 12px 16px;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.14);
-}
-
-.app-flag-success {
-  border-color: #bbf7d0;
-  background: #f0fdf4;
-  color: #166534;
-}
-
-.app-flag-error {
-  border-color: #fecaca;
-  background: #fef2f2;
-  color: #991b1b;
-}
-
-.app-flag-info {
-  border-color: #bfdbfe;
-  background: #eff6ff;
-  color: #1d4ed8;
-}
-
-.app-flag-dot {
-  width: 10px;
-  height: 10px;
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: currentColor;
-  margin-top: 6px;
-}
-
-.app-flag-copy {
-  min-width: 0;
-  flex: 1;
-}
-
-.app-flag-copy p {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.app-flag-copy span {
-  display: block;
-  margin-top: 3px;
-  color: inherit;
-  font-size: 13px;
-  opacity: 0.84;
-}
-
-.app-flag-close {
-  width: 24px;
-  height: 24px;
-  flex: 0 0 auto;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: currentColor;
-  font-weight: 600;
-}
-
-.app-flag-close:hover {
-  background: rgba(15, 23, 42, 0.08);
-}
-
-@media (max-width: 640px) {
-  .app-flag {
-    top: 14px;
-    right: 14px;
-    left: 14px;
-    width: auto;
-  }
-}
-</style>

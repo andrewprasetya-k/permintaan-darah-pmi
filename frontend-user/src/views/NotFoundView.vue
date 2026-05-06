@@ -1,30 +1,15 @@
+<script setup lang="ts">
+import { btn, ui } from '@/utils/ui'
+</script>
+
 <template>
-  <main class="not-found">
-    <section class="empty-state">
+  <main class="grid min-h-screen place-items-center p-6">
+    <section :class="ui.emptyState">
       <div>
-        <h1>Halaman tidak ditemukan</h1>
-        <p>Alamat yang dibuka tidak tersedia di portal rumah sakit.</p>
-        <RouterLink class="btn btn-primary" to="/">Kembali ke Dashboard</RouterLink>
+        <h1 class="mb-2 text-2xl font-semibold text-gray-900">Halaman tidak ditemukan</h1>
+        <p :class="ui.emptyCopy">Alamat yang dibuka tidak tersedia di portal rumah sakit.</p>
+        <RouterLink :class="[btn('btnPrimary'), 'mt-5']" to="/">Kembali ke Dashboard</RouterLink>
       </div>
     </section>
   </main>
 </template>
-
-<style scoped>
-.not-found {
-  display: grid;
-  min-height: 100vh;
-  place-items: center;
-  padding: 24px;
-}
-
-.not-found h1 {
-  margin: 0 0 8px;
-  font-size: 24px;
-  font-weight: 900;
-}
-
-.not-found .btn {
-  margin-top: 18px;
-}
-</style>

@@ -19,143 +19,55 @@ defineEmits<{
 
 <template>
   <Teleport to="body">
-    <Transition name="modal-backdrop">
-      <div v-if="isOpen" class="modal-backdrop" @click="$emit('close')" />
+    <Transition
+      enter-active-class="transition-opacity duration-200"
+      enter-from-class="opacity-0"
+      leave-active-class="transition-opacity duration-200"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="isOpen"
+        class="fixed inset-0 z-[80] bg-black/30 backdrop-blur-sm"
+        @click="$emit('close')"
+      />
     </Transition>
 
-    <Transition name="modal-panel">
+    <Transition
+      enter-active-class="transition duration-200"
+      enter-from-class="-translate-x-1/2 -translate-y-[47%] opacity-0"
+      leave-active-class="transition duration-200"
+      leave-to-class="-translate-x-1/2 -translate-y-[47%] opacity-0"
+    >
       <section
         v-if="isOpen"
-        class="modal-panel"
-        :class="`modal-${width}`"
+        class="fixed left-1/2 top-1/2 z-[90] max-h-[calc(100vh-32px)] w-[calc(100vw-32px)] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-3xl bg-white p-6 shadow-2xl"
+        :class="{
+          'max-w-[420px]': width === 'sm',
+          'max-w-[560px]': width === 'md',
+          'max-w-[760px]': width === 'lg',
+        }"
         role="dialog"
         aria-modal="true"
         :aria-label="title"
       >
-        <div class="modal-copy">
+        <div class="flex items-start gap-4">
           <slot name="icon" />
-          <div class="modal-text">
-            <h2>{{ title }}</h2>
-            <p v-if="description">{{ description }}</p>
+          <div class="min-w-0 flex-1">
+            <h2 class="m-0 text-lg font-semibold text-gray-900">{{ title }}</h2>
+            <p v-if="description" class="mt-2 text-sm leading-6 text-gray-500">
+              {{ description }}
+            </p>
           </div>
         </div>
 
-        <div v-if="$slots.default" class="modal-body">
+        <div v-if="$slots.default" class="mt-4">
           <slot />
         </div>
 
-        <footer v-if="$slots.footer" class="modal-footer">
+        <footer v-if="$slots.footer" class="mt-6 flex gap-3 max-sm:flex-col-reverse">
           <slot name="footer" />
         </footer>
       </section>
     </Transition>
   </Teleport>
 </template>
-
-<style scoped>
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 80;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
-}
-
-.modal-panel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  z-index: 90;
-  width: calc(100vw - 32px);
-  max-height: calc(100vh - 32px);
-  overflow: auto;
-  transform: translate(-50%, -50%);
-  border-radius: 24px;
-  background: var(--surface);
-  padding: 24px;
-  box-shadow: var(--shadow-lg);
-}
-
-.modal-sm {
-  max-width: 420px;
-}
-
-.modal-md {
-  max-width: 560px;
-}
-
-.modal-lg {
-  max-width: 760px;
-}
-
-.modal-copy {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-}
-
-.modal-text {
-  min-width: 0;
-  flex: 1;
-}
-
-.modal-text h2 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.modal-text p {
-  margin: 8px 0 0;
-  color: #6b7280;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.modal-body {
-  margin-top: 18px;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: stretch;
-  gap: 10px;
-  margin-top: 24px;
-}
-
-.modal-footer :deep(.btn) {
-  flex: 1;
-}
-
-.modal-backdrop-enter-active,
-.modal-backdrop-leave-active,
-.modal-panel-enter-active,
-.modal-panel-leave-active {
-  transition:
-    opacity 0.18s ease,
-    transform 0.18s ease;
-}
-
-.modal-backdrop-enter-from,
-.modal-backdrop-leave-to,
-.modal-panel-enter-from,
-.modal-panel-leave-to {
-  opacity: 0;
-}
-
-.modal-panel-enter-from,
-.modal-panel-leave-to {
-  transform: translate(-50%, -47%);
-}
-
-@media (max-width: 560px) {
-  .modal-footer {
-    flex-direction: column-reverse;
-  }
-
-  .modal-footer :deep(.btn) {
-    width: 100%;
-  }
-}
-</style>

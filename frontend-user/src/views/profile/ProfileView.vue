@@ -3,6 +3,7 @@ import { onMounted, reactive, ref } from 'vue'
 import AppModal from '@/components/feedback/AppModal.vue'
 import { useFeedbackStore } from '@/stores/feedback'
 import { useMyProfileStore } from '@/stores/my-profile'
+import { btn, ui } from '@/utils/ui'
 
 const profileStore = useMyProfileStore()
 const feedbackStore = useFeedbackStore()
@@ -70,47 +71,51 @@ onMounted(async () => {
 
 <template>
   <section>
-    <div class="page-header">
+    <div :class="ui.pageHeader">
       <div>
-        <p class="page-eyebrow">Profil</p>
-        <h1 class="page-title">Profil Rumah Sakit</h1>
-        <p class="page-subtitle">Kelola data kontak yang tersimpan di backend rumah sakit.</p>
+        <p :class="ui.pageEyebrow">Profil</p>
+        <h1 :class="ui.pageTitle">Profil Rumah Sakit</h1>
+        <p :class="ui.pageSubtitle">Kelola data kontak yang tersimpan di backend rumah sakit.</p>
       </div>
     </div>
 
-    <form class="card profile-form" @submit.prevent="isConfirmOpen = true">
-      <div class="form-grid">
-        <div class="form-field">
-          <label class="form-label" for="nama">Nama rumah sakit</label>
-          <input id="nama" v-model="form.nama" class="form-input" required />
+    <form :class="[ui.card, 'max-w-[860px] p-6']" @submit.prevent="isConfirmOpen = true">
+      <div :class="ui.formGrid">
+        <div :class="ui.formField">
+          <label :class="ui.formLabel" for="nama">Nama rumah sakit</label>
+          <input id="nama" v-model="form.nama" :class="ui.formControl" required />
         </div>
-        <div class="form-field">
-          <label class="form-label" for="nomorTelepon">Nomor telepon</label>
-          <input id="nomorTelepon" v-model="form.nomorTelepon" class="form-input" required />
+        <div :class="ui.formField">
+          <label :class="ui.formLabel" for="nomorTelepon">Nomor telepon</label>
+          <input id="nomorTelepon" v-model="form.nomorTelepon" :class="ui.formControl" required />
         </div>
-        <div class="form-field">
-          <label class="form-label" for="email">Email</label>
-          <input id="email" v-model="form.email" class="form-input" type="email" />
+        <div :class="ui.formField">
+          <label :class="ui.formLabel" for="email">Email</label>
+          <input id="email" v-model="form.email" :class="ui.formControl" type="email" />
         </div>
-        <div class="form-field">
-          <label class="form-label" for="password">Password baru</label>
+        <div :class="ui.formField">
+          <label :class="ui.formLabel" for="password">Password baru</label>
           <input
             id="password"
             v-model="form.password"
-            class="form-input"
+            :class="ui.formControl"
             type="password"
             autocomplete="new-password"
           />
-          <p class="form-help">Kosongkan bila tidak ingin mengganti password.</p>
+          <p :class="ui.formHelp">Kosongkan bila tidak ingin mengganti password.</p>
         </div>
-        <div class="form-field form-field-full">
-          <label class="form-label" for="alamat">Alamat</label>
-          <textarea id="alamat" v-model="form.alamat" class="form-textarea" required />
+        <div :class="[ui.formField, ui.formFieldFull]">
+          <label :class="ui.formLabel" for="alamat">Alamat</label>
+          <textarea id="alamat" v-model="form.alamat" :class="ui.formTextarea" required />
         </div>
       </div>
 
-      <div class="profile-actions">
-        <button type="submit" class="btn btn-primary" :disabled="profileStore.isLoading">
+      <div class="mt-5 flex justify-end max-sm:block">
+        <button
+          type="submit"
+          :class="[btn('btnPrimary'), 'max-sm:w-full']"
+          :disabled="profileStore.isLoading"
+        >
           {{ profileStore.isLoading ? 'Menyimpan...' : 'Simpan Profil' }}
         </button>
       </div>
@@ -124,12 +129,16 @@ onMounted(async () => {
       @close="isConfirmOpen = false"
     >
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="isConfirmOpen = false">
+        <button
+          type="button"
+          :class="[btn('btnSecondary'), 'flex-1']"
+          @click="isConfirmOpen = false"
+        >
           Batal
         </button>
         <button
           type="button"
-          class="btn btn-primary"
+          :class="[btn('btnPrimary'), 'flex-1']"
           :disabled="profileStore.isLoading"
           @click="submit"
         >
@@ -139,22 +148,3 @@ onMounted(async () => {
     </AppModal>
   </section>
 </template>
-
-<style scoped>
-.profile-form {
-  max-width: 860px;
-  padding: 24px;
-}
-
-.profile-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 18px;
-}
-
-@media (max-width: 640px) {
-  .profile-actions .btn {
-    width: 100%;
-  }
-}
-</style>
