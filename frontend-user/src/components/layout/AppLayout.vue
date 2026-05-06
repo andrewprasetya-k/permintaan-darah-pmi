@@ -33,7 +33,7 @@ const isLogoutOpen = ref(false)
 const navItems: Array<{ label: string; to: string; icon: Component }> = [
   { label: 'Dashboard', to: '/', icon: LayoutDashboard },
   { label: 'Permintaan', to: '/requests', icon: Droplets },
-  // { label: 'Buat Baru', to: '/requests/new', icon: Plus },
+  { label: 'Buat Permintaan Baru', to: '/requests/new', icon: Plus },
   { label: 'Profil', to: '/profile', icon: UserRound },
 ]
 
