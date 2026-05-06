@@ -67,14 +67,13 @@ func RegisterAPIRoutes(
 	rsProfile.PUT("/me", rumahSakitController.UpdateMe)
 
 	komponen := protected.Group("/komponen-darah")
-	komponen.Use(middleware.AdminOnly())
-	komponen.POST("", komponenController.Create)
-	komponen.GET("", komponenController.GetAll)
-	komponen.GET("/:id", komponenController.GetByID)
-	komponen.PUT("/:id", komponenController.Update)
-	komponen.DELETE("/:id", komponenController.Delete)
-	komponen.PUT("/activate/:id", komponenController.Activate)
-	komponen.PUT("/deactivate/:id", komponenController.Deactivate)
+	komponen.GET("", middleware.AdminOrRumahSakit(), komponenController.GetAll)
+	komponen.GET("/:id", middleware.AdminOrRumahSakit(), komponenController.GetByID)
+	komponen.POST("", middleware.AdminOnly(), komponenController.Create)
+	komponen.PUT("/:id", middleware.AdminOnly(), komponenController.Update)
+	komponen.DELETE("/:id", middleware.AdminOnly(), komponenController.Delete)
+	komponen.PUT("/activate/:id", middleware.AdminOnly(), komponenController.Activate)
+	komponen.PUT("/deactivate/:id", middleware.AdminOnly(), komponenController.Deactivate)
 
 	// admin only
 	statusLogs := protected.Group("/status-logs")

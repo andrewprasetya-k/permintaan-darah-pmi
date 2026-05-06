@@ -52,6 +52,19 @@ func (ctl *PermintaanDarahController) GetByID(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
+
+	userID, _, userRole := utils.ExtractUserFromJWT(c)
+	if userRole == "rumah_sakit" {
+		if userID == nil || *userID == "" {
+			utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+			return
+		}
+		if resp.PDRsID != *userID {
+			utils.SendError(c, http.StatusForbidden, "Only owner rumah sakit can access this request")
+			return
+		}
+	}
+
 	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
 }
 
