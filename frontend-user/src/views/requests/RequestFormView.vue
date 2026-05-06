@@ -248,22 +248,6 @@ watch(requestId, load)
 
 <template>
   <section>
-    <div :class="ui.pageHeader">
-      <div>
-        <p :class="ui.pageEyebrow">Permintaan</p>
-        <h1 :class="ui.pageTitle">{{ title }}</h1>
-        <p :class="ui.pageSubtitle">
-          Isi data pasien dan kebutuhan komponen darah sesuai kontrak backend permintaan darah.
-        </p>
-      </div>
-      <RouterLink
-        :class="btn('btnSecondary')"
-        :to="isEdit ? `/requests/${requestId}` : '/requests'"
-      >
-        Batal
-      </RouterLink>
-    </div>
-
     <form class="grid gap-[18px]" @submit.prevent="openConfirm">
       <section :class="[ui.card, 'p-6']">
         <h2 :class="[ui.sectionTitle, 'mb-4']">Data Pasien</h2>

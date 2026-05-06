@@ -16,6 +16,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useFeedbackStore } from '@/stores/feedback'
 import { useMyProfileStore } from '@/stores/my-profile'
 import { useRealtimeStore } from '@/stores/realtime'
+import { usePageHeader } from '@/composables/usePageHeader'
 
 const authStore = useAuthStore()
 const profileStore = useMyProfileStore()
@@ -23,6 +24,7 @@ const feedbackStore = useFeedbackStore()
 const realtimeStore = useRealtimeStore()
 const router = useRouter()
 const route = useRoute()
+const { actions: pageActions } = usePageHeader()
 
 const isMobileNavOpen = ref(false)
 const isLogoutOpen = ref(false)
@@ -39,12 +41,15 @@ const hospitalName = computed(
 )
 
 const pageTitle = computed(() => {
-  if (route.name === 'requests') return 'Permintaan Saya'
-  if (route.name === 'request-create') return 'Buat Permintaan'
-  if (route.name === 'request-edit') return 'Edit Permintaan'
-  if (route.name === 'request-detail') return 'Detail Permintaan'
-  if (route.name === 'profile') return 'Profil Rumah Sakit'
-  return 'Dashboard'
+  return (route.meta?.pageTitle as string) || 'Dashboard'
+})
+
+const pageSubtitle = computed(() => {
+  return (route.meta?.pageSubtitle as string) || ''
+})
+
+const pageActionKey = computed(() => {
+  return route.meta?.pageActionKey as string | undefined
 })
 
 const getInitials = (name: string) => {
@@ -172,36 +177,57 @@ onMounted(async () => {
 
     <div class="min-h-screen flex-1 pl-[280px] max-lg:pl-0">
       <header
-        class="sticky top-0 z-30 flex min-h-[88px] items-center justify-between gap-4 bg-white px-8 py-5 max-lg:min-h-[76px] max-lg:px-4 max-lg:py-3"
+        class="sticky top-0 z-30 bg-white px-8 py-5 max-lg:px-4 max-lg:py-3"
       >
-        <button
-          type="button"
-          class="hidden h-10 w-10 items-center justify-center rounded-xl text-gray-600 transition hover:bg-gray-100 hover:text-gray-900 max-lg:inline-flex"
-          aria-label="Buka navigasi"
-          @click="isMobileNavOpen = true"
-        >
-          <Menu :size="24" />
-        </button>
+        <div class="flex min-h-[54px] items-center justify-between gap-4 max-lg:flex-wrap">
+          <button
+            type="button"
+            class="hidden h-10 w-10 items-center justify-center rounded-xl text-gray-600 transition hover:bg-gray-100 hover:text-gray-900 max-lg:inline-flex"
+            aria-label="Buka navigasi"
+            @click="isMobileNavOpen = true"
+          >
+            <Menu :size="24" />
+          </button>
 
-        <div class="min-w-0 flex-1">
-          <h1 class="truncate text-2xl font-semibold text-gray-900 max-sm:max-w-[180px]">
-            {{ pageTitle }}
-          </h1>
-          <p class="mt-1 truncate text-sm text-gray-500 max-sm:max-w-[180px]">{{ hospitalName }}</p>
-        </div>
+          <div class="min-w-0 flex-1">
+            <h1 class="truncate text-2xl font-semibold text-gray-900 max-sm:max-w-[180px]">
+              {{ pageTitle }}
+            </h1>
+            <p v-if="pageSubtitle" class="mt-1 truncate text-sm text-gray-500 max-sm:max-w-[180px]">
+              {{ pageSubtitle }}
+            </p>
+          </div>
 
-        <div class="flex items-center gap-3">
           <div class="flex items-center gap-3">
-            <div class="hidden text-right xl:block">
-              <strong class="block max-w-48 truncate text-sm font-medium text-gray-900">{{
-                hospitalName
-              }}</strong>
-              <span class="block text-xs text-gray-500">Rumah Sakit</span>
+            <div v-if="pageActions.length > 0" class="flex items-center gap-2">
+              <RouterLink
+                v-for="action in pageActions"
+                :key="`${action.label}`"
+                v-show="action.to"
+                :to="action.to || '#'"
+                class="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold leading-none transition-colors"
+                :class="{
+                  'border-blue-600 bg-blue-600 text-white hover:bg-blue-700': action.variant === 'primary' || !action.variant,
+                  'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50': action.variant === 'secondary',
+                  'border-red-100 bg-red-50 text-red-700 hover:border-red-200': action.variant === 'danger',
+                }"
+              >
+                <component v-if="action.icon" :is="action.icon" :size="16" />
+                {{ action.label }}
+              </RouterLink>
             </div>
-            <div
-              class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 font-semibold text-blue-600"
-            >
-              {{ getInitials(hospitalName) }}
+            <div class="flex items-center gap-3">
+              <div class="hidden text-right xl:block">
+                <strong class="block max-w-48 truncate text-sm font-medium text-gray-900">{{
+                  hospitalName
+                }}</strong>
+                <span class="block text-xs text-gray-500">Rumah Sakit</span>
+              </div>
+              <div
+                class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 font-semibold text-blue-600"
+              >
+                {{ getInitials(hospitalName) }}
+              </div>
             </div>
           </div>
         </div>

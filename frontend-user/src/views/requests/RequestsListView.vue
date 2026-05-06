@@ -6,6 +6,7 @@ import AppModal from '@/components/feedback/AppModal.vue'
 import StatusBadge from '@/components/rs/StatusBadge.vue'
 import { useFeedbackStore } from '@/stores/feedback'
 import { useMyRequestsStore } from '@/stores/my-requests'
+import { useSetPageHeaderActions } from '@/composables/usePageHeader'
 import type { PermintaanDarahListItem, PermintaanStatus } from '@/types/models'
 import { bloodLabel, formatDate, statusLabels } from '@/utils/format'
 import { btn, ui } from '@/utils/ui'
@@ -13,6 +14,7 @@ import { btn, ui } from '@/utils/ui'
 const route = useRoute()
 const requestsStore = useMyRequestsStore()
 const feedbackStore = useFeedbackStore()
+const { setActions } = useSetPageHeaderActions()
 
 const search = ref('')
 const statusFilter = ref<PermintaanStatus | 'all'>('all')
@@ -110,6 +112,15 @@ onMounted(async () => {
     statusFilter.value = status
   }
 
+  setActions([
+    {
+      label: 'Buat Permintaan',
+      to: '/requests/new',
+      icon: Plus,
+      variant: 'primary',
+    },
+  ])
+
   await requestsStore.fetchAll().catch((err) => {
     feedbackStore.showFlag({
       title: 'Gagal memuat permintaan',
@@ -122,19 +133,7 @@ onMounted(async () => {
 
 <template>
   <section>
-    <div :class="ui.pageHeader">
-      <div>
-        <p :class="ui.pageEyebrow">Permintaan</p>
-        <h1 :class="ui.pageTitle">Permintaan Saya</h1>
-        <p :class="ui.pageSubtitle">Daftar permintaan darah milik rumah sakit yang sedang login.</p>
-      </div>
-      <RouterLink :class="btn('btnPrimary')" to="/requests/new">
-        <Plus :size="16" />
-        Buat Permintaan
-      </RouterLink>
-    </div>
-
-    <section :class="[ui.card, 'overflow-hidden']">
+    <div :class="[ui.card, 'overflow-hidden']">
       <div
         class="grid grid-cols-[minmax(0,1fr)_220px] gap-3.5 border-b border-gray-100 p-5 max-md:grid-cols-1"
       >
@@ -304,7 +303,7 @@ onMounted(async () => {
           </article>
         </div>
       </template>
-    </section>
+    </div>
 
     <AppModal
       :is-open="isCancelOpen"

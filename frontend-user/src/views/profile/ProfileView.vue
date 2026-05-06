@@ -71,14 +71,6 @@ onMounted(async () => {
 
 <template>
   <section>
-    <div :class="ui.pageHeader">
-      <div>
-        <p :class="ui.pageEyebrow">Profil</p>
-        <h1 :class="ui.pageTitle">Profil Rumah Sakit</h1>
-        <p :class="ui.pageSubtitle">Kelola data kontak yang tersimpan di backend rumah sakit.</p>
-      </div>
-    </div>
-
     <form :class="[ui.card, 'max-w-[860px] p-6']" @submit.prevent="isConfirmOpen = true">
       <div :class="ui.formGrid">
         <div :class="ui.formField">

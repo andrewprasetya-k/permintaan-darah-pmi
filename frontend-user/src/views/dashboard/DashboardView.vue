@@ -59,13 +59,6 @@ onMounted(async () => {
 <template>
   <section>
     <div :class="ui.pageHeader">
-      <div>
-        <p :class="ui.pageEyebrow">Ringkasan</p>
-        <h1 :class="ui.pageTitle">Dashboard Permintaan Darah</h1>
-        <p :class="ui.pageSubtitle">
-          Pantau status permintaan aktif dan lanjutkan permintaan yang siap diproses.
-        </p>
-      </div>
       <RouterLink :class="btn('btnPrimary')" to="/requests/new">
         <Plus :size="16" />
         Buat Permintaan

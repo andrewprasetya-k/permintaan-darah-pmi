@@ -20,31 +20,56 @@ const router = createRouter({
           path: '',
           name: 'dashboard',
           component: () => import('@/views/dashboard/DashboardView.vue'),
+          meta: {
+            pageTitle: 'Dashboard',
+            pageSubtitle: 'Ringkasan status permintaan darah rumah sakit',
+          },
         },
         {
           path: 'requests',
           name: 'requests',
           component: () => import('@/views/requests/RequestsListView.vue'),
+          meta: {
+            pageTitle: 'Permintaan Saya',
+            pageSubtitle: 'Daftar permintaan darah milik rumah sakit yang sedang login',
+            pageActionKey: 'create-request',
+          },
         },
         {
           path: 'requests/new',
           name: 'request-create',
           component: () => import('@/views/requests/RequestFormView.vue'),
+          meta: {
+            pageTitle: 'Buat Permintaan',
+            pageSubtitle: 'Buat permintaan darah baru untuk rumah sakit',
+          },
         },
         {
           path: 'requests/:id',
           name: 'request-detail',
           component: () => import('@/views/requests/RequestDetailView.vue'),
+          meta: {
+            pageTitle: 'Detail Permintaan',
+            pageSubtitle: 'Lihat detail dan update status permintaan darah',
+          },
         },
         {
           path: 'requests/:id/edit',
           name: 'request-edit',
           component: () => import('@/views/requests/RequestFormView.vue'),
+          meta: {
+            pageTitle: 'Edit Permintaan',
+            pageSubtitle: 'Ubah data permintaan darah',
+          },
         },
         {
           path: 'profile',
           name: 'profile',
           component: () => import('@/views/profile/ProfileView.vue'),
+          meta: {
+            pageTitle: 'Profil Rumah Sakit',
+            pageSubtitle: 'Kelola informasi profil dan pengaturan rumah sakit',
+          },
         },
       ],
     },
