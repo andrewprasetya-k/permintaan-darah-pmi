@@ -4,9 +4,10 @@ import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import {
   Activity,
   Droplets,
-  Hospital,
+  User,
   LayoutDashboard,
   LogOut,
+  LucideHospital,
   Menu,
   Plus,
   UserRound,
@@ -225,10 +226,8 @@ onMounted(async () => {
                 }}</strong>
                 <span class="block text-xs text-gray-500">Rumah Sakit</span>
               </div>
-              <div
-                class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 font-semibold text-blue-600"
-              >
-                {{ getInitials(hospitalName) }}
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl">
+                <User></User>
               </div>
             </div>
           </div>
