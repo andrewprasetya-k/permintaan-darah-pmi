@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { Shield, Menu } from '@lucide/vue'
+import { Shield, Menu, User } from '@lucide/vue'
 
 defineProps<{
   title?: string
@@ -52,16 +52,14 @@ const getInitials = (name: string) => {
         <div class="text-right hidden md:block">
           <div class="text-sm font-medium text-gray-900">{{ userName }}</div>
           <div class="text-xs text-gray-500 flex items-center gap-1 justify-end">
-            <Shield v-if="isSuperAdmin" :size="12" class="text-purple-600" />
             {{ userRole }}
           </div>
         </div>
 
         <div
           class="w-8 h-8 lg:w-10 lg:h-10 rounded-xl flex items-center justify-center text-sm lg:text-base font-semibold"
-          :class="isSuperAdmin ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'"
         >
-          {{ getInitials(userName) }}
+          <User></User>
         </div>
       </div>
     </div>
