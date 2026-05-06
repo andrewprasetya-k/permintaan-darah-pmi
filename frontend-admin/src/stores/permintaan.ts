@@ -5,6 +5,7 @@ import {
   type CreatePermintaanRequest,
   type UpdatePermintaanRequest,
 } from '@/api/permintaan'
+import { useNotification } from '@/composables/useNotification'
 import type { PaginationMeta, PermintaanDarah, WebSocketMessage } from '@/types/models'
 
 const toWebSocketUrl = (apiBaseUrl: string) => {
@@ -127,6 +128,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     const token = localStorage.getItem('authToken')
     if (!token || socket) return
 
+    const { notifyNewPermintaan } = useNotification()
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
     const wsUrl = toWebSocketUrl(apiBaseUrl)
     wsUrl.searchParams.set('token', token)
@@ -142,6 +144,17 @@ export const usePermintaanStore = defineStore('permintaan', () => {
         const message = JSON.parse(event.data) as WebSocketMessage<PermintaanDarah>
         if (message.entityType !== 'permintaan_darah') {
           return
+        }
+
+        // Show notification for new permintaan
+        if (message.action === 'CREATE' && message.data) {
+          const pd = message.data
+          notifyNewPermintaan({
+            namaPasien: pd.namaPasien,
+            golonganDarah: pd.golonganDarah || 'N/A',
+            rhesus: pd.rhesusDarah || '',
+            rumahSakit: pd.rumahSakitId,
+          })
         }
 
         // Refresh all permintaan data on any permintaan event

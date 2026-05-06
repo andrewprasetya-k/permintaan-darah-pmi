@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { usePermintaanStore } from '@/stores/permintaan'
+import { useNotification } from '@/composables/useNotification'
 import {
   Plus,
   AlertCircle,
@@ -20,6 +21,7 @@ import AppModal from '@/components/feedback/AppModal.vue'
 import AppFlag from '@/components/feedback/AppFlag.vue'
 
 const permintaanStore = usePermintaanStore()
+const { requestPermission } = useNotification()
 const showCreateDrawer = ref(false)
 const showEditDrawer = ref(false)
 const showDetailDrawer = ref(false)
@@ -44,6 +46,7 @@ const loadRequests = async (page = currentPage.value) => {
 
 onMounted(async () => {
   await loadRequests()
+  await requestPermission()
   permintaanStore.connectRealtime()
 })
 
