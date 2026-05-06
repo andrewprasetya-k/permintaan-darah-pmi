@@ -23,13 +23,16 @@ func main() {
 		origin := c.GetHeader("Origin")
 		allowedOrigin := os.Getenv("CORS_ALLOWED_ORIGIN")
 		if allowedOrigin == "" {
-			allowedOrigin = "http://localhost:5173"
+			allowedOrigin = "*" // Allow all origins in development
 		}
 
-		if origin == allowedOrigin || allowedOrigin == "*" {
+		// Set CORS headers
+		if allowedOrigin == "*" {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+		} else if origin == allowedOrigin {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 		}
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, PATCH")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
