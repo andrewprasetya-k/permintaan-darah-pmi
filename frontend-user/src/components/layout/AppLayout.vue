@@ -17,6 +17,7 @@ import { useFeedbackStore } from '@/stores/feedback'
 import { useMyProfileStore } from '@/stores/my-profile'
 import { useRealtimeStore } from '@/stores/realtime'
 import { usePageHeader } from '@/composables/usePageHeader'
+import logo from '@/assets/Pmi.png'
 
 const authStore = useAuthStore()
 const profileStore = useMyProfileStore()
@@ -32,7 +33,7 @@ const isLogoutOpen = ref(false)
 const navItems: Array<{ label: string; to: string; icon: Component }> = [
   { label: 'Dashboard', to: '/', icon: LayoutDashboard },
   { label: 'Permintaan', to: '/requests', icon: Droplets },
-  { label: 'Buat Baru', to: '/requests/new', icon: Plus },
+  // { label: 'Buat Baru', to: '/requests/new', icon: Plus },
   { label: 'Profil', to: '/profile', icon: UserRound },
 ]
 
@@ -104,8 +105,8 @@ onMounted(async () => {
       aria-label="Navigasi utama"
     >
       <div class="flex min-h-12 items-center gap-3 px-3">
-        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-          <Hospital :size="20" />
+        <div class="flex items-center justify-center">
+          <img :src="logo" alt="Logo PMI" class="w-9 h-9 object-contain shrink-0" />
         </div>
         <div>
           <strong class="block text-sm font-bold text-gray-900"
@@ -176,9 +177,7 @@ onMounted(async () => {
     />
 
     <div class="min-h-screen flex-1 pl-[280px] max-lg:pl-0">
-      <header
-        class="sticky top-0 z-30 bg-white px-8 py-5 max-lg:px-4 max-lg:py-3"
-      >
+      <header class="sticky top-0 z-30 bg-white px-8 py-5 max-lg:px-4 max-lg:py-3">
         <div class="flex min-h-[54px] items-center justify-between gap-4 max-lg:flex-wrap">
           <button
             type="button"
@@ -207,9 +206,12 @@ onMounted(async () => {
                 :to="action.to || '#'"
                 class="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold leading-none transition-colors"
                 :class="{
-                  'border-blue-600 bg-blue-600 text-white hover:bg-blue-700': action.variant === 'primary' || !action.variant,
-                  'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50': action.variant === 'secondary',
-                  'border-red-100 bg-red-50 text-red-700 hover:border-red-200': action.variant === 'danger',
+                  'border-blue-600 bg-blue-600 text-white hover:bg-blue-700':
+                    action.variant === 'primary' || !action.variant,
+                  'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50':
+                    action.variant === 'secondary',
+                  'border-red-100 bg-red-50 text-red-700 hover:border-red-200':
+                    action.variant === 'danger',
                 }"
               >
                 <component v-if="action.icon" :is="action.icon" :size="16" />
