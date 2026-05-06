@@ -58,13 +58,6 @@ onMounted(async () => {
 
 <template>
   <section>
-    <div :class="ui.pageHeader">
-      <RouterLink :class="btn('btnPrimary')" to="/requests/new">
-        <Plus :size="16" />
-        Buat Permintaan
-      </RouterLink>
-    </div>
-
     <div
       class="mb-6 grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 max-xl:grid-cols-3 max-md:grid-cols-2"
     >
