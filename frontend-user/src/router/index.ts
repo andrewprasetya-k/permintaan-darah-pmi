@@ -22,7 +22,7 @@ const router = createRouter({
           component: () => import('@/views/dashboard/DashboardView.vue'),
           meta: {
             pageTitle: 'Dashboard',
-            pageSubtitle: 'Ringkasan status permintaan darah rumah sakit',
+            pageSubtitle: 'Ringkasan status permintaan darah yang telah dibuat',
           },
         },
         {
@@ -31,7 +31,7 @@ const router = createRouter({
           component: () => import('@/views/requests/RequestsListView.vue'),
           meta: {
             pageTitle: 'Permintaan Saya',
-            pageSubtitle: 'Daftar permintaan darah milik rumah sakit yang sedang login',
+            pageSubtitle: 'Daftar permintaan darah yang telah dibuat',
             pageActionKey: 'create-request',
           },
         },
@@ -41,7 +41,7 @@ const router = createRouter({
           component: () => import('@/views/requests/RequestFormView.vue'),
           meta: {
             pageTitle: 'Buat Permintaan',
-            pageSubtitle: 'Buat permintaan darah baru untuk rumah sakit',
+            pageSubtitle: 'Buat permintaan darah baru kepada PMI',
           },
         },
         {
@@ -68,7 +68,7 @@ const router = createRouter({
           component: () => import('@/views/profile/ProfileView.vue'),
           meta: {
             pageTitle: 'Profil Rumah Sakit',
-            pageSubtitle: 'Kelola informasi profil dan pengaturan rumah sakit',
+            pageSubtitle: 'Kelola informasi profil dan kredensial akun',
           },
         },
       ],
