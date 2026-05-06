@@ -172,7 +172,7 @@ onMounted(async () => {
 
     <div class="min-h-screen flex-1 pl-[280px] max-lg:pl-0">
       <header
-        class="sticky top-0 z-30 flex min-h-[88px] items-center justify-between gap-4 bg-white px-8 py-5 shadow-sm max-lg:min-h-[76px] max-lg:px-4 max-lg:py-3"
+        class="sticky top-0 z-30 flex min-h-[88px] items-center justify-between gap-4 bg-white px-8 py-5 max-lg:min-h-[76px] max-lg:px-4 max-lg:py-3"
       >
         <button
           type="button"
