@@ -199,7 +199,9 @@ const submit = async () => {
   try {
     if (isEdit.value) {
       const rumahSakitId =
-        requestsStore.selectedRequest?.rumahSakitId || profileStore.profile?.rumahSakitId || authStore.user?.id
+        requestsStore.selectedRequest?.rumahSakitId ||
+        profileStore.profile?.rumahSakitId ||
+        authStore.user?.id
 
       if (!rumahSakitId) {
         throw new Error('ID rumah sakit tidak tersedia')
@@ -276,7 +278,13 @@ watch(requestId, load)
           </div>
           <div class="form-field">
             <label class="form-label" for="tanggalLahir">Tanggal lahir</label>
-            <input id="tanggalLahir" v-model="form.tanggalLahir" class="form-input" type="date" required />
+            <input
+              id="tanggalLahir"
+              v-model="form.tanggalLahir"
+              class="form-input"
+              type="date"
+              required
+            />
           </div>
           <div class="form-field">
             <label class="form-label" for="jenisKelamin">Jenis kelamin</label>
@@ -345,7 +353,11 @@ watch(requestId, load)
           </div>
           <div class="form-field form-field-full">
             <label class="form-label" for="indikasiTransfusi">Indikasi transfusi</label>
-            <textarea id="indikasiTransfusi" v-model="form.indikasiTransfusi" class="form-textarea" />
+            <textarea
+              id="indikasiTransfusi"
+              v-model="form.indikasiTransfusi"
+              class="form-textarea"
+            />
           </div>
           <div class="form-field form-field-full">
             <label class="form-label" for="pernahHamil">Riwayat hamil</label>
@@ -382,7 +394,12 @@ watch(requestId, load)
           <div v-for="row in detailRows" :key="row.key" class="detail-row">
             <div class="form-field">
               <label class="form-label" :for="`komponen-${row.key}`">Komponen</label>
-              <select :id="`komponen-${row.key}`" v-model="row.komponenDarahId" class="form-select" required>
+              <select
+                :id="`komponen-${row.key}`"
+                v-model="row.komponenDarahId"
+                class="form-select"
+                required
+              >
                 <option value="" disabled>Pilih komponen</option>
                 <option
                   v-for="component in activeComponents"
@@ -395,7 +412,12 @@ watch(requestId, load)
             </div>
             <div class="form-field">
               <label class="form-label" :for="`detail-gol-${row.key}`">Golongan</label>
-              <select :id="`detail-gol-${row.key}`" v-model="row.golonganDarah" class="form-select" required>
+              <select
+                :id="`detail-gol-${row.key}`"
+                v-model="row.golonganDarah"
+                class="form-select"
+                required
+              >
                 <option value="A">A</option>
                 <option value="B">B</option>
                 <option value="AB">AB</option>
@@ -404,7 +426,12 @@ watch(requestId, load)
             </div>
             <div class="form-field">
               <label class="form-label" :for="`detail-rhesus-${row.key}`">Rhesus</label>
-              <select :id="`detail-rhesus-${row.key}`" v-model="row.rhesusDarah" class="form-select" required>
+              <select
+                :id="`detail-rhesus-${row.key}`"
+                v-model="row.rhesusDarah"
+                class="form-select"
+                required
+              >
                 <option value="+">+</option>
                 <option value="-">-</option>
               </select>
@@ -420,7 +447,11 @@ watch(requestId, load)
                 required
               />
             </div>
-            <button type="button" class="btn btn-danger btn-icon remove-row" @click="removeDetailRow(row.key)">
+            <button
+              type="button"
+              class="btn btn-danger btn-icon remove-row"
+              @click="removeDetailRow(row.key)"
+            >
               x
             </button>
           </div>
@@ -449,8 +480,15 @@ watch(requestId, load)
       @close="isConfirmOpen = false"
     >
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="isConfirmOpen = false">Batal</button>
-        <button type="button" class="btn btn-primary" :disabled="requestsStore.isSubmitting" @click="submit">
+        <button type="button" class="btn btn-secondary" @click="isConfirmOpen = false">
+          Batal
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          :disabled="requestsStore.isSubmitting"
+          @click="submit"
+        >
           {{ submitLabel }}
         </button>
       </template>
@@ -465,7 +503,7 @@ watch(requestId, load)
 }
 
 .form-section {
-  padding: 18px;
+  padding: 24px;
 }
 
 .form-section .section-title {
@@ -488,13 +526,13 @@ watch(requestId, load)
   align-items: center;
   gap: 10px;
   color: var(--text);
-  font-weight: 750;
+  font-weight: 600;
 }
 
 .checkbox-label input {
   width: 18px;
   height: 18px;
-  accent-color: var(--red);
+  accent-color: var(--blue);
 }
 
 .component-header {
@@ -508,7 +546,7 @@ watch(requestId, load)
 .inline-error,
 .empty-row {
   border: 1px dashed var(--line-strong);
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 14px;
   color: var(--text-soft);
 }
@@ -530,8 +568,8 @@ watch(requestId, load)
   grid-template-columns: minmax(220px, 1fr) 120px 100px 120px 44px;
   gap: 10px;
   align-items: end;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid #f3f4f6;
+  border-radius: 16px;
   padding: 12px;
 }
 

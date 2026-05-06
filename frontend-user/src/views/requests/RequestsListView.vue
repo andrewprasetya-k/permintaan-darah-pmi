@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import { Plus, Search } from '@lucide/vue'
 import AppModal from '@/components/feedback/AppModal.vue'
 import StatusBadge from '@/components/rs/StatusBadge.vue'
 import { useFeedbackStore } from '@/stores/feedback'
@@ -59,7 +60,10 @@ const confirmCancel = async () => {
   }
 
   try {
-    await requestsStore.cancelRequest(selectedRequest.value.permintaanDarahId, cancelReason.value.trim())
+    await requestsStore.cancelRequest(
+      selectedRequest.value.permintaanDarahId,
+      cancelReason.value.trim(),
+    )
     isCancelOpen.value = false
     feedbackStore.showFlag({
       title: 'Permintaan dibatalkan',
@@ -127,13 +131,17 @@ onMounted(async () => {
         <h1 class="page-title">Permintaan Saya</h1>
         <p class="page-subtitle">Daftar permintaan darah milik rumah sakit yang sedang login.</p>
       </div>
-      <RouterLink class="btn btn-primary" to="/requests/new">+ Buat Permintaan</RouterLink>
+      <RouterLink class="btn btn-primary" to="/requests/new">
+        <Plus :size="16" />
+        Buat Permintaan
+      </RouterLink>
     </div>
 
     <section class="card list-panel">
       <div class="filters">
-        <div class="form-field">
-          <label class="form-label" for="search">Cari</label>
+        <div class="form-field search-field">
+          <label class="sr-only" for="search">Cari</label>
+          <Search :size="16" />
           <input
             id="search"
             v-model="search"
@@ -189,7 +197,10 @@ onMounted(async () => {
                 <td><StatusBadge :status="request.status" /></td>
                 <td>
                   <div class="row-actions">
-                    <RouterLink class="btn btn-secondary" :to="`/requests/${request.permintaanDarahId}`">
+                    <RouterLink
+                      class="btn btn-secondary"
+                      :to="`/requests/${request.permintaanDarahId}`"
+                    >
                       Detail
                     </RouterLink>
                     <RouterLink
@@ -223,7 +234,11 @@ onMounted(async () => {
         </div>
 
         <div class="mobile-list">
-          <article v-for="request in filteredRequests" :key="request.permintaanDarahId" class="request-card">
+          <article
+            v-for="request in filteredRequests"
+            :key="request.permintaanDarahId"
+            class="request-card"
+          >
             <div class="request-card-head">
               <div>
                 <h2>{{ request.namaPasien }}</h2>
@@ -322,14 +337,36 @@ onMounted(async () => {
 
 <style scoped>
 .list-panel {
-  padding: 18px;
+  overflow: hidden;
 }
 
 .filters {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 220px;
   gap: 14px;
-  margin-bottom: 18px;
+  border-bottom: 1px solid #f3f4f6;
+  padding: 20px;
+}
+
+.list-panel > .empty-state {
+  margin: 20px;
+}
+
+.search-field {
+  position: relative;
+}
+
+.search-field svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  z-index: 1;
+  color: #9ca3af;
+  transform: translateY(-50%);
+}
+
+.search-field .form-input {
+  padding-left: 38px;
 }
 
 .request-id {
@@ -348,12 +385,14 @@ onMounted(async () => {
 
 .mobile-list {
   display: none;
+  padding: 20px;
 }
 
 .request-card {
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 14px;
+  border: 1px solid #f3f4f6;
+  border-radius: 16px;
+  padding: 16px;
+  background: #ffffff;
 }
 
 .request-card + .request-card {

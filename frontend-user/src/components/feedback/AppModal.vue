@@ -20,13 +20,7 @@ defineEmits<{
 <template>
   <Teleport to="body">
     <Transition name="modal-backdrop">
-      <button
-        v-if="isOpen"
-        type="button"
-        class="modal-backdrop"
-        aria-label="Tutup dialog"
-        @click="$emit('close')"
-      />
+      <div v-if="isOpen" class="modal-backdrop" @click="$emit('close')" />
     </Transition>
 
     <Transition name="modal-panel">
@@ -38,17 +32,15 @@ defineEmits<{
         aria-modal="true"
         :aria-label="title"
       >
-        <header class="modal-header">
-          <div>
+        <div class="modal-copy">
+          <slot name="icon" />
+          <div class="modal-text">
             <h2>{{ title }}</h2>
             <p v-if="description">{{ description }}</p>
           </div>
-          <button type="button" class="btn btn-ghost btn-icon" aria-label="Tutup dialog" @click="$emit('close')">
-            x
-          </button>
-        </header>
+        </div>
 
-        <div class="modal-body">
+        <div v-if="$slots.default" class="modal-body">
           <slot />
         </div>
 
@@ -65,8 +57,7 @@ defineEmits<{
   position: fixed;
   inset: 0;
   z-index: 80;
-  border: 0;
-  background: rgba(15, 23, 42, 0.42);
+  background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(4px);
 }
 
@@ -79,10 +70,10 @@ defineEmits<{
   max-height: calc(100vh - 32px);
   overflow: auto;
   transform: translate(-50%, -50%);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 24px;
   background: var(--surface);
-  box-shadow: var(--shadow);
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
 }
 
 .modal-sm {
@@ -97,36 +88,44 @@ defineEmits<{
   max-width: 760px;
 }
 
-.modal-header {
+.modal-copy {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 16px;
-  border-bottom: 1px solid var(--line);
-  padding: 18px 20px;
 }
 
-.modal-header h2 {
+.modal-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.modal-text h2 {
   margin: 0;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
+  color: #111827;
 }
 
-.modal-header p {
-  margin: 6px 0 0;
-  color: var(--text-soft);
+.modal-text p {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .modal-body {
-  padding: 20px;
+  margin-top: 18px;
 }
 
 .modal-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: stretch;
   gap: 10px;
-  border-top: 1px solid var(--line);
-  padding: 16px 20px;
+  margin-top: 24px;
+}
+
+.modal-footer :deep(.btn) {
+  flex: 1;
 }
 
 .modal-backdrop-enter-active,

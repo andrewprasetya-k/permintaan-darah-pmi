@@ -94,7 +94,13 @@ onMounted(async () => {
         </div>
         <div class="form-field">
           <label class="form-label" for="password">Password baru</label>
-          <input id="password" v-model="form.password" class="form-input" type="password" autocomplete="new-password" />
+          <input
+            id="password"
+            v-model="form.password"
+            class="form-input"
+            type="password"
+            autocomplete="new-password"
+          />
           <p class="form-help">Kosongkan bila tidak ingin mengganti password.</p>
         </div>
         <div class="form-field form-field-full">
@@ -118,8 +124,15 @@ onMounted(async () => {
       @close="isConfirmOpen = false"
     >
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="isConfirmOpen = false">Batal</button>
-        <button type="button" class="btn btn-primary" :disabled="profileStore.isLoading" @click="submit">
+        <button type="button" class="btn btn-secondary" @click="isConfirmOpen = false">
+          Batal
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          :disabled="profileStore.isLoading"
+          @click="submit"
+        >
           Simpan
         </button>
       </template>
@@ -130,7 +143,7 @@ onMounted(async () => {
 <style scoped>
 .profile-form {
   max-width: 860px;
-  padding: 18px;
+  padding: 24px;
 }
 
 .profile-actions {

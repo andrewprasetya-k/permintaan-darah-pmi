@@ -16,43 +16,37 @@ const props = defineProps<{
 <style scoped>
 .status-badge {
   display: inline-flex;
-  min-height: 28px;
+  min-height: 26px;
   align-items: center;
-  border: 1px solid;
-  border-radius: 999px;
+  border-radius: 8px;
   padding: 5px 10px;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 500;
   line-height: 1;
   white-space: nowrap;
 }
 
 .status-dibuat {
-  border-color: #d1d5db;
-  background: #f9fafb;
-  color: #374151;
+  background: #fffbeb;
+  color: #b45309;
 }
 
 .status-diproses {
-  border-color: #bfdbfe;
   background: #eff6ff;
   color: #1d4ed8;
 }
 
 .status-bisa_diambil {
-  border-color: #bbf7d0;
-  background: #f0fdf4;
-  color: #15803d;
+  background: #f5f3ff;
+  color: #6d28d9;
 }
 
 .status-selesai {
-  border-color: #86efac;
-  background: #dcfce7;
+  background: #ecfdf5;
   color: #166534;
 }
 
 .status-dibatalkan {
-  border-color: #fecaca;
   background: #fef2f2;
   color: #b91c1c;
 }

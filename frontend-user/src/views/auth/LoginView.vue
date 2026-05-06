@@ -88,18 +88,16 @@ const submit = async () => {
   min-height: 100vh;
   place-items: center;
   padding: 24px;
-  background:
-    linear-gradient(135deg, rgba(220, 38, 38, 0.08), transparent 42%),
-    var(--bg);
+  background: #f9fafb;
 }
 
 .login-panel {
   width: min(430px, 100%);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid #f3f4f6;
+  border-radius: 16px;
   background: var(--surface);
   padding: 28px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-lg);
 }
 
 .login-brand {
@@ -114,10 +112,10 @@ const submit = async () => {
   width: 54px;
   height: 54px;
   place-items: center;
-  border-radius: 8px;
-  background: var(--red);
-  color: #ffffff;
-  font-weight: 900;
+  border-radius: 16px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 700;
 }
 
 .login-brand p,
@@ -128,12 +126,12 @@ const submit = async () => {
 .login-brand p {
   color: var(--text-muted);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 500;
 }
 
 .login-brand h1 {
   font-size: 24px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .login-form {

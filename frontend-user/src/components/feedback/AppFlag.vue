@@ -23,7 +23,12 @@ defineEmits<{
       <p>{{ title }}</p>
       <span v-if="message">{{ message }}</span>
     </div>
-    <button type="button" class="app-flag-close" aria-label="Tutup notifikasi" @click="$emit('close')">
+    <button
+      type="button"
+      class="app-flag-close"
+      aria-label="Tutup notifikasi"
+      @click="$emit('close')"
+    >
       x
     </button>
   </div>
@@ -36,13 +41,13 @@ defineEmits<{
   right: 20px;
   z-index: 100;
   display: flex;
-  width: min(420px, calc(100vw - 32px));
+  width: min(384px, calc(100vw - 32px));
   align-items: flex-start;
   gap: 12px;
   border: 1px solid;
-  border-radius: 8px;
-  padding: 14px;
-  box-shadow: var(--shadow);
+  border-radius: 16px;
+  padding: 12px 16px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.14);
 }
 
 .app-flag-success {
@@ -79,7 +84,8 @@ defineEmits<{
 
 .app-flag-copy p {
   margin: 0;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .app-flag-copy span {
@@ -91,14 +97,14 @@ defineEmits<{
 }
 
 .app-flag-close {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   flex: 0 0 auto;
   border: 0;
   border-radius: 8px;
   background: transparent;
   color: currentColor;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .app-flag-close:hover {

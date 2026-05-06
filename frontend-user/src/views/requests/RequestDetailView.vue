@@ -288,7 +288,7 @@ watch(requestId, loadRequest)
 }
 
 .detail-card {
-  padding: 18px;
+  padding: 24px;
 }
 
 .status-card {
@@ -325,13 +325,13 @@ watch(requestId, loadRequest)
 .detail-list dt {
   color: var(--text-muted);
   font-size: 12px;
-  font-weight: 850;
+  font-weight: 600;
 }
 
 .detail-list dd {
   margin: 0;
   overflow-wrap: anywhere;
-  font-weight: 750;
+  font-weight: 600;
 }
 
 .component-card {
