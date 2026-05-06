@@ -5,15 +5,7 @@ import {
   type CreatePermintaanRequest,
   type UpdatePermintaanRequest,
 } from '@/api/permintaan'
-import { useNotification } from '@/composables/useNotification'
-import type { PaginationMeta, PermintaanDarah, WebSocketMessage } from '@/types/models'
-
-const toWebSocketUrl = (apiBaseUrl: string) => {
-  const url = new URL(apiBaseUrl)
-  url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
-  url.pathname = `${url.pathname.replace(/\/api\/?$/, '')}/api/ws/connect`
-  return url
-}
+import type { PaginationMeta, PermintaanDarah } from '@/types/models'
 
 interface FetchPermintaanParams {
   search?: string
@@ -28,15 +20,16 @@ export const usePermintaanStore = defineStore('permintaan', () => {
   const pagination = ref<PaginationMeta | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
-  const isRealtimeConnected = ref(false)
-
-  let socket: WebSocket | null = null
+  const lastParams = ref<FetchPermintaanParams | undefined>()
 
   const fetchAll = async (params?: FetchPermintaanParams) => {
+    if (params) {
+      lastParams.value = params
+    }
     isLoading.value = true
     error.value = null
     try {
-      const response = await permintaanAPI.getAll(params)
+      const response = await permintaanAPI.getAll(params || lastParams.value)
       requests.value = response.data
       pagination.value = response.pagination ?? null
     } catch (err) {
@@ -124,78 +117,17 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     }
   }
 
-  const connectRealtime = () => {
-    const token = localStorage.getItem('authToken')
-    if (!token || socket) return
-
-    const { notifyNewPermintaan } = useNotification()
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
-    const wsUrl = toWebSocketUrl(apiBaseUrl)
-    wsUrl.searchParams.set('token', token)
-
-    socket = new WebSocket(wsUrl.toString())
-
-    socket.onopen = () => {
-      isRealtimeConnected.value = true
-    }
-
-    socket.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data) as WebSocketMessage<PermintaanDarah>
-        if (message.entityType !== 'permintaan_darah') {
-          return
-        }
-
-        // Show notification for new permintaan
-        if (message.action === 'CREATE' && message.data) {
-          const pd = message.data
-          notifyNewPermintaan({
-            namaPasien: pd.namaPasien,
-            golonganDarah: pd.golonganDarah || 'N/A',
-            rhesus: pd.rhesusDarah || '',
-            rumahSakit: pd.rumahSakitId,
-          })
-        }
-
-        // Refresh all permintaan data on any permintaan event
-        void fetchAll()
-      } catch {
-        // Ignore malformed messages
-      }
-    }
-
-    socket.onerror = () => {
-      error.value = 'Realtime connection error'
-    }
-
-    socket.onclose = () => {
-      isRealtimeConnected.value = false
-      socket = null
-    }
-  }
-
-  const disconnectRealtime = () => {
-    if (socket) {
-      socket.close()
-      socket = null
-    }
-    isRealtimeConnected.value = false
-  }
-
   return {
     requests,
     selectedRequest,
     pagination,
     isLoading,
     error,
-    isRealtimeConnected,
     fetchAll,
     fetchById,
     create,
     update,
     updateStatus,
     deleteRequest,
-    connectRealtime,
-    disconnectRealtime,
   }
 })

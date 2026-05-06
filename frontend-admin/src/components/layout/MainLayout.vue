@@ -1,16 +1,26 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
+import { useWebsocketStore } from '@/stores/websocket'
 import Sidebar from './Sidebar.vue'
 import Topbar from './Topbar.vue'
 
 defineProps<{ title?: string; subtitle?: string }>()
 
 const route = useRoute()
+const websocketStore = useWebsocketStore()
 const isMobileOpen = ref(false)
 
 const pageTitle = computed(() => (route.meta.title as string) || 'Dashboard')
 const pageSubtitle = computed(() => (route.meta.subtitle as string) || '')
+
+onMounted(() => {
+  websocketStore.connect()
+})
+
+onBeforeUnmount(() => {
+  websocketStore.disconnect()
+})
 </script>
 
 <template>

@@ -47,14 +47,12 @@ const loadRequests = async (page = currentPage.value) => {
 onMounted(async () => {
   await loadRequests()
   await requestPermission()
-  permintaanStore.connectRealtime()
 })
 
 onBeforeUnmount(() => {
   if (searchDebounceTimer) {
     clearTimeout(searchDebounceTimer)
   }
-  permintaanStore.disconnectRealtime()
 })
 
 const formatDate = (date: string) =>

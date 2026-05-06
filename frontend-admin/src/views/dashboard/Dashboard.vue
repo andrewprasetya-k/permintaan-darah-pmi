@@ -26,7 +26,6 @@ onMounted(async () => {
       dashboardStore.fetchStatusSummary('all'),
       logsStore.fetchSystemLogs({ limit: 10, offset: 0 }),
     ])
-    logsStore.connectRealtime()
   }
 })
 

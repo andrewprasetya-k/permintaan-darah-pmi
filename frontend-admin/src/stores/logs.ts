@@ -1,28 +1,18 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { logsAPI } from '@/api/logs'
-import type { PaginationMeta, SystemAccessLog, WebSocketMessage } from '@/types/models'
+import type { PaginationMeta, SystemAccessLog } from '@/types/models'
 import type { StatusLog } from '@/types/models'
 
 const MAX_RECENT_ACTIVITIES = 10
-
-const toWebSocketUrl = (apiBaseUrl: string) => {
-  const url = new URL(apiBaseUrl)
-  url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
-  url.pathname = `${url.pathname.replace(/\/api\/?$/, '')}/api/ws/connect`
-  return url
-}
 
 export const useLogsStore = defineStore('logs', () => {
   const systemLogs = ref<SystemAccessLog[]>([])
   const statusLogs = ref<StatusLog[]>([])
   const recentActivities = ref<SystemAccessLog[]>([])
   const isLoading = ref(false)
-  const isRealtimeConnected = ref(false)
   const error = ref<string | null>(null)
   const pagination = ref<PaginationMeta | null>(null)
-
-  let socket: WebSocket | null = null
 
   const recentActivityItems = computed(() => recentActivities.value.slice(0, MAX_RECENT_ACTIVITIES))
 
@@ -121,56 +111,12 @@ export const useLogsStore = defineStore('logs', () => {
     systemLogs.value = [log, ...systemLogs.value.filter((item) => item.sysLogId !== log.sysLogId)]
   }
 
-  const connectRealtime = () => {
-    const token = localStorage.getItem('authToken')
-    if (!token || socket) return
-
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
-    const wsUrl = toWebSocketUrl(apiBaseUrl)
-    wsUrl.searchParams.set('token', token)
-
-    socket = new WebSocket(wsUrl.toString())
-
-    socket.onopen = () => {
-      isRealtimeConnected.value = true
-    }
-
-    socket.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data) as WebSocketMessage<SystemAccessLog>
-        if (message.type === 'new_activity' && message.data) {
-          pushRecentActivity(message.data)
-        }
-      } catch {
-        // Ignore malformed messages from unrelated events
-      }
-    }
-
-    socket.onerror = () => {
-      error.value = 'Realtime connection error'
-    }
-
-    socket.onclose = () => {
-      isRealtimeConnected.value = false
-      socket = null
-    }
-  }
-
-  const disconnectRealtime = () => {
-    if (socket) {
-      socket.close()
-      socket = null
-    }
-    isRealtimeConnected.value = false
-  }
-
   return {
     systemLogs,
     statusLogs,
     recentActivities,
     recentActivityItems,
     isLoading,
-    isRealtimeConnected,
     error,
     pagination,
     fetchSystemLogs,
@@ -179,7 +125,6 @@ export const useLogsStore = defineStore('logs', () => {
     fetchSystemLogsByAction,
     fetchSystemLogsByTable,
     fetchSystemLogsByTargetId,
-    connectRealtime,
-    disconnectRealtime,
+    pushRecentActivity,
   }
 })
