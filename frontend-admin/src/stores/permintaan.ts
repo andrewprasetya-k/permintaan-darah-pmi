@@ -5,7 +5,14 @@ import {
   type CreatePermintaanRequest,
   type UpdatePermintaanRequest,
 } from '@/api/permintaan'
-import type { PaginationMeta, PermintaanDarah } from '@/types/models'
+import type { PaginationMeta, PermintaanDarah, WebSocketMessage } from '@/types/models'
+
+const toWebSocketUrl = (apiBaseUrl: string) => {
+  const url = new URL(apiBaseUrl)
+  url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
+  url.pathname = `${url.pathname.replace(/\/api\/?$/, '')}/api/ws/connect`
+  return url
+}
 
 interface FetchPermintaanParams {
   search?: string
@@ -20,6 +27,9 @@ export const usePermintaanStore = defineStore('permintaan', () => {
   const pagination = ref<PaginationMeta | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const isRealtimeConnected = ref(false)
+
+  let socket: WebSocket | null = null
 
   const fetchAll = async (params?: FetchPermintaanParams) => {
     isLoading.value = true
@@ -113,17 +123,66 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     }
   }
 
+  const connectRealtime = () => {
+    const token = localStorage.getItem('authToken')
+    if (!token || socket) return
+
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
+    const wsUrl = toWebSocketUrl(apiBaseUrl)
+    wsUrl.searchParams.set('token', token)
+
+    socket = new WebSocket(wsUrl.toString())
+
+    socket.onopen = () => {
+      isRealtimeConnected.value = true
+    }
+
+    socket.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data) as WebSocketMessage<PermintaanDarah>
+        if (message.entityType !== 'permintaan_darah') {
+          return
+        }
+
+        // Refresh all permintaan data on any permintaan event
+        void fetchAll()
+      } catch {
+        // Ignore malformed messages
+      }
+    }
+
+    socket.onerror = () => {
+      error.value = 'Realtime connection error'
+    }
+
+    socket.onclose = () => {
+      isRealtimeConnected.value = false
+      socket = null
+    }
+  }
+
+  const disconnectRealtime = () => {
+    if (socket) {
+      socket.close()
+      socket = null
+    }
+    isRealtimeConnected.value = false
+  }
+
   return {
     requests,
     selectedRequest,
     pagination,
     isLoading,
     error,
+    isRealtimeConnected,
     fetchAll,
     fetchById,
     create,
     update,
     updateStatus,
     deleteRequest,
+    connectRealtime,
+    disconnectRealtime,
   }
 })

@@ -42,12 +42,16 @@ const loadRequests = async (page = currentPage.value) => {
   })
 }
 
-onMounted(async () => await loadRequests())
+onMounted(async () => {
+  await loadRequests()
+  permintaanStore.connectRealtime()
+})
 
 onBeforeUnmount(() => {
   if (searchDebounceTimer) {
     clearTimeout(searchDebounceTimer)
   }
+  permintaanStore.disconnectRealtime()
 })
 
 const formatDate = (date: string) =>
