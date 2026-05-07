@@ -22,7 +22,7 @@ type CreatePermintaanDarahRequest struct {
 	PDRuangBagianKelas  *string  `json:"ruangBagianKelas,omitempty"`
 	PDPernahTransfusi   bool     `json:"pernahTransfusi"`
 	PDIndikasiTransfusi *string  `json:"indikasiTransfusi,omitempty"`
-	PDPernahHamil       *string  `json:"pernahHamil,omitempty"`
+	PDPernahHamil       *string  `json:"pernahHamil,omitempty" binding:"omitempty"`
 
 	// Status
 	PDStatus        models.PermintaanStatusEnum `json:"status" binding:"required,oneof=dibuat diproses bisa_diambil selesai dibatalkan"`
@@ -50,7 +50,7 @@ type UpdatePermintaanDarahRequest struct {
 	PDRuangBagianKelas  *string  `json:"ruangBagianKelas,omitempty"`
 	PDPernahTransfusi   bool     `json:"pernahTransfusi"`
 	PDIndikasiTransfusi *string  `json:"indikasiTransfusi,omitempty"`
-	PDPernahHamil       *string  `json:"pernahHamil,omitempty"`
+	PDPernahHamil       *string  `json:"pernahHamil,omitempty" binding:"omitempty,oneof=Y N"`
 
 	// Status
 	PDStatus        models.PermintaanStatusEnum `json:"status" binding:"required,oneof=dibuat diproses bisa_diambil selesai dibatalkan"`

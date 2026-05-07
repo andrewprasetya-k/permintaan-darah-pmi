@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { Plus, Search } from '@lucide/vue'
 import AppModal from '@/components/feedback/AppModal.vue'
@@ -14,7 +14,7 @@ import { btn, ui } from '@/utils/ui'
 const route = useRoute()
 const requestsStore = useMyRequestsStore()
 const feedbackStore = useFeedbackStore()
-const { setActions } = useSetPageHeaderActions()
+const { clearActions, setActions } = useSetPageHeaderActions()
 
 const search = ref('')
 const statusFilter = ref<PermintaanStatus | 'all'>('all')
@@ -129,6 +129,8 @@ onMounted(async () => {
     })
   })
 })
+
+onBeforeUnmount(clearActions)
 </script>
 
 <template>

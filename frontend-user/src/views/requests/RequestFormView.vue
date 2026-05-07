@@ -12,6 +12,7 @@ import type {
   CreateDetailPermintaanDarahRequest,
   CreatePermintaanRequest,
   Gender,
+  PregnancyFlag,
   PermintaanStatus,
   Rhesus,
   UpdatePermintaanRequest,
@@ -39,7 +40,7 @@ interface FormState {
   ruangBagianKelas: string
   pernahTransfusi: boolean
   indikasiTransfusi: string
-  pernahHamil: string
+  pernahHamil: PregnancyFlag | ''
   tanggalPermintaan: string
   status: PermintaanStatus
 }
@@ -91,6 +92,10 @@ const optionalNumber = (value: string) => {
   return Number.isFinite(parsed) ? parsed : undefined
 }
 
+const optionalPregnancyFlag = (value: PregnancyFlag | '') => {
+  return value || undefined
+}
+
 const addDetailRow = () => {
   const firstComponent = activeComponents.value[0]
   detailRows.value.push({
@@ -132,7 +137,7 @@ const buildBasePayload = () => ({
   ruangBagianKelas: optionalString(form.ruangBagianKelas),
   pernahTransfusi: form.pernahTransfusi,
   indikasiTransfusi: optionalString(form.indikasiTransfusi),
-  pernahHamil: optionalString(form.pernahHamil),
+  pernahHamil: optionalPregnancyFlag(form.pernahHamil),
   status: form.status,
   tanggalPermintaan: toIsoDate(form.tanggalPermintaan),
 })
@@ -154,7 +159,8 @@ const populateForm = () => {
   form.ruangBagianKelas = request.ruangBagianKelas || ''
   form.pernahTransfusi = request.pernahTransfusi
   form.indikasiTransfusi = request.indikasiTransfusi || ''
-  form.pernahHamil = request.pernahHamil || ''
+  form.pernahHamil =
+    request.pernahHamil === 'Y' || request.pernahHamil === 'N' ? request.pernahHamil : ''
   form.tanggalPermintaan = toDateInputValue(request.tanggalPermintaan)
   form.status = request.status
 }
@@ -398,7 +404,7 @@ watch(requestId, load)
           <div
             v-for="row in detailRows"
             :key="row.key"
-            class="grid grid-cols-[minmax(220px,1fr)_120px_100px_120px_44px] items-end gap-2.5 rounded-2xl border border-gray-100 p-3 max-lg:grid-cols-2 max-sm:grid-cols-1"
+            class="grid grid-cols-[minmax(220px,1fr)_120px_100px_120px_44px] items-end gap-2.5 rounded-2xl border border-gray-100 p-3 max-xl:grid-cols-2 max-sm:grid-cols-1"
           >
             <div :class="ui.formField">
               <label :class="ui.formLabel" :for="`komponen-${row.key}`">Komponen</label>
@@ -457,7 +463,7 @@ watch(requestId, load)
             </div>
             <button
               type="button"
-              :class="[btn('btnDanger'), ui.btnIcon, 'max-lg:w-full']"
+              :class="[btn('btnDanger'), ui.btnIcon, 'max-xl:w-full']"
               @click="removeDetailRow(row.key)"
             >
               x

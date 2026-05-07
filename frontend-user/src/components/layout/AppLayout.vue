@@ -7,7 +7,6 @@ import {
   User,
   LayoutDashboard,
   LogOut,
-  LucideHospital,
   Menu,
   Plus,
   UserRound,
@@ -49,17 +48,6 @@ const pageTitle = computed(() => {
 const pageSubtitle = computed(() => {
   return (route.meta?.pageSubtitle as string) || ''
 })
-
-const pageActionKey = computed(() => {
-  return route.meta?.pageActionKey as string | undefined
-})
-
-const getInitials = (name: string) => {
-  if (!name) return 'RS'
-  const parts = name.trim().split(' ')
-  if (parts.length === 1) return parts[0]?.substring(0, 2).toUpperCase()
-  return ((parts[0]?.[0] ?? '') + (parts[parts.length - 1]?.[0] ?? '')).toUpperCase()
-}
 
 const realtimeLabel = computed(() => {
   if (realtimeStore.status === 'connected') {
@@ -202,8 +190,8 @@ onMounted(async () => {
             <div v-if="pageActions.length > 0" class="flex items-center gap-2">
               <RouterLink
                 v-for="action in pageActions"
-                :key="`${action.label}`"
-                v-show="action.to"
+                v-show="action.to && !action.onClick"
+                :key="`link-${action.label}`"
                 :to="action.to || '#'"
                 class="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold leading-none transition-colors"
                 :class="{
@@ -218,6 +206,25 @@ onMounted(async () => {
                 <component v-if="action.icon" :is="action.icon" :size="16" />
                 {{ action.label }}
               </RouterLink>
+              <button
+                v-for="action in pageActions"
+                v-show="action.onClick"
+                :key="`button-${action.label}`"
+                type="button"
+                class="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold leading-none transition-colors"
+                :class="{
+                  'border-blue-600 bg-blue-600 text-white hover:bg-blue-700':
+                    action.variant === 'primary' || !action.variant,
+                  'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50':
+                    action.variant === 'secondary',
+                  'border-red-100 bg-red-50 text-red-700 hover:border-red-200':
+                    action.variant === 'danger',
+                }"
+                @click="action.onClick"
+              >
+                <component v-if="action.icon" :is="action.icon" :size="16" />
+                {{ action.label }}
+              </button>
             </div>
             <div class="flex items-center gap-3">
               <div class="hidden text-right xl:block">

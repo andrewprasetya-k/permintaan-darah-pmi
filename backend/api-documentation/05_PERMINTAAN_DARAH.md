@@ -80,7 +80,7 @@ Authorization: Bearer {token}
         "golonganDarah": "O",
         "rhesusDarah": "+",
         "jumlahKantong": 2,
-        "tanggalDiperlukan": "0001-01-01T00:00:00Z",
+        "tanggalDiperlukan": "2026-04-10T00:00:00Z",
         "createdAt": "2026-04-07T14:30:45Z"
       }
     ]

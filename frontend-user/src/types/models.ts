@@ -48,6 +48,7 @@ export type PermintaanStatus = 'dibuat' | 'diproses' | 'bisa_diambil' | 'selesai
 export type Gender = 'L' | 'P'
 export type BloodType = 'A' | 'B' | 'AB' | 'O'
 export type Rhesus = '+' | '-'
+export type PregnancyFlag = 'Y' | 'N'
 
 export interface DetailPermintaanDarah {
   detailId: number
@@ -82,7 +83,7 @@ export interface PermintaanDarah extends PermintaanDarahListItem {
   ruangBagianKelas?: string
   pernahTransfusi: boolean
   indikasiTransfusi?: string
-  pernahHamil?: string
+  pernahHamil?: PregnancyFlag
   cancelReason?: string
   detailPermintaanDarah?: DetailPermintaanDarah[]
 }
@@ -107,14 +108,17 @@ export interface CreatePermintaanRequest {
   ruangBagianKelas?: string
   pernahTransfusi: boolean
   indikasiTransfusi?: string
-  pernahHamil?: string
+  pernahHamil?: PregnancyFlag
   status: PermintaanStatus
   cancelReason?: string
   tanggalPermintaan: string
   details?: CreateDetailPermintaanDarahRequest[]
 }
 
-export interface UpdatePermintaanRequest extends Omit<CreatePermintaanRequest, 'rumahSakitId' | 'details'> {
+export interface UpdatePermintaanRequest extends Omit<
+  CreatePermintaanRequest,
+  'rumahSakitId' | 'details'
+> {
   rumahSakitId: string
 }
 

@@ -19,7 +19,6 @@ type UpdateDetailPermintaanDarahRequest struct {
 	DPDGolonganDarah models.BloodTypeEnum `json:"golonganDarah" binding:"required,oneof=A B AB O"`
 	DPDRhesus        models.RhesusEnum    `json:"rhesusDarah" binding:"required,oneof=+ -"`
 	DPDJmlKantong    int                  `json:"jumlahKantong" binding:"required"`
-	DPDTglDiperlukan time.Time            `json:"tanggalDiperlukan" binding:"required"`
 }
 
 type DetailPermintaanDarahResponse struct {

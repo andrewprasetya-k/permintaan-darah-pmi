@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { CheckCircle2, CircleSlash, Pencil, Undo2 } from '@lucide/vue'
 import AppModal from '@/components/feedback/AppModal.vue'
 import StatusBadge from '@/components/rs/StatusBadge.vue'
 import { useFeedbackStore } from '@/stores/feedback'
 import { useMyRequestsStore } from '@/stores/my-requests'
+import { useSetPageHeaderActions } from '@/composables/usePageHeader'
 import { bloodLabel, formatDate, formatDateTime, statusDescriptions } from '@/utils/format'
 import { btn, ui } from '@/utils/ui'
 
 const route = useRoute()
 const requestsStore = useMyRequestsStore()
 const feedbackStore = useFeedbackStore()
+const { clearActions, setActions } = useSetPageHeaderActions()
 
 const cancelReason = ref('')
 const isCancelOpen = ref(false)
@@ -29,6 +32,51 @@ const loadRequest = async () => {
       variant: 'error',
     })
   })
+}
+
+const syncHeaderActions = () => {
+  if (!request.value) {
+    setActions([{ label: 'Kembali', to: '/requests', icon: Undo2, variant: 'secondary' }])
+    return
+  }
+
+  setActions([
+    { label: 'Kembali', to: '/requests', icon: Undo2, variant: 'secondary' },
+    ...(requestsStore.canEdit(request.value)
+      ? [
+          {
+            label: 'Edit',
+            to: `/requests/${request.value.permintaanDarahId}/edit`,
+            icon: Pencil,
+            variant: 'secondary' as const,
+          },
+        ]
+      : []),
+    ...(requestsStore.canConfirmPickup(request.value)
+      ? [
+          {
+            label: 'Konfirmasi Selesai',
+            onClick: () => {
+              isPickupOpen.value = true
+            },
+            icon: CheckCircle2,
+            variant: 'primary' as const,
+          },
+        ]
+      : []),
+    ...(requestsStore.canCancel(request.value)
+      ? [
+          {
+            label: 'Batalkan',
+            onClick: () => {
+              isCancelOpen.value = true
+            },
+            icon: CircleSlash,
+            variant: 'danger' as const,
+          },
+        ]
+      : []),
+  ])
 }
 
 const confirmCancel = async () => {
@@ -71,48 +119,21 @@ const confirmPickup = async () => {
   }
 }
 
-onMounted(loadRequest)
-watch(requestId, loadRequest)
+onMounted(async () => {
+  syncHeaderActions()
+  await loadRequest()
+  syncHeaderActions()
+})
+watch(requestId, async () => {
+  await loadRequest()
+  syncHeaderActions()
+})
+watch(request, syncHeaderActions)
+onBeforeUnmount(clearActions)
 </script>
 
 <template>
   <section>
-    <div :class="ui.pageHeader">
-      <div>
-        <p :class="ui.pageEyebrow">Detail Permintaan</p>
-        <h1 :class="ui.pageTitle">{{ request?.namaPasien || 'Memuat detail' }}</h1>
-        <p v-if="request" :class="ui.pageSubtitle">
-          {{ request.permintaanDarahId }} - {{ statusDescriptions[request.status] }}
-        </p>
-      </div>
-      <div v-if="request" class="flex flex-wrap gap-2.5 max-sm:w-full">
-        <RouterLink :class="btn('btnSecondary')" to="/requests">Kembali</RouterLink>
-        <RouterLink
-          v-if="requestsStore.canEdit(request)"
-          :class="btn('btnSecondary')"
-          :to="`/requests/${request.permintaanDarahId}/edit`"
-        >
-          Edit
-        </RouterLink>
-        <button
-          v-if="requestsStore.canConfirmPickup(request)"
-          type="button"
-          :class="btn('btnSuccess')"
-          @click="isPickupOpen = true"
-        >
-          Konfirmasi Selesai
-        </button>
-        <button
-          v-if="requestsStore.canCancel(request)"
-          type="button"
-          :class="btn('btnDanger')"
-          @click="isCancelOpen = true"
-        >
-          Batalkan
-        </button>
-      </div>
-    </div>
-
     <div v-if="requestsStore.isLoading && !request" :class="ui.emptyState">
       <div>
         <h2 :class="ui.emptyTitle">Memuat detail</h2>
@@ -128,9 +149,19 @@ watch(requestId, loadRequest)
     </div>
 
     <template v-else>
-      <section
-        class="grid grid-cols-[280px_minmax(0,1fr)_minmax(0,1fr)] gap-4.5 max-xl:grid-cols-1"
-      >
+      <section :class="[ui.card, 'mb-5 p-6']">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 :class="ui.sectionTitle">{{ request.namaPasien }}</h2>
+            <p class="mt-1 text-sm text-gray-500">
+              {{ request.permintaanDarahId }} - {{ statusDescriptions[request.status] }}
+            </p>
+          </div>
+          <StatusBadge :status="request.status" />
+        </div>
+      </section>
+
+      <section class="grid grid-cols-[280px_minmax(0,1fr)_minmax(0,1fr)] gap-5 max-xl:grid-cols-1">
         <article :class="[ui.card, 'grid content-start gap-3.5 p-6']">
           <div>
             <span class="mb-2 block text-xs font-semibold uppercase text-gray-500">Status</span>
