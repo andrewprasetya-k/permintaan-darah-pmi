@@ -124,11 +124,12 @@ func (r *permintaanDarahRepository) applyFilters(query *gorm.DB, filters *dto.Pe
 		query = query.Where(`
 			pd_id ILIKE ? OR
 			pd_nama_pasien ILIKE ? OR
+			COALESCE(pd_dokter, '') ILIKE ? OR
 			COALESCE(pd_no_rm, '') ILIKE ? OR
 			COALESCE(pd_gol_darah::text, '') ILIKE ? OR
 			COALESCE(pd_rhesus::text, '') ILIKE ? OR
 			(CONCAT(COALESCE(pd_gol_darah::text, ''), COALESCE(pd_rhesus::text, ''))) ILIKE ?
-		`, search, search, search, search, search, search)
+		`, search, search, search, search, search, search, search)
 	}
 	if filters.RsID != nil && *filters.RsID != "" {
 		query = query.Where("pd_rs_id = ?", *filters.RsID)

@@ -213,6 +213,12 @@ onBeforeUnmount(clearActions)
               <dd class="m-0 break-words font-semibold text-gray-900">{{ request.namaPasien }}</dd>
             </div>
             <div class="grid gap-1">
+              <dt class="text-xs font-semibold text-gray-500">Nama Dokter</dt>
+              <dd class="m-0 break-words font-semibold text-gray-900">
+                {{ request.namaDokter || '-' }}
+              </dd>
+            </div>
+            <div class="grid gap-1">
               <dt class="text-xs font-semibold text-gray-500">No. RM</dt>
               <dd class="m-0 break-words font-semibold text-gray-900">{{ request.noRM || '-' }}</dd>
             </div>

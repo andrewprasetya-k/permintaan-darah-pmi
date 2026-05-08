@@ -11,6 +11,7 @@ export const useLogsStore = defineStore('logs', () => {
   const statusLogs = ref<StatusLog[]>([])
   const recentActivities = ref<SystemAccessLog[]>([])
   const isLoading = ref(false)
+  const isRealtimeConnected = ref(false)
   const error = ref<string | null>(null)
   const pagination = ref<PaginationMeta | null>(null)
 
@@ -111,12 +112,19 @@ export const useLogsStore = defineStore('logs', () => {
     systemLogs.value = [log, ...systemLogs.value.filter((item) => item.sysLogId !== log.sysLogId)]
   }
 
+  const connectRealtime = () => undefined
+
+  const setRealtimeConnected = (value: boolean) => {
+    isRealtimeConnected.value = value
+  }
+
   return {
     systemLogs,
     statusLogs,
     recentActivities,
     recentActivityItems,
     isLoading,
+    isRealtimeConnected,
     error,
     pagination,
     fetchSystemLogs,
@@ -126,5 +134,7 @@ export const useLogsStore = defineStore('logs', () => {
     fetchSystemLogsByTable,
     fetchSystemLogsByTargetId,
     pushRecentActivity,
+    connectRealtime,
+    setRealtimeConnected,
   }
 })

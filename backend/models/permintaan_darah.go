@@ -8,6 +8,7 @@ type PermintaanDarah struct {
 
 	// Data Pasien (Flat - Ditulis Ulang Tiap Permintaan)
 	PDNamaPasien  string         `gorm:"column:pd_nama_pasien" json:"namaPasien"`
+	PDDokter      *string        `gorm:"column:pd_dokter" json:"namaDokter,omitempty"`
 	PDNoRM        *string        `gorm:"column:pd_no_rm" json:"noRM,omitempty"`
 	PDTempatLahir string         `gorm:"column:pd_tempat_lahir" json:"tempatLahir"`
 	PDTglLahir    time.Time      `gorm:"column:pd_tgl_lahir;type:date" json:"tanggalLahir"`

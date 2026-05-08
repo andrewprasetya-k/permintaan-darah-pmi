@@ -60,6 +60,7 @@ func (s *permintaanDarahService) Create(req dto.CreatePermintaanDarahRequest, us
 	data := models.PermintaanDarah{
 		PDRsID:              req.PDRsID,
 		PDNamaPasien:        req.PDNamaPasien,
+		PDDokter:            req.PDDokter,
 		PDNoRM:              req.PDNoRM,
 		PDTempatLahir:       req.PDTempatLahir,
 		PDTglLahir:          req.PDTglLahir,
@@ -203,7 +204,7 @@ func (s *permintaanDarahService) GenerateBlankoPDF(id string) ([]byte, string, e
 	}
 
 	write(80, 41.5, 100, rsName)
-	write(80, 48.2, 100, "-")
+	write(80, 48.2, 100, derefStringPtr(data.PDDokter, "-"))
 	write(80, 55.0, 100, data.PDNamaPasien)
 	write(80, 61.8, 100, derefString(data.PDTempatLahir, "-"))
 	write(80, 68.5, 100, derefStringPtr(data.PDNoRM, "-"))
@@ -286,6 +287,7 @@ func (s *permintaanDarahService) Update(id string, req dto.UpdatePermintaanDarah
 
 	data.PDRsID = req.PDRsID
 	data.PDNamaPasien = req.PDNamaPasien
+	data.PDDokter = req.PDDokter
 	data.PDNoRM = req.PDNoRM
 	data.PDTempatLahir = req.PDTempatLahir
 	data.PDTglLahir = req.PDTglLahir
@@ -397,6 +399,7 @@ func (s *permintaanDarahService) UpdateMyRequest(id string, rsID string, req dto
 	}
 
 	data.PDNamaPasien = req.PDNamaPasien
+	data.PDDokter = req.PDDokter
 	data.PDNoRM = req.PDNoRM
 	data.PDTempatLahir = req.PDTempatLahir
 	data.PDTglLahir = req.PDTglLahir
@@ -504,6 +507,7 @@ func mapPermintaanToGetAllResponse(data models.PermintaanDarah) dto.PermintaanDa
 
 		// Data Pasien
 		PDNamaPasien:    data.PDNamaPasien,
+		PDDokter:        data.PDDokter,
 		PDGender:        data.PDGender,
 		PDGolDarah:      data.PDGolDarah,
 		PDRhesus:        data.PDRhesus,
@@ -535,6 +539,7 @@ func mapPermintaanToResponse(data models.PermintaanDarah) dto.PermintaanDarahRes
 		PDID:                data.PDID,
 		PDRsID:              data.PDRsID,
 		PDNamaPasien:        data.PDNamaPasien,
+		PDDokter:            data.PDDokter,
 		PDNoRM:              data.PDNoRM,
 		PDTempatLahir:       data.PDTempatLahir,
 		PDTglLahir:          data.PDTglLahir,

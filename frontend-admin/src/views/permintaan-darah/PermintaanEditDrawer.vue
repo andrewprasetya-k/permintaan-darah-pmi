@@ -22,6 +22,7 @@ const flag = ref<{ variant: 'success' | 'error'; title: string; message?: string
 const formData = ref<UpdatePermintaanRequest>({
   rumahSakitId: '',
   namaPasien: '',
+  namaDokter: '',
   tempatLahir: '',
   tanggalLahir: '',
   jenisKelamin: 'L',
@@ -39,6 +40,7 @@ watch(
       formData.value = {
         rumahSakitId: permintaanStore.selectedRequest.rumahSakitId,
         namaPasien: permintaanStore.selectedRequest.namaPasien,
+        namaDokter: permintaanStore.selectedRequest.namaDokter || '',
         noRM: permintaanStore.selectedRequest.noRM || '',
         tempatLahir: permintaanStore.selectedRequest.tempatLahir,
         tanggalLahir: permintaanStore.selectedRequest.tanggalLahir,
@@ -162,6 +164,21 @@ const handleSubmit = async () => {
                   class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
+              <div>
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >
+                  Nama Dokter
+                </label>
+                <input
+                  v-model="formData.namaDokter"
+                  type="text"
+                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
               <div>
                 <label
                   class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"

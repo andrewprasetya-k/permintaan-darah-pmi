@@ -14,6 +14,7 @@ const cancelableStatuses: PermintaanStatus[] = ['dibuat', 'diproses', 'bisa_diam
 const toListItem = (request: PermintaanDarah | PermintaanDarahListItem): PermintaanDarahListItem => ({
   permintaanDarahId: request.permintaanDarahId,
   namaPasien: request.namaPasien,
+  namaDokter: request.namaDokter,
   jenisKelamin: request.jenisKelamin,
   golonganDarah: request.golonganDarah,
   rhesusDarah: request.rhesusDarah,

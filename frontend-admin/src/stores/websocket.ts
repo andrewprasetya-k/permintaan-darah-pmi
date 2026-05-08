@@ -18,7 +18,7 @@ export const useWebsocketStore = defineStore('websocket', () => {
   const error = ref<string | null>(null)
   let socket: WebSocket | null = null
 
-  const { notifyNewPermintaan, notifyPermintaanUpdate } = useNotification()
+  const { notifyNewPermintaan } = useNotification()
   const permintaanStore = usePermintaanStore()
   const logsStore = useLogsStore()
   const dashboardStore = useDashboardStore()
@@ -35,6 +35,7 @@ export const useWebsocketStore = defineStore('websocket', () => {
 
     socket.onopen = () => {
       isConnected.value = true
+      logsStore.setRealtimeConnected(true)
       error.value = null
       console.log('WebSocket connected')
     }
@@ -46,7 +47,7 @@ export const useWebsocketStore = defineStore('websocket', () => {
         // Handle Permintaan Darah events
         if (message.entityType === 'permintaan_darah') {
           const pd = message.data as PermintaanDarah
-          
+
           if (message.type === 'new_permintaan' && message.action === 'CREATE') {
             notifyNewPermintaan({
               namaPasien: pd.namaPasien,
@@ -78,10 +79,12 @@ export const useWebsocketStore = defineStore('websocket', () => {
     socket.onerror = () => {
       error.value = 'Realtime connection error'
       isConnected.value = false
+      logsStore.setRealtimeConnected(false)
     }
 
     socket.onclose = () => {
       isConnected.value = false
+      logsStore.setRealtimeConnected(false)
       socket = null
       console.log('WebSocket disconnected')
     }
@@ -93,6 +96,7 @@ export const useWebsocketStore = defineStore('websocket', () => {
       socket = null
     }
     isConnected.value = false
+    logsStore.setRealtimeConnected(false)
   }
 
   return {

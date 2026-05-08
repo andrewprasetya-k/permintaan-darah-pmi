@@ -245,22 +245,32 @@ const submitPendingStatus = async () => {
                   <label
                     class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
                   >
-                    No. Rekam Medis
+                    Nama Dokter
                   </label>
                   <p class="text-base text-gray-900 font-medium">
-                    {{ permintaanStore.selectedRequest.noRM || '-' }}
+                    {{ permintaanStore.selectedRequest.namaDokter || '-' }}
                   </p>
                 </div>
                 <div>
                   <label
                     class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2"
                   >
-                    Tempat Lahir
+                    No. Rekam Medis
                   </label>
                   <p class="text-base text-gray-900 font-medium">
-                    {{ permintaanStore.selectedRequest.tempatLahir }}
+                    {{ permintaanStore.selectedRequest.noRM || '-' }}
                   </p>
                 </div>
+              </div>
+
+              <!-- Tempat Lahir -->
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  Tempat Lahir
+                </label>
+                <p class="text-base text-gray-900 font-medium">
+                  {{ permintaanStore.selectedRequest.tempatLahir }}
+                </p>
               </div>
 
               <!-- Jenis Kelamin & Tanggal Lahir -->

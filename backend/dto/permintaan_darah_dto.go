@@ -10,6 +10,7 @@ type CreatePermintaanDarahRequest struct {
 
 	// Data Pasien
 	PDNamaPasien  string                `json:"namaPasien" binding:"required"`
+	PDDokter      *string               `json:"namaDokter,omitempty"`
 	PDNoRM        *string               `json:"noRM,omitempty"`
 	PDTempatLahir string                `json:"tempatLahir" binding:"required"`
 	PDTglLahir    time.Time             `json:"tanggalLahir" binding:"required"`
@@ -38,6 +39,7 @@ type UpdatePermintaanDarahRequest struct {
 
 	// Data Pasien
 	PDNamaPasien  string                `json:"namaPasien" binding:"required"`
+	PDDokter      *string               `json:"namaDokter,omitempty"`
 	PDNoRM        *string               `json:"noRM,omitempty"`
 	PDTempatLahir string                `json:"tempatLahir" binding:"required"`
 	PDTglLahir    time.Time             `json:"tanggalLahir" binding:"required"`
@@ -63,6 +65,7 @@ type PermintaanDarahGetAllResponse struct {
 
 	// Data Pasien
 	PDNamaPasien    string                `json:"namaPasien"`
+	PDDokter        *string               `json:"namaDokter,omitempty"`
 	PDGender        models.GenderEnum     `json:"jenisKelamin"`
 	PDGolDarah      *models.BloodTypeEnum `json:"golonganDarah,omitempty"`
 	PDRhesus        *models.RhesusEnum    `json:"rhesusDarah,omitempty"`
@@ -81,6 +84,7 @@ type PermintaanDarahResponse struct {
 
 	// Data Pasien
 	PDNamaPasien  string                `json:"namaPasien"`
+	PDDokter      *string               `json:"namaDokter,omitempty"`
 	PDNoRM        *string               `json:"noRM,omitempty"`
 	PDTempatLahir string                `json:"tempatLahir"`
 	PDTglLahir    time.Time             `json:"tanggalLahir"`

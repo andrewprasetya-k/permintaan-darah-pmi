@@ -64,6 +64,7 @@ export interface DetailPermintaanDarah {
 export interface PermintaanDarahListItem {
   permintaanDarahId: string
   namaPasien: string
+  namaDokter?: string
   jenisKelamin: Gender
   golonganDarah?: BloodType
   rhesusDarah?: Rhesus
@@ -98,6 +99,7 @@ export interface CreateDetailPermintaanDarahRequest {
 export interface CreatePermintaanRequest {
   rumahSakitId?: string
   namaPasien: string
+  namaDokter?: string
   noRM?: string
   tempatLahir: string
   tanggalLahir: string

@@ -24,6 +24,7 @@ const flag = ref<{ variant: 'success' | 'error'; title: string; message?: string
 const formData = ref<CreatePermintaanRequest>({
   rumahSakitId: '',
   namaPasien: '',
+  namaDokter: '',
   noRM: '',
   tempatLahir: '',
   tanggalLahir: '',
@@ -51,6 +52,7 @@ const resetForm = () => {
   formData.value = {
     rumahSakitId: '',
     namaPasien: '',
+    namaDokter: '',
     noRM: '',
     tempatLahir: '',
     tanggalLahir: '',
@@ -145,6 +147,7 @@ const handleSubmit = async () => {
     const payload: CreatePermintaanRequest = {
       rumahSakitId: formData.value.rumahSakitId,
       namaPasien: formData.value.namaPasien.trim(),
+      namaDokter: normalizeOptionalString(formData.value.namaDokter),
       noRM: normalizeOptionalString(formData.value.noRM),
       tempatLahir: formData.value.tempatLahir.trim(),
       tanggalLahir: toIsoDateString(formData.value.tanggalLahir) ?? formData.value.tanggalLahir,
@@ -259,6 +262,21 @@ const handleSubmit = async () => {
                   class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
+              <div>
+                <label
+                  class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
+                >
+                  Nama Dokter
+                </label>
+                <input
+                  v-model="formData.namaDokter"
+                  type="text"
+                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
               <div>
                 <label
                   class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"

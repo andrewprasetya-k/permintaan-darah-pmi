@@ -59,6 +59,7 @@ export interface PermintaanDarah {
   permintaanDarahId: string
   rumahSakitId: string
   namaPasien: string
+  namaDokter?: string
   noRM?: string
   tempatLahir: string
   tanggalLahir: string

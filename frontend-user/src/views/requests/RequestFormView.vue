@@ -30,6 +30,7 @@ interface DetailFormRow {
 
 interface FormState {
   namaPasien: string
+  namaDokter: string
   noRM: string
   tempatLahir: string
   tanggalLahir: string
@@ -60,6 +61,7 @@ const detailRows = ref<DetailFormRow[]>([])
 
 const form = reactive<FormState>({
   namaPasien: '',
+  namaDokter: '',
   noRM: '',
   tempatLahir: '',
   tanggalLahir: '',
@@ -128,6 +130,7 @@ const buildDetails = (): CreateDetailPermintaanDarahRequest[] | undefined => {
 
 const buildBasePayload = () => ({
   namaPasien: form.namaPasien.trim(),
+  namaDokter: optionalString(form.namaDokter),
   noRM: optionalString(form.noRM),
   tempatLahir: form.tempatLahir.trim(),
   tanggalLahir: toIsoDate(form.tanggalLahir),
@@ -150,6 +153,7 @@ const populateForm = () => {
   }
 
   form.namaPasien = request.namaPasien
+  form.namaDokter = request.namaDokter || ''
   form.noRM = request.noRM || ''
   form.tempatLahir = request.tempatLahir
   form.tanggalLahir = toDateInputValue(request.tanggalLahir)
@@ -263,6 +267,10 @@ watch(requestId, load)
           <div :class="ui.formField">
             <label :class="ui.formLabel" for="namaPasien">Nama pasien</label>
             <input id="namaPasien" v-model="form.namaPasien" :class="ui.formControl" required />
+          </div>
+          <div :class="ui.formField">
+            <label :class="ui.formLabel" for="namaDokter">Nama dokter</label>
+            <input id="namaDokter" v-model="form.namaDokter" :class="ui.formControl" />
           </div>
           <div :class="ui.formField">
             <label :class="ui.formLabel" for="noRM">No. RM</label>

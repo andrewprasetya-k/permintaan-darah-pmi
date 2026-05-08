@@ -27,6 +27,7 @@ Authorization: Bearer {token}
 {
   "rumahSakitId": "RS001",
   "namaPasien": "Budi Santoso",
+  "namaDokter": "dr. Siti Aminah",
   "noRM": "RM123",
   "tempatLahir": "Jakarta",
   "tanggalLahir": "1990-05-15T00:00:00Z",
@@ -61,6 +62,7 @@ Authorization: Bearer {token}
     "permintaanDarahId": "PD04071430001",
     "rumahSakitId": "RS001",
     "namaPasien": "Budi Santoso",
+    "namaDokter": "dr. Siti Aminah",
     "noRM": "RM123",
     "tempatLahir": "Jakarta",
     "tanggalLahir": "1990-05-15T00:00:00Z",
@@ -101,7 +103,7 @@ Authorization: Bearer {token}
 - `limit` (optional): default 20
 - `offset` (optional): default 0
 - `status` (optional): dibuat | diproses | bisa_diambil | selesai | dibatalkan
-- `search` (optional): matches request ID, patient name, medical record number, blood type, rhesus, or combined blood type+rhesus
+- `search` (optional): matches request ID, patient name, doctor name, medical record number, blood type, rhesus, or combined blood type+rhesus
 - `rsID` (optional): filter by rumah sakit ID
 - `golDarah` (optional): A | B | AB | O
 - `startDate` (optional): `YYYY-MM-DD`, compared against `tanggalPermintaan`
@@ -174,6 +176,7 @@ Authorization: Bearer {token}
     "permintaanDarahId": "PD04071430001",
     "rumahSakitId": "RS001",
     "namaPasien": "Budi Santoso",
+    "namaDokter": "dr. Siti Aminah",
     "status": "diproses",
     "createdAt": "2026-04-07T14:30:45Z",
     "updatedAt": "2026-04-07T15:00:00Z",
@@ -207,7 +210,7 @@ Endpoint ini mengisi data permintaan ke template `Blanko_Permintaan_Darah.pdf`.
 
 **PUT** `/permintaan-darah/{id}`
 
-**Access:** Admin or Rumah Sakit. Current controller does not enforce ownership for this endpoint; Rumah Sakit-specific ownership check is available on `/permintaan-darah/my-requests/{id}`.
+**Access:** Admin or Rumah Sakit. Rumah Sakit-specific ownership check is available on `/permintaan-darah/my-requests/{id}`.
 
 **Request:**
 
@@ -215,6 +218,7 @@ Endpoint ini mengisi data permintaan ke template `Blanko_Permintaan_Darah.pdf`.
 {
   "rumahSakitId": "RS001",
   "namaPasien": "Budi Santoso",
+  "namaDokter": "dr. Siti Aminah",
   "noRM": "RM123",
   "tempatLahir": "Jakarta",
   "tanggalLahir": "1990-05-15T00:00:00Z",
@@ -255,6 +259,7 @@ Endpoint ini mengisi data permintaan ke template `Blanko_Permintaan_Darah.pdf`.
 {
   "rumahSakitId": "RS001",
   "namaPasien": "Budi Santoso",
+  "namaDokter": "dr. Siti Aminah",
   "noRM": "RM123",
   "tempatLahir": "Jakarta",
   "tanggalLahir": "1990-05-15T00:00:00Z",

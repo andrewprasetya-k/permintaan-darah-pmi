@@ -227,6 +227,7 @@ curl -X POST http://localhost:8080/api/permintaan-darah \
   -d '{
     "rumahSakitId":"RS001",
     "namaPasien":"Budi",
+    "namaDokter":"dr. Siti Aminah",
     "tempatLahir":"Jakarta",
     "tanggalLahir":"1990-05-15T00:00:00Z",
     "jenisKelamin":"L",

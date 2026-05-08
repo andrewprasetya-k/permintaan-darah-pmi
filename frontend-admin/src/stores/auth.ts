@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { authAPI, type LoginRequest } from '@/api/auth'
+import { authAPI } from '@/api/auth'
 import type { User } from '@/types/models'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -45,7 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
       token.value = savedToken
       try {
         user.value = JSON.parse(savedUser)
-      } catch (e) {
+      } catch {
         localStorage.removeItem('authUser')
       }
     }
