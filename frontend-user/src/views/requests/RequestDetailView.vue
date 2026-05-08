@@ -301,7 +301,6 @@ onBeforeUnmount(clearActions)
                 <th :class="ui.th">Komponen</th>
                 <th :class="ui.th">Darah</th>
                 <th :class="ui.th">Jumlah</th>
-                <th :class="ui.th">Diperlukan</th>
               </tr>
             </thead>
             <tbody>
@@ -313,7 +312,6 @@ onBeforeUnmount(clearActions)
                 <td :class="ui.td">{{ detail.komponenNama }}</td>
                 <td :class="ui.td">{{ bloodLabel(detail.golonganDarah, detail.rhesusDarah) }}</td>
                 <td :class="ui.td">{{ detail.jumlahKantong }} kantong</td>
-                <td :class="ui.td">{{ formatDate(detail.tanggalDiperlukan) }}</td>
               </tr>
             </tbody>
           </table>

@@ -152,6 +152,7 @@ func (s *permintaanDarahService) GenerateBlankoPDF(id string) ([]byte, string, e
 	if err != nil {
 		return nil, "", err
 	}
+
 	pdf := gofpdf.NewCustom(&gofpdf.InitType{
 		UnitStr: "mm",
 		Size: gofpdf.SizeType{
@@ -166,27 +167,42 @@ func (s *permintaanDarahService) GenerateBlankoPDF(id string) ([]byte, string, e
 	tpl := gofpdi.ImportPage(pdf, templatePath, 1, "/MediaBox")
 	gofpdi.UseImportedTemplate(pdf, tpl, 0, 0, pageWidth, pageHeight)
 
-	pdf.SetFont("Helvetica", "", 9)
+	pdf.SetFont("Arial", "", 10)
 	pdf.SetTextColor(0, 0, 0)
+	pdf.SetFillColor(255, 255, 255) // White for covering placeholders
 
-	write := func(x, y, w float64, text string) {
-		pdf.SetXY(x, y)
-		pdf.MultiCell(w, 4.8, safePDFText(text), "", "L", false)
+	// Helper function: timpa placeholder dengan putih dan tulis teks
+	// Replicates PHP fillField() behavior
+	fillField := func(x, y, w, h float64, text string) {
+		if text == "" {
+			text = "(tidak ada data)"
+		}
+		// Timpa area dengan warna putih (rectangle)
+		pdf.SetFillColor(255, 255, 255)
+		pdf.Rect(x, y, w, h, "F")
+
+		// Tulis teks dengan offset y + 2 untuk vertical alignment
+		pdf.SetTextColor(0, 0, 0)
+		pdf.SetXY(x, y+2)
+		// Use MultiCell untuk wrapping text jika diperlukan
+		pdf.MultiCell(w, h, safePDFText(text), "", "L", false)
 	}
 
-	firstDetail := ""
-	totalKantong := 0
-	components := []string{}
-	for _, detail := range data.Details {
-		totalKantong += detail.DPDJmlKantong
-		if detail.KomponenDarah.KomNama != "" {
-			components = append(components, detail.KomponenDarah.KomNama)
-		}
-		if firstDetail == "" {
-			firstDetail = fmt.Sprintf("%s%s", detail.DPDGolonganDarah, detail.DPDRhesus)
-		}
+	// Prepare data untuk detail pertama
+	detail := map[string]string{
+		"tanggalDiperlukan": "",
+		"jamDiperlukan":     "",
+		"jumlahKantong":     "",
+		"jenisDarah":        "",
 	}
 
+	if len(data.Details) > 0 {
+		firstDetail := data.Details[0]
+		detail["jumlahKantong"] = fmt.Sprintf("%d", firstDetail.DPDJmlKantong)
+		detail["jenisDarah"] = firstDetail.KomponenDarah.KomNama
+	}
+
+	// Prepare blood type (dari gol darah header atau dari detail pertama)
 	blood := "-"
 	if data.PDGolDarah != nil {
 		blood = string(*data.PDGolDarah)
@@ -194,44 +210,51 @@ func (s *permintaanDarahService) GenerateBlankoPDF(id string) ([]byte, string, e
 			blood += string(*data.PDRhesus)
 		}
 	}
-	if firstDetail != "" {
-		blood = firstDetail
+	if len(data.Details) > 0 && data.Details[0].DPDGolonganDarah != "" {
+		blood = fmt.Sprintf("%s%s", data.Details[0].DPDGolonganDarah, data.Details[0].DPDRhesus)
 	}
 
-	quantity := "-"
-	if totalKantong > 0 {
-		quantity = fmt.Sprintf("%d kantong", totalKantong)
-	}
+	// FILL FIELDS SESUAI KOORDINAT DARI downloadPdf() PHP
+	// Referensi: x=78 untuk field utama, width=120
+	fillField(78, 40, 120, 0, rsName)                                               // RS/Klinik: x=78, y=40
+	fillField(78, 46, 120, 0, derefStringPtr(data.PDDokter, ""))                     // Nama Dokter: x=78, y=46 (NOW USING pd_dokter!)
+	fillField(78, 52, 120, 0, data.PDNamaPasien)                                     // Nama Pasien: x=78, y=52
+	fillField(78, 58, 120, 0, derefString(data.PDTempatLahir, ""))                   // Alamat/Tempat Lahir: x=78, y=58
+	fillField(78, 65, 120, 0, derefStringPtr(data.PDNoRM, ""))                       // No RM: x=78, y=65
+	fillField(78, 71, 120, 0, formatIndonesianDate(data.PDTglLahir))                 // Tanggal Lahir: x=78, y=71
+	fillField(78, 77, 120, 0,                                                        // Umur + Jenis Kelamin: x=78, y=77
+		fmt.Sprintf("%d tahun - %s", ageInYears(data.PDTglLahir, data.PDTglPermintaan), genderLabel(data.PDGender)))
+	fillField(78, 83, 120, 0, derefStringPtr(data.PDIndikasiTransfusi, ""))          // Diagnosa Medis (mapped dari indikasi): x=78, y=83
+	fillField(78, 89, 120, 0, derefStringPtr(data.PDRuangBagianKelas, ""))           // Ruang/Bagian/Kelas: x=78, y=89
+	fillField(78, 96, 120, 0, derefStringPtr(data.PDIndikasiTransfusi, ""))          // Indikasi Transfusi: x=78, y=96
+	fillField(78, 102, 120, 0, transfusionLabel(data.PDPernahTransfusi))             // Transfusi Sebelumnya: x=78, y=102
+	fillField(78, 109, 120, 0, pregnancyLabel(data.PDPernahHamil))                   // Pernah Hamil: x=78, y=109
+	fillField(78, 116, 120, 0, blood)                                                // Golongan Darah: x=78, y=116
+	fillField(78, 123, 120, 0, hemoglobinLabel(data.PDHemoglobin))                   // Hemoglobin: x=78, y=123
+	fillField(78, 129, 120, 0,                                                       // Tanggal/Jam Diperlukan: x=78, y=129
+		fmt.Sprintf("%s jam %s", detail["tanggalDiperlukan"], detail["jamDiperlukan"]))
+	fillField(78, 135, 120, 0, detail["jumlahKantong"]+" kantong")                   // Jumlah Kantong: x=78, y=135
+	fillField(78, 142, 120, 0, detail["jenisDarah"])                                 // Jenis Darah/Komponen: x=78, y=142
 
-	write(80, 41.5, 100, rsName)
-	write(80, 48.2, 100, derefStringPtr(data.PDDokter, "-"))
-	write(80, 55.0, 100, data.PDNamaPasien)
-	write(80, 61.8, 100, derefString(data.PDTempatLahir, "-"))
-	write(80, 68.5, 100, derefStringPtr(data.PDNoRM, "-"))
-	write(80, 75.3, 100, formatIndonesianDate(data.PDTglLahir))
-	write(80, 82.0, 100, fmt.Sprintf("%d tahun - %s", ageInYears(data.PDTglLahir, data.PDTglPermintaan), genderLabel(data.PDGender)))
-	write(80, 88.8, 100, derefStringPtr(data.PDIndikasiTransfusi, "-"))
-	write(80, 95.5, 100, derefStringPtr(data.PDRuangBagianKelas, "-"))
-	write(80, 102.3, 100, derefStringPtr(data.PDIndikasiTransfusi, "-"))
-	write(80, 109.0, 100, transfusionLabel(data.PDPernahTransfusi))
-	write(80, 115.8, 100, pregnancyLabel(data.PDPernahHamil))
-	write(80, 122.5, 100, blood)
-	write(80, 129.3, 100, hemoglobinLabel(data.PDHemoglobin))
-	write(80, 136.0, 100, formatIndonesianDateTime(data.PDTglPermintaan))
-	write(80, 142.8, 100, quantity)
-	write(80, 149.5, 100, strings.Join(uniqueStrings(components), ", "))
+	// SAMPLE PMI SECTION (bagian bawah)
+	// Tanda tangan dokter: x=18, y=180
+	fillField(18, 180, 120, 0, derefStringPtr(data.PDDokter, ""))
 
-	write(18, 182.5, 45, "-")
-	write(82, 182.5, 35, derefStringPtr(data.PDNoRM, "-"))
-	write(18, 189.2, 45, blood)
-	write(82, 189.2, 35, rhesusOnly(data.PDRhesus))
+	// Sample a/n pasien: x=36, y=205 (width=80)
+	fillField(36, 205, 80, 0, data.PDNamaPasien)
+
+	// Sample No RM: x=91, y=205 (width=80)
+	fillField(91, 205, 80, 0, derefStringPtr(data.PDNoRM, ""))
+
+	// Sample Golongan Darah: x=36, y=212 (width=80)
+	fillField(36, 212, 80, 0, blood)
 
 	var buf bytes.Buffer
 	if err := pdf.Output(&buf); err != nil {
 		return nil, "", err
 	}
 
-	filename := fmt.Sprintf("blanko-permintaan-darah-%s.pdf", data.PDID)
+	filename := fmt.Sprintf("Blanko_Permintaan_Darah_%s_%s.pdf", data.PDID, time.Now().Format("20060102_150405"))
 	return buf.Bytes(), filename, nil
 }
 
