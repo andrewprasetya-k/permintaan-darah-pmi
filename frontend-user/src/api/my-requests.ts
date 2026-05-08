@@ -37,4 +37,8 @@ export const myRequestsAPI = {
   updateStatus(id: string, payload: UpdatePermintaanStatusRequest) {
     return apiClient.put<PermintaanDarah>(`/permintaan-darah/update/${id}`, payload)
   },
+
+  downloadBlanko(id: string) {
+    return apiClient.download(`/permintaan-darah/${id}/blanko`)
+  },
 }

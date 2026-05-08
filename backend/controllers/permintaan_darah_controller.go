@@ -5,6 +5,7 @@ import (
 	"backend/models"
 	"backend/services"
 	"backend/utils"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -66,6 +67,36 @@ func (ctl *PermintaanDarahController) GetByID(c *gin.Context) {
 	}
 
 	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
+}
+
+func (ctl *PermintaanDarahController) DownloadBlanko(c *gin.Context) {
+	resp, err := ctl.service.GetByID(c.Param("id"))
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	userID, _, userRole := utils.ExtractUserFromJWT(c)
+	if userRole == "rumah_sakit" {
+		if userID == nil || *userID == "" {
+			utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+			return
+		}
+		if resp.PDRsID != *userID {
+			utils.SendError(c, http.StatusForbidden, "Only owner rumah sakit can download this request blanko")
+			return
+		}
+	}
+
+	content, filename, err := ctl.service.GenerateBlankoPDF(c.Param("id"))
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, filename))
+	c.Data(http.StatusOK, "application/pdf", content)
 }
 
 func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {

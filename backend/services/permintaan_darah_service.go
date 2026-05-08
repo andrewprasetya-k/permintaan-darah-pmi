@@ -5,9 +5,16 @@ import (
 	"backend/models"
 	"backend/repository"
 	"backend/utils"
+	"bytes"
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 
+	"github.com/phpdave11/gofpdf"
+	"github.com/phpdave11/gofpdf/contrib/gofpdi"
 	"gorm.io/gorm"
 )
 
@@ -23,6 +30,7 @@ type PermintaanDarahService interface {
 
 	UpdateStatus(pdID string, newStatus models.PermintaanStatusEnum, reason *string, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
 	UpdateStatusWithOwnershipCheck(pdID string, newStatus models.PermintaanStatusEnum, reason *string, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error)
+	GenerateBlankoPDF(id string) ([]byte, string, error)
 }
 
 type permintaanDarahService struct {
@@ -123,6 +131,107 @@ func (s *permintaanDarahService) GetByID(id string) (*dto.PermintaanDarahRespons
 	}
 	resp := mapPermintaanToResponse(*data)
 	return &resp, nil
+}
+
+func (s *permintaanDarahService) GenerateBlankoPDF(id string) ([]byte, string, error) {
+	data, err := s.repo.GetByID(id)
+	if err != nil {
+		return nil, "", err
+	}
+
+	var rs models.RumahSakit
+	rsName := data.PDRsID
+	if err := s.db.Select("rs_nama").First(&rs, "rs_id = ?", data.PDRsID).Error; err == nil {
+		rsName = rs.RSNama
+	}
+
+	const pageWidth = 210.0
+	const pageHeight = 330.0
+	templatePath, err := resolveBlankoTemplatePath()
+	if err != nil {
+		return nil, "", err
+	}
+	pdf := gofpdf.NewCustom(&gofpdf.InitType{
+		UnitStr: "mm",
+		Size: gofpdf.SizeType{
+			Wd: pageWidth,
+			Ht: pageHeight,
+		},
+	})
+	pdf.SetMargins(0, 0, 0)
+	pdf.SetAutoPageBreak(false, 0)
+	pdf.AddPage()
+
+	tpl := gofpdi.ImportPage(pdf, templatePath, 1, "/MediaBox")
+	gofpdi.UseImportedTemplate(pdf, tpl, 0, 0, pageWidth, pageHeight)
+
+	pdf.SetFont("Helvetica", "", 9)
+	pdf.SetTextColor(0, 0, 0)
+
+	write := func(x, y, w float64, text string) {
+		pdf.SetXY(x, y)
+		pdf.MultiCell(w, 4.8, safePDFText(text), "", "L", false)
+	}
+
+	firstDetail := ""
+	totalKantong := 0
+	components := []string{}
+	for _, detail := range data.Details {
+		totalKantong += detail.DPDJmlKantong
+		if detail.KomponenDarah.KomNama != "" {
+			components = append(components, detail.KomponenDarah.KomNama)
+		}
+		if firstDetail == "" {
+			firstDetail = fmt.Sprintf("%s%s", detail.DPDGolonganDarah, detail.DPDRhesus)
+		}
+	}
+
+	blood := "-"
+	if data.PDGolDarah != nil {
+		blood = string(*data.PDGolDarah)
+		if data.PDRhesus != nil {
+			blood += string(*data.PDRhesus)
+		}
+	}
+	if firstDetail != "" {
+		blood = firstDetail
+	}
+
+	quantity := "-"
+	if totalKantong > 0 {
+		quantity = fmt.Sprintf("%d kantong", totalKantong)
+	}
+
+	write(80, 41.5, 100, rsName)
+	write(80, 48.2, 100, "-")
+	write(80, 55.0, 100, data.PDNamaPasien)
+	write(80, 61.8, 100, derefString(data.PDTempatLahir, "-"))
+	write(80, 68.5, 100, derefStringPtr(data.PDNoRM, "-"))
+	write(80, 75.3, 100, formatIndonesianDate(data.PDTglLahir))
+	write(80, 82.0, 100, fmt.Sprintf("%d tahun - %s", ageInYears(data.PDTglLahir, data.PDTglPermintaan), genderLabel(data.PDGender)))
+	write(80, 88.8, 100, derefStringPtr(data.PDIndikasiTransfusi, "-"))
+	write(80, 95.5, 100, derefStringPtr(data.PDRuangBagianKelas, "-"))
+	write(80, 102.3, 100, derefStringPtr(data.PDIndikasiTransfusi, "-"))
+	write(80, 109.0, 100, transfusionLabel(data.PDPernahTransfusi))
+	write(80, 115.8, 100, pregnancyLabel(data.PDPernahHamil))
+	write(80, 122.5, 100, blood)
+	write(80, 129.3, 100, hemoglobinLabel(data.PDHemoglobin))
+	write(80, 136.0, 100, formatIndonesianDateTime(data.PDTglPermintaan))
+	write(80, 142.8, 100, quantity)
+	write(80, 149.5, 100, strings.Join(uniqueStrings(components), ", "))
+
+	write(18, 182.5, 45, "-")
+	write(82, 182.5, 35, derefStringPtr(data.PDNoRM, "-"))
+	write(18, 189.2, 45, blood)
+	write(82, 189.2, 35, rhesusOnly(data.PDRhesus))
+
+	var buf bytes.Buffer
+	if err := pdf.Output(&buf); err != nil {
+		return nil, "", err
+	}
+
+	filename := fmt.Sprintf("blanko-permintaan-darah-%s.pdf", data.PDID)
+	return buf.Bytes(), filename, nil
 }
 
 func (s *permintaanDarahService) GetAll(filters *dto.PermintaanDarahFilters, limit, offset int) ([]dto.PermintaanDarahGetAllResponse, int, error) {
@@ -445,6 +554,135 @@ func mapPermintaanToResponse(data models.PermintaanDarah) dto.PermintaanDarahRes
 		DeletedAt:           data.DeletedAt,
 		Details:             details,
 	}
+}
+
+func safePDFText(value string) string {
+	return strings.NewReplacer("–", "-", "—", "-", "→", "->").Replace(value)
+}
+
+func derefString(value string, fallback string) string {
+	if strings.TrimSpace(value) == "" {
+		return fallback
+	}
+	return value
+}
+
+func derefStringPtr(value *string, fallback string) string {
+	if value == nil || strings.TrimSpace(*value) == "" {
+		return fallback
+	}
+	return *value
+}
+
+func formatIndonesianDate(value time.Time) string {
+	if value.IsZero() {
+		return "-"
+	}
+	months := []string{
+		"Januari", "Februari", "Maret", "April", "Mei", "Juni",
+		"Juli", "Agustus", "September", "Oktober", "November", "Desember",
+	}
+	return fmt.Sprintf("%d %s %d", value.Day(), months[int(value.Month())-1], value.Year())
+}
+
+func formatIndonesianDateTime(value time.Time) string {
+	if value.IsZero() {
+		return "-"
+	}
+	return fmt.Sprintf("%s jam %02d:%02d", formatIndonesianDate(value), value.Hour(), value.Minute())
+}
+
+func ageInYears(birthDate time.Time, at time.Time) int {
+	if birthDate.IsZero() {
+		return 0
+	}
+	if at.IsZero() {
+		at = time.Now()
+	}
+	age := at.Year() - birthDate.Year()
+	if at.YearDay() < birthDate.YearDay() {
+		age--
+	}
+	if age < 0 {
+		return 0
+	}
+	return age
+}
+
+func genderLabel(value models.GenderEnum) string {
+	if value == models.GenderL {
+		return "Laki-laki"
+	}
+	if value == models.GenderP {
+		return "Perempuan"
+	}
+	return "-"
+}
+
+func transfusionLabel(value bool) string {
+	if value {
+		return "Pernah transfusi"
+	}
+	return "Belum pernah transfusi"
+}
+
+func pregnancyLabel(value *string) string {
+	if value == nil || strings.TrimSpace(*value) == "" {
+		return "-"
+	}
+	if *value == "Y" {
+		return "Pernah hamil"
+	}
+	if *value == "N" {
+		return "Belum pernah hamil"
+	}
+	return *value
+}
+
+func hemoglobinLabel(value *float64) string {
+	if value == nil {
+		return "-"
+	}
+	return fmt.Sprintf("%.1f gr/dl", *value)
+}
+
+func rhesusOnly(value *models.RhesusEnum) string {
+	if value == nil {
+		return "....."
+	}
+	return string(*value)
+}
+
+func uniqueStrings(values []string) []string {
+	seen := map[string]bool{}
+	result := []string{}
+	for _, value := range values {
+		trimmed := strings.TrimSpace(value)
+		if trimmed == "" || seen[trimmed] {
+			continue
+		}
+		seen[trimmed] = true
+		result = append(result, trimmed)
+	}
+	if len(result) == 0 {
+		return []string{"-"}
+	}
+	return result
+}
+
+func resolveBlankoTemplatePath() (string, error) {
+	candidates := []string{
+		"Blanko_Permintaan_Darah.pdf",
+		filepath.Join("backend", "Blanko_Permintaan_Darah.pdf"),
+	}
+
+	for _, candidate := range candidates {
+		if _, err := os.Stat(candidate); err == nil {
+			return candidate, nil
+		}
+	}
+
+	return "", fmt.Errorf("template Blanko_Permintaan_Darah.pdf tidak ditemukan")
 }
 
 func (s *permintaanDarahService) UpdateStatusWithOwnershipCheck(pdID string, newStatus models.PermintaanStatusEnum, reason *string, userID *string, userName string, userRole string, userAgent *string) (*dto.PermintaanDarahResponse, error) {

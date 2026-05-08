@@ -77,7 +77,8 @@ PUT    /komponen-darah/deactivate/:id    # Deactivate
 # Create & List
 POST   /permintaan-darah         # Create (admin/rumah sakit)
 GET    /permintaan-darah         # List requests; current endpoint is not ownership-scoped
-GET    /permintaan-darah/:id     # Get detail; current endpoint is not ownership-scoped
+GET    /permintaan-darah/:id     # Get detail; rumah sakit ownership checked
+GET    /permintaan-darah/:id/blanko # Download filled blanko PDF; rumah sakit ownership checked
 
 # Rumah Sakit (Own Requests)
 GET    /permintaan-darah/my-requests        # List own

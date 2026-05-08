@@ -17,7 +17,7 @@ import type {
   Rhesus,
   UpdatePermintaanRequest,
 } from '@/types/models'
-import { toDateInputValue, toIsoDate } from '@/utils/format'
+import { toDateInputValue, toIsoDate, toIsoDateTime, toTimeInputValue } from '@/utils/format'
 import { btn, ui } from '@/utils/ui'
 
 interface DetailFormRow {
@@ -42,6 +42,7 @@ interface FormState {
   indikasiTransfusi: string
   pernahHamil: PregnancyFlag | ''
   tanggalPermintaan: string
+  jamPermintaan: string
   status: PermintaanStatus
 }
 
@@ -71,12 +72,12 @@ const form = reactive<FormState>({
   indikasiTransfusi: '',
   pernahHamil: '',
   tanggalPermintaan: toDateInputValue(new Date().toISOString()),
+  jamPermintaan: toTimeInputValue(new Date().toISOString()),
   status: 'dibuat',
 })
 
 const isEdit = computed(() => route.name === 'request-edit')
 const requestId = computed(() => String(route.params.id || ''))
-const title = computed(() => (isEdit.value ? 'Edit Permintaan' : 'Buat Permintaan'))
 const submitLabel = computed(() => (isEdit.value ? 'Simpan Perubahan' : 'Kirim Permintaan'))
 const activeComponents = computed(() =>
   komponenStore.components.filter((component) => component.isActive !== false),
@@ -139,7 +140,7 @@ const buildBasePayload = () => ({
   indikasiTransfusi: optionalString(form.indikasiTransfusi),
   pernahHamil: optionalPregnancyFlag(form.pernahHamil),
   status: form.status,
-  tanggalPermintaan: toIsoDate(form.tanggalPermintaan),
+  tanggalPermintaan: toIsoDateTime(form.tanggalPermintaan, form.jamPermintaan),
 })
 
 const populateForm = () => {
@@ -162,6 +163,7 @@ const populateForm = () => {
   form.pernahHamil =
     request.pernahHamil === 'Y' || request.pernahHamil === 'N' ? request.pernahHamil : ''
   form.tanggalPermintaan = toDateInputValue(request.tanggalPermintaan)
+  form.jamPermintaan = toTimeInputValue(request.tanggalPermintaan)
   form.status = request.status
 }
 
@@ -338,6 +340,16 @@ watch(requestId, load)
               v-model="form.tanggalPermintaan"
               :class="ui.formControl"
               type="date"
+              required
+            />
+          </div>
+          <div :class="ui.formField">
+            <label :class="ui.formLabel" for="jamPermintaan">Jam permintaan</label>
+            <input
+              id="jamPermintaan"
+              v-model="form.jamPermintaan"
+              :class="ui.formControl"
+              type="time"
               required
             />
           </div>

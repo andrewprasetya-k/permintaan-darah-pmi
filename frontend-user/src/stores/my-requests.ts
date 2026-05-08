@@ -29,6 +29,7 @@ export const useMyRequestsStore = defineStore('myRequests', () => {
   const selectedRequest = ref<PermintaanDarah | null>(null)
   const isLoading = ref(false)
   const isSubmitting = ref(false)
+  const isDownloading = ref(false)
   const error = ref<string | null>(null)
   const pagination = ref<FetchMyRequestsParams | null>(null)
 
@@ -170,11 +171,26 @@ export const useMyRequestsStore = defineStore('myRequests', () => {
   const canConfirmPickup = (request: PermintaanDarah | PermintaanDarahListItem | null) =>
     request?.status === 'bisa_diambil'
 
+  const downloadBlanko = async (id: string) => {
+    isDownloading.value = true
+    error.value = null
+
+    try {
+      return await myRequestsAPI.downloadBlanko(id)
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Gagal mengunduh blanko'
+      throw err
+    } finally {
+      isDownloading.value = false
+    }
+  }
+
   return {
     requests,
     selectedRequest,
     isLoading,
     isSubmitting,
+    isDownloading,
     error,
     pagination,
     activeRequests,
@@ -185,6 +201,7 @@ export const useMyRequestsStore = defineStore('myRequests', () => {
     updateMyRequest,
     cancelRequest,
     confirmPickup,
+    downloadBlanko,
     canEdit,
     canCancel,
     canConfirmPickup,

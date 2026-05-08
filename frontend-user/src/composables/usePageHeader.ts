@@ -1,9 +1,9 @@
-import { computed, inject, provide, ref, type Ref } from 'vue'
+import { inject, provide, ref, type Component, type Ref } from 'vue'
 
 export interface PageHeaderAction {
   label: string
   to?: string
-  icon?: any
+  icon?: Component
   onClick?: () => void
   variant?: 'primary' | 'secondary' | 'danger'
 }

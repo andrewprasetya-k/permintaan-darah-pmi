@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { CheckCircle2, CircleSlash, Pencil, Undo2 } from '@lucide/vue'
+import { CheckCircle2, CircleSlash, Download, Pencil, Undo2 } from '@lucide/vue'
 import AppModal from '@/components/feedback/AppModal.vue'
 import StatusBadge from '@/components/rs/StatusBadge.vue'
 import { useFeedbackStore } from '@/stores/feedback'
@@ -35,48 +35,7 @@ const loadRequest = async () => {
 }
 
 const syncHeaderActions = () => {
-  if (!request.value) {
-    setActions([{ label: 'Kembali', to: '/requests', icon: Undo2, variant: 'secondary' }])
-    return
-  }
-
-  setActions([
-    { label: 'Kembali', to: '/requests', icon: Undo2, variant: 'secondary' },
-    ...(requestsStore.canEdit(request.value)
-      ? [
-          {
-            label: 'Edit',
-            to: `/requests/${request.value.permintaanDarahId}/edit`,
-            icon: Pencil,
-            variant: 'secondary' as const,
-          },
-        ]
-      : []),
-    ...(requestsStore.canConfirmPickup(request.value)
-      ? [
-          {
-            label: 'Konfirmasi Selesai',
-            onClick: () => {
-              isPickupOpen.value = true
-            },
-            icon: CheckCircle2,
-            variant: 'primary' as const,
-          },
-        ]
-      : []),
-    ...(requestsStore.canCancel(request.value)
-      ? [
-          {
-            label: 'Batalkan',
-            onClick: () => {
-              isCancelOpen.value = true
-            },
-            icon: CircleSlash,
-            variant: 'danger' as const,
-          },
-        ]
-      : []),
-  ])
+  setActions([{ label: 'Kembali', to: '/requests', icon: Undo2, variant: 'secondary' }])
 }
 
 const confirmCancel = async () => {
@@ -119,6 +78,40 @@ const confirmPickup = async () => {
   }
 }
 
+const triggerDownload = (blob: Blob, filename: string) => {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
+}
+
+const downloadBlanko = async () => {
+  if (!request.value) return
+
+  try {
+    const response = await requestsStore.downloadBlanko(request.value.permintaanDarahId)
+    triggerDownload(
+      response.blob,
+      response.filename || `blanko-permintaan-darah-${request.value.permintaanDarahId}.pdf`,
+    )
+    feedbackStore.showFlag({
+      title: 'Blanko diunduh',
+      message: 'PDF blanko permintaan darah berhasil dibuat.',
+      variant: 'success',
+    })
+  } catch (err) {
+    feedbackStore.showFlag({
+      title: 'Gagal mengunduh blanko',
+      message: err instanceof Error ? err.message : 'Coba lagi nanti.',
+      variant: 'error',
+    })
+  }
+}
+
 onMounted(async () => {
   syncHeaderActions()
   await loadRequest()
@@ -150,13 +143,52 @@ onBeforeUnmount(clearActions)
 
     <template v-else>
       <section :class="[ui.card, 'mb-5 p-6']">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h2 :class="ui.sectionTitle">{{ request.namaPasien }}</h2>
             <p class="mt-1 text-sm text-gray-500">
               {{ request.permintaanDarahId }} - {{ statusDescriptions[request.status] }}
             </p>
           </div>
+          <div class="flex flex-wrap justify-end gap-2.5 max-sm:w-full max-sm:flex-col">
+            <button
+              type="button"
+              :class="[btn('btnSecondary'), 'max-sm:w-full']"
+              :disabled="requestsStore.isDownloading"
+              @click="downloadBlanko"
+            >
+              <Download :size="17" />
+              {{ requestsStore.isDownloading ? 'Mengunduh...' : 'Download Blanko' }}
+            </button>
+            <RouterLink
+              v-if="requestsStore.canEdit(request)"
+              :class="[btn('btnSecondary'), 'max-sm:w-full']"
+              :to="`/requests/${request.permintaanDarahId}/edit`"
+            >
+              <Pencil :size="17" />
+              Edit
+            </RouterLink>
+            <button
+              v-if="requestsStore.canConfirmPickup(request)"
+              type="button"
+              :class="[btn('btnPrimary'), 'max-sm:w-full']"
+              @click="isPickupOpen = true"
+            >
+              <CheckCircle2 :size="17" />
+              Konfirmasi Selesai
+            </button>
+            <button
+              v-if="requestsStore.canCancel(request)"
+              type="button"
+              :class="[btn('btnDanger'), 'max-sm:w-full']"
+              @click="isCancelOpen = true"
+            >
+              <CircleSlash :size="17" />
+              Batalkan
+            </button>
+          </div>
+        </div>
+        <div class="mt-4">
           <StatusBadge :status="request.status" />
         </div>
       </section>
@@ -241,7 +273,7 @@ onBeforeUnmount(clearActions)
             <div class="grid gap-1">
               <dt class="text-xs font-semibold text-gray-500">Tanggal Permintaan</dt>
               <dd class="m-0 break-words font-semibold text-gray-900">
-                {{ formatDate(request.tanggalPermintaan) }}
+                {{ formatDateTime(request.tanggalPermintaan) }}
               </dd>
             </div>
           </dl>

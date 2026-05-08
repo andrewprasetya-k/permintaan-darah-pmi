@@ -158,7 +158,7 @@ Authorization: Bearer {token}
 
 **GET** `/permintaan-darah/{id}`
 
-**Access:** Admin or Rumah Sakit. Current controller does not enforce ownership for this endpoint.
+**Access:** Admin or Rumah Sakit. Rumah Sakit hanya bisa mengakses permintaan miliknya sendiri.
 
 **Path Parameters:**
 
@@ -181,6 +181,25 @@ Authorization: Bearer {token}
   }
 }
 ```
+
+---
+
+## Download Blanko Permintaan
+
+**GET** `/permintaan-darah/{id}/blanko`
+
+**Access:** Admin or Rumah Sakit. Rumah Sakit hanya bisa mengunduh blanko milik rumah sakitnya sendiri.
+
+**Response:** `application/pdf`
+
+Header response:
+
+```http
+Content-Type: application/pdf
+Content-Disposition: attachment; filename="blanko-permintaan-darah-{id}.pdf"
+```
+
+Endpoint ini mengisi data permintaan ke template `Blanko_Permintaan_Darah.pdf`.
 
 ---
 

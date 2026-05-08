@@ -65,12 +65,33 @@ export const toDateInputValue = (value?: string) => {
   return date.toISOString().slice(0, 10)
 }
 
+export const toTimeInputValue = (value?: string) => {
+  if (!value) {
+    return ''
+  }
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return ''
+  }
+
+  return date.toTimeString().slice(0, 5)
+}
+
 export const toIsoDate = (value: string) => {
   if (!value) {
     return ''
   }
 
   return new Date(`${value}T00:00:00`).toISOString()
+}
+
+export const toIsoDateTime = (dateValue: string, timeValue: string) => {
+  if (!dateValue) {
+    return ''
+  }
+
+  return new Date(`${dateValue}T${timeValue || '00:00'}:00`).toISOString()
 }
 
 export const bloodLabel = (blood?: BloodType, rhesus?: Rhesus) => {

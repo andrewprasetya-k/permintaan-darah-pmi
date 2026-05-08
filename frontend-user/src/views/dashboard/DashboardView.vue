@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import { Plus } from '@lucide/vue'
 import StatusBadge from '@/components/rs/StatusBadge.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'

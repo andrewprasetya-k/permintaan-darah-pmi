@@ -96,6 +96,7 @@ func RegisterAPIRoutes(
 	permintaan.GET("", permintaanController.GetAll)
 	permintaan.GET("/my-requests", permintaanController.GetMyRequests)
 	permintaan.PUT("/my-requests/:id", permintaanController.UpdateMyRequest)
+	permintaan.GET("/:id/blanko", permintaanController.DownloadBlanko)
 	permintaan.GET("/:id", permintaanController.GetByID)
 	permintaan.PUT("/:id", permintaanController.Update)
 	permintaan.DELETE("/:id", permintaanController.Delete)

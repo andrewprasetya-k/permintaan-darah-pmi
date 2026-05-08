@@ -114,6 +114,48 @@ class ApiClient {
   delete<T>(endpoint: string, options?: Omit<RequestOptions, 'method' | 'data'>) {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' })
   }
+
+  async download(endpoint: string, params: Params = {}) {
+    const url = new URL(`${this.baseUrl}${endpoint}`)
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        url.searchParams.set(key, String(value))
+      }
+    })
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: buildHeaders(true, false),
+    })
+
+    if (response.status === 401) {
+      clearAuthStorage()
+    }
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => null)
+      throw new Error(
+        body && typeof body === 'object'
+          ? responseMessage(body as Partial<ApiResponse<unknown>>, `HTTP ${response.status}`)
+          : `HTTP ${response.status}`,
+      )
+    }
+
+    return {
+      blob: await response.blob(),
+      filename: parseFilename(response.headers.get('content-disposition')),
+    }
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL)
+
+const parseFilename = (contentDisposition: string | null) => {
+  if (!contentDisposition) {
+    return undefined
+  }
+
+  const match = contentDisposition.match(/filename="?([^"]+)"?/i)
+  return match?.[1]
+}
