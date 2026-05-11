@@ -163,6 +163,12 @@ const triggerDownload = (blob: Blob, filename: string) => {
   URL.revokeObjectURL(url)
 }
 
+const exportFilename = () => {
+  const start = startDate.value || 'all'
+  const end = endDate.value || 'all'
+  return `permintaan-darah-${start}-${end}.xlsx`
+}
+
 const exportExcel = async () => {
   if (!startDate.value || !endDate.value) {
     flag.value = {
@@ -181,7 +187,7 @@ const exportExcel = async () => {
       startDate: startDate.value,
       endDate: endDate.value,
     })
-    triggerDownload(response.blob, response.filename || 'export-permintaan-darah.xlsx')
+    triggerDownload(response.blob, response.filename || exportFilename())
     flag.value = {
       variant: 'success',
       title: 'Export berhasil',

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
 const props = withDefaults(
   defineProps<{
     title: string
@@ -15,11 +17,12 @@ defineEmits<{
   close: []
 }>()
 
-const variantClass =
+const variantClass = computed(() =>
   props.variant === 'success'
     ? 'border-emerald-100 bg-emerald-50 text-emerald-700'
-    : 'border-red-100 bg-red-50 text-red-700'
-const badgeClass = props.variant === 'success' ? 'bg-emerald-500' : 'bg-red-500'
+    : 'border-red-100 bg-red-50 text-red-700',
+)
+const badgeClass = computed(() => (props.variant === 'success' ? 'bg-emerald-500' : 'bg-red-500'))
 </script>
 
 <template>
