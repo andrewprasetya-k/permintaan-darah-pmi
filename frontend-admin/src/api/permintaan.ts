@@ -47,6 +47,10 @@ export const permintaanAPI = {
     return apiClient.get<PermintaanDarah[]>('/permintaan-darah', { params })
   },
 
+  exportExcel(params?: Record<string, any>) {
+    return apiClient.download('/permintaan-darah/export', params)
+  },
+
   getMyRequests(params?: Record<string, any>) {
     return apiClient.get<PermintaanDarah[]>('/permintaan-darah/my-requests', { params })
   },

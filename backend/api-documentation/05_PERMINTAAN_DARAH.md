@@ -206,6 +206,34 @@ Endpoint ini mengisi data permintaan ke template `Blanko_Permintaan_Darah.pdf`.
 
 ---
 
+## Export Blood Requests to Excel
+
+**GET** `/permintaan-darah/export?startDate=2026-04-01&endDate=2026-04-30`
+
+**Access:** Admin or Rumah Sakit
+
+**Query Parameters:**
+
+- `startDate` (recommended): `YYYY-MM-DD`, compared against `tanggalPermintaan`
+- `endDate` (recommended): `YYYY-MM-DD`, compared against `tanggalPermintaan`
+- `status` (optional): dibuat | diproses | bisa_diambil | selesai | dibatalkan
+- `search` (optional): same search behavior as list endpoint
+- `rsID` (optional): filter by rumah sakit ID
+- `golDarah` (optional): A | B | AB | O
+
+**Response:** `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
+
+Header response:
+
+```http
+Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+Content-Disposition: attachment; filename="Export_Permintaan_Darah_YYYYMMDD_HHMMSS.xlsx"
+```
+
+Kolom Excel menggunakan label baris dari blanko permintaan darah, seperti `RS/Klinik`, `Nama Dokter`, `Nama Pasien`, `No RM`, `Tanggal Lahir`, `Golongan Darah`, `Jumlah Kantong`, dan `Jenis Darah/Komponen`.
+
+---
+
 ## Update Blood Request
 
 **PUT** `/permintaan-darah/{id}`

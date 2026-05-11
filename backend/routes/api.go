@@ -94,6 +94,7 @@ func RegisterAPIRoutes(
 	permintaan.Use(middleware.AdminOrRumahSakit())
 	permintaan.POST("", permintaanController.Create)
 	permintaan.GET("", permintaanController.GetAll)
+	permintaan.GET("/export", permintaanController.ExportExcel)
 	permintaan.GET("/my-requests", permintaanController.GetMyRequests)
 	permintaan.PUT("/my-requests/:id", permintaanController.UpdateMyRequest)
 	permintaan.GET("/:id/blanko", permintaanController.DownloadBlanko)

@@ -12,6 +12,7 @@ import {
   Clock3,
   Trash2,
   Droplets,
+  Download,
 } from '@lucide/vue'
 import PermintaanCreateDrawer from './PermintaanCreateDrawer.vue'
 import PermintaanEditDrawer from './PermintaanEditDrawer.vue'
@@ -33,19 +34,24 @@ const currentPage = ref(1)
 const itemsPerPage = 8
 const deleteTarget = ref<PermintaanDarah | null>(null)
 const deleting = ref(false)
+const exporting = ref(false)
 const flag = ref<{ variant: 'success' | 'error'; title: string; message?: string } | null>(null)
 let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null
 
-const loadRequests = async (page = currentPage.value) => {
+const currentFilterParams = (page = currentPage.value) => {
   const offset = (page - 1) * itemsPerPage
-  await permintaanStore.fetchAll({
+  return {
     limit: itemsPerPage,
     offset,
     status: statusFilter.value === 'all' ? undefined : statusFilter.value,
     search: searchTerm.value.trim() || undefined,
     startDate: startDate.value || undefined,
     endDate: endDate.value || undefined,
-  })
+  }
+}
+
+const loadRequests = async (page = currentPage.value) => {
+  await permintaanStore.fetchAll(currentFilterParams(page))
 }
 
 onMounted(async () => {
@@ -144,6 +150,52 @@ const openDetailDrawer = async (request: PermintaanDarah) => {
 
 const askDelete = (request: PermintaanDarah) => {
   deleteTarget.value = request
+}
+
+const triggerDownload = (blob: Blob, filename: string) => {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
+}
+
+const exportExcel = async () => {
+  if (!startDate.value || !endDate.value) {
+    flag.value = {
+      variant: 'error',
+      title: 'Rentang tanggal belum lengkap',
+      message: 'Isi tanggal mulai dan tanggal akhir sebelum export Excel.',
+    }
+    return
+  }
+
+  exporting.value = true
+  try {
+    const response = await permintaanStore.exportExcel({
+      status: statusFilter.value === 'all' ? undefined : statusFilter.value,
+      search: searchTerm.value.trim() || undefined,
+      startDate: startDate.value,
+      endDate: endDate.value,
+    })
+    triggerDownload(response.blob, response.filename || 'export-permintaan-darah.xlsx')
+    flag.value = {
+      variant: 'success',
+      title: 'Export berhasil',
+      message: 'Data permintaan darah sesuai filter berhasil diunduh.',
+    }
+  } catch (error) {
+    flag.value = {
+      variant: 'error',
+      title: 'Export gagal',
+      message: error instanceof Error ? error.message : 'Gagal mengunduh export Excel.',
+    }
+  } finally {
+    exporting.value = false
+  }
 }
 
 const cancelDelete = () => {
@@ -336,13 +388,23 @@ const handleDetailUpdated = async () => {
               </div>
             </div>
 
-            <button
-              @click="openCreateDrawer"
-              class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto xl:px-5"
-            >
-              <Plus :size="16" />
-              Tambah Permintaan
-            </button>
+            <div class="flex flex-col gap-2 sm:flex-row xl:justify-end">
+              <button
+                @click="exportExcel"
+                :disabled="exporting"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto xl:px-5"
+              >
+                <Download :size="16" />
+                {{ exporting ? 'Mengunduh...' : 'Export Excel' }}
+              </button>
+              <button
+                @click="openCreateDrawer"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto xl:px-5"
+              >
+                <Plus :size="16" />
+                Tambah Permintaan
+              </button>
+            </div>
           </div>
 
           <div class="border-t border-gray-100 pt-4">

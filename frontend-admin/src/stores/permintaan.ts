@@ -119,6 +119,15 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     }
   }
 
+  const exportExcel = async (params?: FetchPermintaanParams) => {
+    try {
+      return await permintaanAPI.exportExcel(params || lastParams.value)
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to export requests'
+      throw err
+    }
+  }
+
   return {
     requests,
     selectedRequest,
@@ -131,5 +140,6 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     update,
     updateStatus,
     deleteRequest,
+    exportExcel,
   }
 })

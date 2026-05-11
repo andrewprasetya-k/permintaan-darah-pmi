@@ -123,6 +123,51 @@ class ApiClient {
   delete<T>(endpoint: string, options?: { params?: Record<string, any>; includeAuth?: boolean }) {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' })
   }
+
+  async download(endpoint: string, params: Record<string, any> = {}) {
+    const url = new URL(`${this.baseUrl}${endpoint}`)
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        url.searchParams.set(key, String(value))
+      }
+    })
+
+    const token = getAuthToken()
+    const headers: Record<string, string> = {}
+    if (token) {
+      headers.Authorization = `Bearer ${token}`
+    }
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers,
+    })
+
+    if (response.status === 401) {
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('authUser')
+      window.location.href = '/login'
+    }
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Unknown error' }))
+      throw new Error(error.message || `HTTP ${response.status}`)
+    }
+
+    return {
+      blob: await response.blob(),
+      filename: parseFilename(response.headers.get('content-disposition')),
+    }
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL)
+
+const parseFilename = (contentDisposition: string | null) => {
+  if (!contentDisposition) {
+    return undefined
+  }
+
+  const match = contentDisposition.match(/filename="?([^"]+)"?/i)
+  return match?.[1]
+}

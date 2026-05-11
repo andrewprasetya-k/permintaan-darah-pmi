@@ -100,6 +100,31 @@ func (ctl *PermintaanDarahController) DownloadBlanko(c *gin.Context) {
 }
 
 func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
+	filters := parsePermintaanDarahFilters(c)
+
+	limit, offset := utils.ParsePagination(c)
+	resp, total, err := ctl.service.GetAll(filters, limit, offset)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
+}
+
+func (ctl *PermintaanDarahController) ExportExcel(c *gin.Context) {
+	filters := parsePermintaanDarahFilters(c)
+	content, filename, err := ctl.service.GenerateExportXLSX(filters)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	c.Header("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, filename))
+	c.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", content)
+}
+
+func parsePermintaanDarahFilters(c *gin.Context) *dto.PermintaanDarahFilters {
 	status := c.Query("status")
 	search := c.Query("search")
 	rsID := c.Query("rsID")
@@ -132,7 +157,7 @@ func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 		}
 	}
 
-	filters := &dto.PermintaanDarahFilters{
+	return &dto.PermintaanDarahFilters{
 		Status:    &status,
 		Search:    &search,
 		RsID:      &rsID,
@@ -140,14 +165,6 @@ func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 		StartDate: startDate,
 		EndDate:   endDate,
 	}
-
-	limit, offset := utils.ParsePagination(c)
-	resp, total, err := ctl.service.GetAll(filters, limit, offset)
-	if err != nil {
-		utils.HandleError(c, err)
-		return
-	}
-	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
 }
 
 func (ctl *PermintaanDarahController) GetMyRequests(c *gin.Context) {
