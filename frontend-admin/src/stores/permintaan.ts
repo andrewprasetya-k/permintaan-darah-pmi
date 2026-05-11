@@ -12,6 +12,8 @@ interface FetchPermintaanParams {
   status?: string
   limit?: number
   offset?: number
+  startDate?: string
+  endDate?: string
 }
 
 export const usePermintaanStore = defineStore('permintaan', () => {

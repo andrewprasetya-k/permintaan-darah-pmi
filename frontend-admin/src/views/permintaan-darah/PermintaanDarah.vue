@@ -27,6 +27,8 @@ const showEditDrawer = ref(false)
 const showDetailDrawer = ref(false)
 const searchTerm = ref('')
 const statusFilter = ref<'all' | PermintaanDarah['status']>('all')
+const startDate = ref('')
+const endDate = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 8
 const deleteTarget = ref<PermintaanDarah | null>(null)
@@ -41,6 +43,8 @@ const loadRequests = async (page = currentPage.value) => {
     offset,
     status: statusFilter.value === 'all' ? undefined : statusFilter.value,
     search: searchTerm.value.trim() || undefined,
+    startDate: startDate.value || undefined,
+    endDate: endDate.value || undefined,
   })
 }
 
@@ -110,6 +114,11 @@ const handleSearchInput = () => {
 }
 
 const handleStatusChange = async () => {
+  resetPage()
+  await loadRequests(1)
+}
+
+const handleDateChange = async () => {
   resetPage()
   await loadRequests(1)
 }
@@ -250,16 +259,21 @@ const handleDetailUpdated = async () => {
     </AppModal>
 
     <div
-      class="flex min-h-0 flex-1 flex-col rounded-2xl border border-gray-100 bg-white overflow-hidden"
+      class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white"
     >
       <div class="border-b border-gray-100 px-5 py-4">
         <div class="flex flex-col gap-4">
-          <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
-              <div class="relative w-full sm:max-w-md">
+          <div class="grid gap-4 xl:grid-cols-[1fr_auto] xl:items-end">
+            <div
+              class="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(280px,1.3fr)_190px_minmax(320px,1fr)] xl:items-end"
+            >
+              <div class="relative w-full">
+                <label class="text-xs font-semibold uppercase text-gray-500">
+                  Cari permintaan darah
+                </label>
                 <Search
                   :size="16"
-                  class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  class="pointer-events-none absolute left-3 top-[calc(50%+12px)] -translate-y-1/2 text-gray-400"
                 />
                 <input
                   v-model="searchTerm"
@@ -269,22 +283,62 @@ const handleDetailUpdated = async () => {
                   @input="handleSearchInput"
                 />
               </div>
-              <select
-                v-model="statusFilter"
-                class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100 sm:w-[190px]"
-                @change="handleStatusChange"
-              >
-                <option value="all">Semua Status</option>
-                <option value="dibuat">Baru</option>
-                <option value="diproses">Diproses</option>
-                <option value="bisa_diambil">Siap Diambil</option>
-                <option value="selesai">Selesai</option>
-                <option value="dibatalkan">Dibatalkan</option>
-              </select>
+
+              <div class="flex w-full flex-col gap-2">
+                <label class="text-xs font-semibold uppercase text-gray-500">
+                  Cari per status
+                </label>
+                <select
+                  v-model="statusFilter"
+                  class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  @change="handleStatusChange"
+                >
+                  <option value="all">Semua Status</option>
+                  <option value="dibuat">Baru</option>
+                  <option value="diproses">Diproses</option>
+                  <option value="bisa_diambil">Siap Diambil</option>
+                  <option value="selesai">Selesai</option>
+                  <option value="dibatalkan">Dibatalkan</option>
+                </select>
+              </div>
+
+              <div class="flex w-full flex-col gap-2 md:col-span-2 xl:col-span-1">
+                <label class="text-xs font-semibold uppercase text-gray-500">
+                  Rentang Tanggal Permintaan
+                </label>
+                <div class="grid gap-2 sm:grid-cols-2">
+                  <div>
+                    <label for="startDate" class="sr-only">Tanggal Mulai</label>
+                    <p class="mb-1 text-xs text-gray-500">Mulai dari</p>
+                    <input
+                      id="startDate"
+                      v-model="startDate"
+                      type="date"
+                      class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                      @change="handleDateChange"
+                      title="Pilih tanggal mulai"
+                    />
+                  </div>
+
+                  <div>
+                    <label for="endDate" class="sr-only">Tanggal Akhir</label>
+                    <p class="mb-1 text-xs text-gray-500">Sampai</p>
+                    <input
+                      id="endDate"
+                      v-model="endDate"
+                      type="date"
+                      class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-700 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                      @change="handleDateChange"
+                      title="Pilih tanggal akhir"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
+
             <button
               @click="openCreateDrawer"
-              class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 lg:px-5"
+              class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto xl:px-5"
             >
               <Plus :size="16" />
               Tambah Permintaan
@@ -296,11 +350,11 @@ const handleDetailUpdated = async () => {
               Menampilkan
               <span class="font-semibold text-gray-900">{{ permintaanStore.requests.length }}</span>
               data
-              <span v-if="searchTerm || statusFilter !== 'all'">
+              <span v-if="searchTerm || statusFilter !== 'all' || startDate || endDate">
                 dari
-                <span class="font-semibold text-gray-900">{{
-                  permintaanStore.pagination?.total ?? permintaanStore.requests.length
-                }}</span>
+                <span class="font-semibold text-gray-900">
+                  {{ permintaanStore.pagination?.total ?? permintaanStore.requests.length }}
+                </span>
                 total permintaan darah
               </span>
             </p>
