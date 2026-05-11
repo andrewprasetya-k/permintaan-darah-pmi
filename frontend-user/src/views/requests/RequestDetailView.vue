@@ -153,38 +153,38 @@ onBeforeUnmount(clearActions)
           <div class="flex flex-wrap justify-end gap-2.5 max-sm:w-full max-sm:flex-col">
             <button
               type="button"
-              :class="[btn('btnSecondary'), 'max-sm:w-full']"
+              class="flex items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-100 max-sm:w-full bg-blue-50"
               :disabled="requestsStore.isDownloading"
               @click="downloadBlanko"
             >
-              <Download :size="17" />
+              <Download :size="16" />
               {{ requestsStore.isDownloading ? 'Mengunduh...' : 'Download Blanko' }}
             </button>
             <RouterLink
               v-if="requestsStore.canEdit(request)"
-              :class="[btn('btnSecondary'), 'max-sm:w-full']"
+              class="flex items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-100 max-sm:w-full"
               :to="`/requests/${request.permintaanDarahId}/edit`"
             >
-              <Pencil :size="17" />
+              <Pencil :size="16" />
               Edit
             </RouterLink>
             <button
               v-if="requestsStore.canConfirmPickup(request)"
               type="button"
-              :class="[btn('btnPrimary'), 'max-sm:w-full']"
+              class="flex items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium text-emerald-600 transition-colors hover:bg-emerald-100 max-sm:w-full"
               @click="isPickupOpen = true"
             >
-              <CheckCircle2 :size="17" />
-              Konfirmasi Selesai
+              <CheckCircle2 :size="16" />
+              Selesai
             </button>
             <button
               v-if="requestsStore.canCancel(request)"
               type="button"
-              :class="[btn('btnDanger'), 'max-sm:w-full']"
+              class="flex items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-100 max-sm:w-full bg-red-50"
               @click="isCancelOpen = true"
             >
-              <CircleSlash :size="17" />
-              Batalkan
+              <CircleSlash :size="16" />
+              Batalkan permintaan
             </button>
           </div>
         </div>
