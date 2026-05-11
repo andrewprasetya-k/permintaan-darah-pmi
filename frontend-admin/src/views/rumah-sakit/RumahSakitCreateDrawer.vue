@@ -137,8 +137,9 @@ const handleSubmit = async () => {
               <input
                 v-model="formData.nama"
                 type="text"
+                placeholder="RSUD Salatiga"
                 required
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
               />
             </div>
 
@@ -149,8 +150,9 @@ const handleSubmit = async () => {
               <input
                 v-model="formData.username"
                 type="text"
+                placeholder="rsudsalatiga"
                 required
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
               />
             </div>
 
@@ -163,8 +165,9 @@ const handleSubmit = async () => {
                 <input
                   v-model="formData.password"
                   :type="showPassword ? 'text' : 'password'"
+                  placeholder="••••••••"
                   required
-                  class="w-full px-3.5 py-2.5 pr-10 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  class="w-full px-3.5 py-2.5 pr-10 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
                 />
                 <button
                   type="button"
@@ -184,7 +187,8 @@ const handleSubmit = async () => {
               <input
                 v-model="formData.email"
                 type="email"
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                placeholder="admin@rsumsalatiga.com"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
               />
             </div>
 
@@ -195,8 +199,9 @@ const handleSubmit = async () => {
               <input
                 v-model="formData.nomorTelepon"
                 type="tel"
+                placeholder="0274-123456"
                 required
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
               />
             </div>
 
@@ -206,9 +211,10 @@ const handleSubmit = async () => {
               </label>
               <textarea
                 v-model="formData.alamat"
+                placeholder=": Jl. Osamaliki No.19, Mangunsari, Kec. Sidomukti, Kota Salatiga, Jawa Tengah 50721"
                 required
                 rows="3"
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
               />
             </div>
 

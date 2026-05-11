@@ -372,7 +372,7 @@ const submitPendingStatus = async () => {
               <!-- Pernah Hamil -->
               <div>
                 <label class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-                  Pernah Hamil
+                  Riwayat Hamil
                 </label>
                 <p class="text-base text-gray-900 font-medium">
                   {{ permintaanStore.selectedRequest.pernahHamil || '-' }}

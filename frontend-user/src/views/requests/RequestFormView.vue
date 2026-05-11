@@ -266,19 +266,41 @@ watch(requestId, load)
         <div :class="ui.formGrid">
           <div :class="ui.formField">
             <label :class="ui.formLabel" for="namaPasien">Nama pasien</label>
-            <input id="namaPasien" v-model="form.namaPasien" :class="ui.formControl" required />
+            <input
+              id="namaPasien"
+              v-model="form.namaPasien"
+              placeholder="mis. Budi Santoso"
+              :class="ui.formControl"
+              required
+            />
           </div>
           <div :class="ui.formField">
             <label :class="ui.formLabel" for="namaDokter">Nama dokter</label>
-            <input id="namaDokter" v-model="form.namaDokter" :class="ui.formControl" />
+            <input
+              id="namaDokter"
+              v-model="form.namaDokter"
+              placeholder="mis. Dr. Wijaya Kusuma"
+              :class="ui.formControl"
+            />
           </div>
           <div :class="ui.formField">
             <label :class="ui.formLabel" for="noRM">No. RM</label>
-            <input id="noRM" v-model="form.noRM" :class="ui.formControl" />
+            <input
+              id="noRM"
+              v-model="form.noRM"
+              placeholder="mis. 123456"
+              :class="ui.formControl"
+            />
           </div>
           <div :class="ui.formField">
             <label :class="ui.formLabel" for="tempatLahir">Tempat lahir</label>
-            <input id="tempatLahir" v-model="form.tempatLahir" :class="ui.formControl" required />
+            <input
+              id="tempatLahir"
+              v-model="form.tempatLahir"
+              placeholder="mis. Jakarta"
+              :class="ui.formControl"
+              required
+            />
           </div>
           <div :class="ui.formField">
             <label :class="ui.formLabel" for="tanggalLahir">Tanggal lahir</label>
@@ -331,6 +353,7 @@ watch(requestId, load)
             <input
               id="hemoglobin"
               v-model="form.hemoglobin"
+              placeholder="mis. 12.5"
               :class="ui.formControl"
               type="number"
               step="0.1"
@@ -339,7 +362,12 @@ watch(requestId, load)
           </div>
           <div :class="ui.formField">
             <label :class="ui.formLabel" for="ruangBagianKelas">Ruang/Bagian/Kelas</label>
-            <input id="ruangBagianKelas" v-model="form.ruangBagianKelas" :class="ui.formControl" />
+            <input
+              id="ruangBagianKelas"
+              v-model="form.ruangBagianKelas"
+              placeholder="mis. ICU / Jantung"
+              :class="ui.formControl"
+            />
           </div>
           <div :class="ui.formField">
             <label :class="ui.formLabel" for="tanggalPermintaan">Tanggal permintaan</label>
@@ -380,12 +408,18 @@ watch(requestId, load)
             <textarea
               id="indikasiTransfusi"
               v-model="form.indikasiTransfusi"
+              placeholder="mis. Anemia, perdarahan akut, dll"
               :class="ui.formTextarea"
             />
           </div>
           <div :class="[ui.formField, ui.formFieldFull]">
             <label :class="ui.formLabel" for="pernahHamil">Riwayat hamil</label>
-            <input id="pernahHamil" v-model="form.pernahHamil" :class="ui.formControl" />
+            <input
+              id="pernahHamil"
+              v-model="form.pernahHamil"
+              placeholder="Hamil keberapa/'-'"
+              :class="ui.formControl"
+            />
           </div>
         </div>
       </section>

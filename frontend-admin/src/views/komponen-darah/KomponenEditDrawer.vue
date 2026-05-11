@@ -129,8 +129,9 @@ const closeSubmitDialog = () => {
               <input
                 v-model="formData.komponenDarah"
                 type="text"
+                placeholder="Packed Red Cell (PRC)"
                 required
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
               />
             </div>
 
@@ -141,8 +142,9 @@ const closeSubmitDialog = () => {
               <input
                 v-model="formData.komponenKode"
                 type="text"
+                placeholder="PRC"
                 required
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
               />
             </div>
 

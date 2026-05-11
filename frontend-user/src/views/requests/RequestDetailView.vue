@@ -291,7 +291,7 @@ onBeforeUnmount(clearActions)
               </dd>
             </div>
             <div class="grid gap-1">
-              <dt class="text-xs font-semibold text-gray-500">Pernah Hamil</dt>
+              <dt class="text-xs font-semibold text-gray-500">Riwayat Hamil</dt>
               <dd class="m-0 break-words font-semibold text-gray-900">
                 {{ request.pernahHamil || '-' }}
               </dd>

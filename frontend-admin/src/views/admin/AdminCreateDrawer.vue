@@ -127,9 +127,9 @@ const handleSubmit = async () => {
           <form @submit.prevent="openSubmitDialog" class="space-y-5 max-w-full">
             <div
               v-for="field in [
-                { key: 'adminUsername', label: 'Username', type: 'text' },
-                { key: 'adminName', label: 'Nama', type: 'text' },
-                { key: 'adminEmail', label: 'Email', type: 'email' },
+                { key: 'adminUsername', label: 'Username', type: 'text', placeholder: 'masukkan username' },
+                { key: 'adminName', label: 'Nama', type: 'text', placeholder: 'masukkan nama' },
+                { key: 'adminEmail', label: 'Email', type: 'email', placeholder: 'email@domain.com' },
               ]"
               :key="field.key"
             >
@@ -139,8 +139,9 @@ const handleSubmit = async () => {
               <input
                 v-model="(formData as any)[field.key]"
                 :type="field.type"
+                :placeholder="field.placeholder"
                 required
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
               />
             </div>
 
@@ -153,8 +154,9 @@ const handleSubmit = async () => {
                 <input
                   v-model="formData.adminPassword"
                   :type="showPassword ? 'text' : 'password'"
+                  placeholder="••••••••"
                   required
-                  class="w-full px-3.5 py-2.5 pr-10 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  class="w-full px-3.5 py-2.5 pr-10 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
                 />
                 <button
                   type="button"

@@ -141,8 +141,9 @@ const handleSubmit = async () => {
               <input
                 v-model="formData.adminUsername"
                 type="text"
+                placeholder="budisantoso"
                 required
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 disabled:opacity-50"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 disabled:opacity-50 placeholder:text-gray-300"
               />
             </div>
 
@@ -153,8 +154,9 @@ const handleSubmit = async () => {
               <input
                 v-model="formData.adminName"
                 type="text"
+                placeholder="Budi Santoso"
                 required
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
               />
             </div>
 
@@ -165,8 +167,9 @@ const handleSubmit = async () => {
               <input
                 v-model="formData.adminEmail"
                 type="email"
+                placeholder="budi@email.com"
                 required
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
               />
             </div>
 
@@ -180,7 +183,8 @@ const handleSubmit = async () => {
                 <input
                   v-model="formData.adminPassword"
                   :type="showPassword ? 'text' : 'password'"
-                  class="w-full px-3.5 py-2.5 pr-10 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  placeholder="••••••••"
+                  class="w-full px-3.5 py-2.5 pr-10 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
                 />
                 <button
                   type="button"

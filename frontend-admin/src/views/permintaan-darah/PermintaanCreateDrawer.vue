@@ -258,8 +258,9 @@ const handleSubmit = async () => {
                 <input
                   v-model="formData.namaPasien"
                   type="text"
+                  placeholder="mis. Budi Santoso"
                   required
-                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
                 />
               </div>
               <div>
@@ -271,7 +272,8 @@ const handleSubmit = async () => {
                 <input
                   v-model="formData.namaDokter"
                   type="text"
-                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  placeholder="mis. Dr. Wijaya Kusuma"
+                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
                 />
               </div>
             </div>
@@ -286,7 +288,8 @@ const handleSubmit = async () => {
                 <input
                   v-model="formData.noRM"
                   type="text"
-                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  placeholder="mis. 123456"
+                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
                 />
               </div>
             </div>
@@ -302,8 +305,9 @@ const handleSubmit = async () => {
                 <input
                   v-model="formData.tempatLahir"
                   type="text"
+                  placeholder="mis. Jakarta"
                   required
-                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
                 />
               </div>
               <div>
@@ -381,7 +385,8 @@ const handleSubmit = async () => {
                   v-model.number="formData.hemoglobin"
                   type="number"
                   step="0.1"
-                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  placeholder="mis. 12.5"
+                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
                 />
               </div>
             </div>
@@ -394,7 +399,8 @@ const handleSubmit = async () => {
               <input
                 v-model="formData.ruangBagianKelas"
                 type="text"
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                placeholder="mis. ICU / Jantung"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
               />
             </div>
 
@@ -418,8 +424,9 @@ const handleSubmit = async () => {
               </label>
               <textarea
                 v-model="formData.indikasiTransfusi"
+                placeholder="mis. Anemia, perdarahan akut, dll"
                 rows="3"
-                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
               />
             </div>
 
@@ -428,12 +435,13 @@ const handleSubmit = async () => {
                 <label
                   class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5"
                 >
-                  Pernah Hamil
+                  Riwayat Hamil
                 </label>
                 <input
                   v-model="formData.pernahHamil"
                   type="text"
-                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                  placeholder="Hamil keberapa / '-'"
+                  class="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 placeholder:text-gray-300"
                 />
               </div>
               <div>
