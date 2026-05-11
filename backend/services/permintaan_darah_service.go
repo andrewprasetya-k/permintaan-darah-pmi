@@ -292,14 +292,7 @@ func (s *permintaanDarahService) GenerateExportXLSX(filters *dto.PermintaanDarah
 		if name, ok := rsNames[item.PDRsID]; ok {
 			rsName = name
 		}
-
-		if len(item.Details) == 0 {
-			rows = append(rows, buildBlankoExportRow(item, models.DetailPermintaanDarah{}, rsName))
-			continue
-		}
-		for _, detail := range item.Details {
-			rows = append(rows, buildBlankoExportRow(item, detail, rsName))
-		}
+		rows = append(rows, buildBlankoExportRow(item, rsName))
 	}
 
 	content, err := buildSimpleXLSX(rows)
@@ -307,7 +300,7 @@ func (s *permintaanDarahService) GenerateExportXLSX(filters *dto.PermintaanDarah
 		return nil, "", err
 	}
 
-	filename := fmt.Sprintf("Export_Permintaan_Darah_%s.xlsx", time.Now().Format("20060102_150405"))
+	filename := fmt.Sprintf("permintaan-darah-%s-%s.xlsx", exportDatePart(filters.StartDate), exportDatePart(filters.EndDate))
 	return content, filename, nil
 }
 
@@ -695,7 +688,14 @@ func blankoExportHeaders() []string {
 	}
 }
 
-func buildBlankoExportRow(data models.PermintaanDarah, detail models.DetailPermintaanDarah, rsName string) []string {
+func exportDatePart(value *time.Time) string {
+	if value == nil || value.IsZero() {
+		return "all"
+	}
+	return value.Format("2006-01-02")
+}
+
+func buildBlankoExportRow(data models.PermintaanDarah, rsName string) []string {
 	blood := "-"
 	if data.PDGolDarah != nil {
 		blood = string(*data.PDGolDarah)
@@ -703,17 +703,19 @@ func buildBlankoExportRow(data models.PermintaanDarah, detail models.DetailPermi
 			blood += string(*data.PDRhesus)
 		}
 	}
-	if detail.DPDGolonganDarah != "" {
-		blood = fmt.Sprintf("%s%s", detail.DPDGolonganDarah, detail.DPDRhesus)
-	}
 
-	jumlahKantong := ""
-	jenisDarah := ""
-	if detail.DPDJmlKantong > 0 {
-		jumlahKantong = fmt.Sprintf("%d kantong", detail.DPDJmlKantong)
-	}
-	if strings.TrimSpace(detail.KomponenDarah.KomNama) != "" {
-		jenisDarah = detail.KomponenDarah.KomNama
+	jumlahKantong := make([]string, 0, len(data.Details))
+	jenisDarah := make([]string, 0, len(data.Details))
+	for _, detail := range data.Details {
+		if detail.DPDGolonganDarah != "" && blood == "-" {
+			blood = fmt.Sprintf("%s%s", detail.DPDGolonganDarah, detail.DPDRhesus)
+		}
+		if detail.DPDJmlKantong > 0 {
+			jumlahKantong = append(jumlahKantong, fmt.Sprintf("%d kantong", detail.DPDJmlKantong))
+		}
+		if strings.TrimSpace(detail.KomponenDarah.KomNama) != "" {
+			jenisDarah = append(jenisDarah, detail.KomponenDarah.KomNama)
+		}
 	}
 
 	return []string{
@@ -732,8 +734,8 @@ func buildBlankoExportRow(data models.PermintaanDarah, detail models.DetailPermi
 		blood,
 		hemoglobinLabel(data.PDHemoglobin),
 		formatIndonesianDateTime(data.PDTglPermintaan),
-		jumlahKantong,
-		jenisDarah,
+		strings.Join(jumlahKantong, ", "),
+		strings.Join(jenisDarah, ", "),
 	}
 }
 
