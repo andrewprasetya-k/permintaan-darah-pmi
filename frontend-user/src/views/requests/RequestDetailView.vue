@@ -127,6 +127,16 @@ onBeforeUnmount(clearActions)
 
 <template>
   <section>
+    <div class="mb-5">
+      <RouterLink
+        to="/requests"
+        class="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
+      >
+        <Undo2 :size="16" />
+        Kembali ke Daftar Permintaan
+      </RouterLink>
+    </div>
+
     <div v-if="requestsStore.isLoading && !request" :class="ui.emptyState">
       <div>
         <h2 :class="ui.emptyTitle">Memuat detail</h2>
