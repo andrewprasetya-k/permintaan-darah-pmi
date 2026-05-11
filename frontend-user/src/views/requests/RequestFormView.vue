@@ -67,7 +67,7 @@ const form = reactive<FormState>({
   tanggalLahir: '',
   jenisKelamin: '',
   golonganDarah: '',
-  rhesusDarah: '',
+  rhesusDarah: '+',
   hemoglobin: '',
   ruangBagianKelas: '',
   pernahTransfusi: false,
@@ -335,9 +335,8 @@ watch(requestId, load)
               <div :class="ui.formField">
                 <label :class="ui.formLabel" for="rhesusDarah">Rhesus</label>
                 <select id="rhesusDarah" v-model="form.rhesusDarah" :class="ui.formControl">
-                  <option value="">-</option>
-                  <option value="+">+</option>
                   <option value="-">-</option>
+                  <option value="+">+</option>
                 </select>
               </div>
             </div>
