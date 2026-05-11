@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import logo from '@/assets/Pmi.png'
-import { LogIn, AlertCircle } from '@lucide/vue'
+import { LogIn, AlertCircle, Eye, EyeOff } from '@lucide/vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
