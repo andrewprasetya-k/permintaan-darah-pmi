@@ -130,7 +130,7 @@ onBeforeUnmount(clearActions)
     <div class="mb-5">
       <RouterLink
         to="/requests"
-        class="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
+        class="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 bg-gray-100 rounded-lg px-3 py-1.5 hover:bg-gray-200"
       >
         <Undo2 :size="16" />
         Kembali ke Daftar Permintaan
