@@ -94,14 +94,16 @@ func RegisterAPIRoutes(
 	permintaan.Use(middleware.AdminOrRumahSakit())
 	permintaan.POST("", permintaanController.Create)
 	permintaan.GET("", permintaanController.GetAll)
+	// Specific routes MUST come before parameterized routes (/:id)
 	permintaan.GET("/export", permintaanController.ExportExcel)
 	permintaan.GET("/my-requests", permintaanController.GetMyRequests)
 	permintaan.PUT("/my-requests/:id", permintaanController.UpdateMyRequest)
 	permintaan.GET("/:id/blanko", permintaanController.DownloadBlanko)
+	permintaan.PUT("/update/:id", permintaanController.UpdateStatus)
+	// Parameterized routes (/:id) MUST come last
 	permintaan.GET("/:id", permintaanController.GetByID)
 	permintaan.PUT("/:id", permintaanController.Update)
 	permintaan.DELETE("/:id", permintaanController.Delete)
-	permintaan.PUT("/update/:id", permintaanController.UpdateStatus)
 
 	filter := protected.Group("/filter")
 	filter.Use(middleware.AdminOnly())
