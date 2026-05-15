@@ -126,10 +126,6 @@ onMounted(async () => {
         class="mt-auto flex flex-col gap-3 border-t border-gray-100 px-3 pt-4 text-xs text-gray-600"
       >
         <div class="flex items-center gap-2">
-          <Activity :size="16" />
-          <span class="font-medium">Koneksi portal</span>
-        </div>
-        <div class="flex items-center gap-2">
           <span
             class="h-2.5 w-2.5 rounded-full"
             :class="{
