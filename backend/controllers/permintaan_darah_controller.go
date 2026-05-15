@@ -101,6 +101,14 @@ func (ctl *PermintaanDarahController) DownloadBlanko(c *gin.Context) {
 
 func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 	filters := parsePermintaanDarahFilters(c)
+	userID, _, userRole := utils.ExtractUserFromJWT(c)
+	if userRole == "rumah_sakit" {
+		if userID == nil || *userID == "" {
+			utils.SendError(c, http.StatusUnauthorized, "User ID tidak valid dalam token")
+			return
+		}
+		filters.RsID = userID
+	}
 
 	limit, offset := utils.ParsePagination(c)
 	resp, total, err := ctl.service.GetAll(filters, limit, offset)
@@ -113,6 +121,15 @@ func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 
 func (ctl *PermintaanDarahController) ExportExcel(c *gin.Context) {
 	filters := parsePermintaanDarahFilters(c)
+	userID, _, userRole := utils.ExtractUserFromJWT(c)
+	if userRole == "rumah_sakit" {
+		if userID == nil || *userID == "" {
+			utils.SendError(c, http.StatusUnauthorized, "User ID tidak valid dalam token")
+			return
+		}
+		filters.RsID = userID
+	}
+
 	content, filename, err := ctl.service.GenerateExportXLSX(filters)
 	if err != nil {
 		utils.HandleError(c, err)
