@@ -20,14 +20,14 @@ func (e *AppError) Error() string {
 
 // Custom errors
 var (
-	ErrUnauthorized      = &AppError{Code: http.StatusUnauthorized, Message: "Unauthorized"}
-	ErrForbidden         = &AppError{Code: http.StatusForbidden, Message: "Forbidden"}
-	ErrNotFound          = &AppError{Code: http.StatusNotFound, Message: "Data not found"}
-	ErrBadRequest        = &AppError{Code: http.StatusBadRequest, Message: "Bad request"}
-	ErrConflict          = &AppError{Code: http.StatusConflict, Message: "Data already exists"}
-	ErrUnprocessable     = &AppError{Code: http.StatusUnprocessableEntity, Message: "Invalid input"}
-	ErrInternalServer    = &AppError{Code: http.StatusInternalServerError, Message: "Internal server error"}
-	ErrInvalidCredentials = &AppError{Code: http.StatusUnauthorized, Message: "Invalid credentials"}
+	ErrUnauthorized      = &AppError{Code: http.StatusUnauthorized, Message: "Tidak Terautentikasi"}
+	ErrForbidden         = &AppError{Code: http.StatusForbidden, Message: "Akses Ditolak"}
+	ErrNotFound          = &AppError{Code: http.StatusNotFound, Message: "Data tidak ditemukan"}
+	ErrBadRequest        = &AppError{Code: http.StatusBadRequest, Message: "Permintaan tidak valid"}
+	ErrConflict          = &AppError{Code: http.StatusConflict, Message: "Data sudah ada"}
+	ErrUnprocessable     = &AppError{Code: http.StatusUnprocessableEntity, Message: "Input tidak valid"}
+	ErrInternalServer    = &AppError{Code: http.StatusInternalServerError, Message: "Error server internal"}
+	ErrInvalidCredentials = &AppError{Code: http.StatusUnauthorized, Message: "Kredensial tidak valid"}
 )
 
 func NewAppError(code int, message string, details ...string) *AppError {
@@ -62,7 +62,7 @@ func FormatValidationError(err error) []string {
 		}
 	} else {
 		// For non-validator errors (e.g., JSON unmarshal), provide generic message
-		errMessages = append(errMessages, "Invalid request format")
+		errMessages = append(errMessages, "Format permintaan tidak valid")
 	}
 
 	return errMessages
@@ -74,17 +74,17 @@ func formatFieldError(fe validator.FieldError) string {
 
 	switch fe.Tag() {
 	case "required":
-		return fieldName + " is required"
+		return fieldName + " harus diisi"
 	case "email":
-		return fieldName + " must be a valid email address"
+		return fieldName + " harus berupa alamat email yang valid"
 	case "min":
-		return fieldName + " is too short (minimum: " + fe.Param() + ")"
+		return fieldName + " terlalu pendek (minimum: " + fe.Param() + ")"
 	case "max":
-		return fieldName + " is too long (maximum: " + fe.Param() + ")"
+		return fieldName + " terlalu panjang (maksimum: " + fe.Param() + ")"
 	case "oneof":
-		return fieldName + " must be one of: " + fe.Param()
+		return fieldName + " harus salah satu dari: " + fe.Param()
 	default:
-		return fieldName + " is invalid"
+		return fieldName + " tidak valid"
 	}
 }
 

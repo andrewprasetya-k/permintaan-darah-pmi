@@ -22,13 +22,14 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
     isLoading.value = true
     error.value = null
     try {
-      const nextFilter = (params?.status as RumahSakitFilterStatus | undefined) ?? currentFilter.value
+      const nextFilter =
+        (params?.status as RumahSakitFilterStatus | undefined) ?? currentFilter.value
       currentFilter.value = nextFilter
       const response = await rumahSakitAPI.getAll({ ...params, status: nextFilter })
       hospitals.value = response.data
       pagination.value = response.pagination ?? null
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch hospitals'
+      error.value = err instanceof Error ? err.message : 'Gagal memuat rumah sakit'
     } finally {
       isLoading.value = false
     }
@@ -41,7 +42,7 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
       const response = await rumahSakitAPI.getById(id)
       selectedHospital.value = response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch hospital'
+      error.value = err instanceof Error ? err.message : 'Gagal memuat rumah sakit'
     } finally {
       isLoading.value = false
     }
@@ -55,7 +56,7 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
       hospitals.value.push(response.data)
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create hospital'
+      error.value = err instanceof Error ? err.message : 'Gagal membuat rumah sakit'
       throw err
     } finally {
       isLoading.value = false
@@ -73,7 +74,7 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
       }
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update hospital'
+      error.value = err instanceof Error ? err.message : 'Gagal memperbarui rumah sakit'
       throw err
     } finally {
       isLoading.value = false
@@ -87,7 +88,7 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
       await rumahSakitAPI.delete(id)
       hospitals.value = hospitals.value.filter((h) => h.rumahSakitId !== id)
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to delete hospital'
+      error.value = err instanceof Error ? err.message : 'Gagal menghapus rumah sakit'
       throw err
     } finally {
       isLoading.value = false
@@ -100,7 +101,7 @@ export const useRumahSakitStore = defineStore('rumahSakit', () => {
     try {
       await rumahSakitAPI.restore(id)
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to restore hospital'
+      error.value = err instanceof Error ? err.message : 'Gagal restore rumah sakit'
       throw err
     } finally {
       isLoading.value = false

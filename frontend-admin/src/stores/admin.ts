@@ -24,7 +24,7 @@ export const useAdminStore = defineStore('admin', () => {
       admins.value = response.data
       pagination.value = response.pagination ?? null
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch admins'
+      error.value = err instanceof Error ? err.message : 'Gagal memuat admin'
     } finally {
       isLoading.value = false
     }
@@ -37,7 +37,7 @@ export const useAdminStore = defineStore('admin', () => {
       const response = await adminAPI.getById(id)
       selectedAdmin.value = response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch admin'
+      error.value = err instanceof Error ? err.message : 'Gagal memuat admin'
     } finally {
       isLoading.value = false
     }
@@ -51,7 +51,7 @@ export const useAdminStore = defineStore('admin', () => {
       admins.value.push(response.data)
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create admin'
+      error.value = err instanceof Error ? err.message : 'Gagal membuat admin'
       throw err
     } finally {
       isLoading.value = false
@@ -69,7 +69,7 @@ export const useAdminStore = defineStore('admin', () => {
       }
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update admin'
+      error.value = err instanceof Error ? err.message : 'Gagal memperbarui admin'
       throw err
     } finally {
       isLoading.value = false
@@ -83,7 +83,7 @@ export const useAdminStore = defineStore('admin', () => {
       await adminAPI.delete(id)
       await fetchAll({ status: currentFilter.value })
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to delete admin'
+      error.value = err instanceof Error ? err.message : 'Gagal menghapus admin'
       throw err
     } finally {
       isLoading.value = false
@@ -98,7 +98,7 @@ export const useAdminStore = defineStore('admin', () => {
       await fetchAll({ status: currentFilter.value })
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to restore admin'
+      error.value = err instanceof Error ? err.message : 'Gagal memulihkan admin'
       throw err
     } finally {
       isLoading.value = false
@@ -113,7 +113,7 @@ export const useAdminStore = defineStore('admin', () => {
       myProfile.value = response.data
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch profile'
+      error.value = err instanceof Error ? err.message : 'Gagal memuat profil'
       throw err
     } finally {
       isLoading.value = false
@@ -128,7 +128,7 @@ export const useAdminStore = defineStore('admin', () => {
       myProfile.value = response.data
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update profile'
+      error.value = err instanceof Error ? err.message : 'Gagal memperbarui profil'
       throw err
     } finally {
       isLoading.value = false

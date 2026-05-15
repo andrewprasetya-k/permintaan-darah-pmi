@@ -29,7 +29,7 @@ func RateLimiter(rate string) gin.HandlerFunc {
         limiterCtx, err := instance.Get(c.Request.Context(), key)
         if err != nil {
             c.JSON(http.StatusInternalServerError, gin.H{
-                "error": "Internal server error",
+                "error": "Kesalahan server internal",
             })
             c.Abort()
             return
@@ -49,7 +49,7 @@ func RateLimiter(rate string) gin.HandlerFunc {
             c.Header("Retry-After", strconv.FormatInt(retryAfterSeconds, 10))
             c.JSON(http.StatusTooManyRequests, gin.H{
                 "success":           false,
-                "message":           "Rate limit exceeded. Please try again in " + strconv.FormatInt(retryAfterSeconds, 10) + " seconds.",
+                "message":           "Melebihi batas permintaan. Silakan coba lagi dalam " + strconv.FormatInt(retryAfterSeconds, 10) + " detik.",
                 "retryAfterSeconds": retryAfterSeconds,
             })
             c.Abort()

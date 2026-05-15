@@ -37,12 +37,12 @@ func HandleError(c *gin.Context, err error) {
 
 	// Check if it's a GORM error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusNotFound, dto.ErrorResponse("Data not found"))
+		c.JSON(http.StatusNotFound, dto.ErrorResponse("Data tidak ditemukan"))
 		return
 	}
 
 	// Default internal server error
-	c.JSON(http.StatusInternalServerError, dto.ErrorResponse("Internal server error", err.Error()))
+	c.JSON(http.StatusInternalServerError, dto.ErrorResponse("Error server internal", err.Error()))
 }
 
 // SendSuccess sends a success response
@@ -63,7 +63,7 @@ func SendError(c *gin.Context, statusCode int, message string, errors ...string)
 // SendValidationError sends a validation error response with formatted messages
 func SendValidationError(c *gin.Context, err error) {
 	formattedErrors := FormatValidationError(err)
-	c.JSON(http.StatusBadRequest, dto.ErrorResponse("Invalid input", formattedErrors...))
+	c.JSON(http.StatusBadRequest, dto.ErrorResponse("Input tidak valid", formattedErrors...))
 }
 
 // ExtractUserFromJWT extracts user info from context set by JWT middleware

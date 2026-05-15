@@ -18,7 +18,7 @@ export const useKomponenStore = defineStore('komponen', () => {
       komponens.value = response.data
       pagination.value = response.pagination ?? null
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch components'
+      error.value = err instanceof Error ? err.message : 'Gagal memuat komponen'
     } finally {
       isLoading.value = false
     }
@@ -31,7 +31,7 @@ export const useKomponenStore = defineStore('komponen', () => {
       const response = await komponenAPI.getById(id)
       selectedKomponen.value = response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch component'
+      error.value = err instanceof Error ? err.message : 'Gagal memuat komponen'
     } finally {
       isLoading.value = false
     }
@@ -45,7 +45,7 @@ export const useKomponenStore = defineStore('komponen', () => {
       komponens.value.push(response.data)
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create component'
+      error.value = err instanceof Error ? err.message : 'Gagal membuat komponen'
       throw err
     } finally {
       isLoading.value = false
@@ -63,7 +63,7 @@ export const useKomponenStore = defineStore('komponen', () => {
       }
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update component'
+      error.value = err instanceof Error ? err.message : 'Gagal memperbarui komponen'
       throw err
     } finally {
       isLoading.value = false
@@ -77,7 +77,7 @@ export const useKomponenStore = defineStore('komponen', () => {
       await komponenAPI.delete(id)
       komponens.value = komponens.value.filter((k) => k.komponenId !== id)
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to delete component'
+      error.value = err instanceof Error ? err.message : 'Gagal menghapus komponen'
       throw err
     } finally {
       isLoading.value = false
@@ -95,7 +95,7 @@ export const useKomponenStore = defineStore('komponen', () => {
       }
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to activate component'
+      error.value = err instanceof Error ? err.message : 'Gagal mengaktifkan komponen'
       throw err
     } finally {
       isLoading.value = false
@@ -113,7 +113,7 @@ export const useKomponenStore = defineStore('komponen', () => {
       }
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to deactivate component'
+      error.value = err instanceof Error ? err.message : 'Gagal menonaktifkan komponen'
       throw err
     } finally {
       isLoading.value = false

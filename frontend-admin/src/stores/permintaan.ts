@@ -46,7 +46,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
       requests.value = response.data
       pagination.value = response.pagination ?? null
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch requests'
+      error.value = err instanceof Error ? err.message : 'Gagal memuat permintaan'
     } finally {
       isLoading.value = false
     }
@@ -59,7 +59,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
       const response = await permintaanAPI.getById(id)
       selectedRequest.value = response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch request'
+      error.value = err instanceof Error ? err.message : 'Gagal memuat permintaan'
     } finally {
       isLoading.value = false
     }
@@ -73,7 +73,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
       requests.value.push(response.data)
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create request'
+      error.value = err instanceof Error ? err.message : 'Gagal membuat permintaan'
       throw err
     } finally {
       isLoading.value = false
@@ -91,7 +91,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
       }
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update request'
+      error.value = err instanceof Error ? err.message : 'Gagal memperbarui permintaan'
       throw err
     } finally {
       isLoading.value = false
@@ -109,7 +109,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
       }
       return response.data
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update status'
+      error.value = err instanceof Error ? err.message : 'Gagal memperbarui status'
       throw err
     } finally {
       isLoading.value = false
@@ -123,7 +123,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
       await permintaanAPI.delete(id)
       requests.value = requests.value.filter((r) => r.permintaanDarahId !== id)
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to delete request'
+      error.value = err instanceof Error ? err.message : 'Gagal menghapus permintaan'
       throw err
     } finally {
       isLoading.value = false
@@ -134,7 +134,7 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     try {
       return await permintaanAPI.exportExcel(params || lastParams.value)
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to export requests'
+      error.value = err instanceof Error ? err.message : 'Gagal mengekspor permintaan'
       throw err
     }
   }

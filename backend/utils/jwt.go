@@ -22,7 +22,7 @@ func GenerateJWT(userID, username, role string) (string, error) {
 
 	secretKey := os.Getenv("JWT_SECRET")
 	if secretKey == "" {
-		return "", errors.New("server configuration error")
+		return "", errors.New("error konfigurasi server")
 	}
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
@@ -42,12 +42,12 @@ func ValidateJWT(tokenString string) (*dto.TokenPayload, error) {
 	})
 
 	if err != nil || !token.Valid {
-		return nil, errors.New("invalid token")
+		return nil, errors.New("token tidak valid")
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, errors.New("invalid token claims")
+		return nil, errors.New("klaim token tidak valid")
 	}
 
 	payload := &dto.TokenPayload{
@@ -78,7 +78,7 @@ func JWTMiddleware() gin.HandlerFunc {
 			if len(parts) == 2 && parts[0] == "Bearer" {
 				tokenString = parts[1]
 			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "Format token tidak valid"})
 				c.Abort()
 				return
 			}
@@ -87,7 +87,7 @@ func JWTMiddleware() gin.HandlerFunc {
 			// WebSocket upgrade doesn't allow custom headers per HTTP spec
 			tokenString = c.Query("token")
 			if tokenString == "" {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "Tidak Terautentikasi"})
 				c.Abort()
 				return
 			}
@@ -101,14 +101,14 @@ func JWTMiddleware() gin.HandlerFunc {
 		})
 
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token tidak valid"})
 			c.Abort()
 			return
 		}
 
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Klaim token tidak valid"})
 			c.Abort()
 			return
 		}
