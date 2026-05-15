@@ -58,7 +58,6 @@ export const useWebsocketStore = defineStore('websocket', () => {
       isConnected.value = true
       logsStore.setRealtimeConnected(true)
       error.value = null
-      console.log('WebSocket connected')
     }
 
     socket.onmessage = (event) => {
@@ -117,7 +116,6 @@ export const useWebsocketStore = defineStore('websocket', () => {
       isConnected.value = false
       logsStore.setRealtimeConnected(false)
       socket = null
-      console.log('WebSocket disconnected')
       scheduleReconnect()
     }
   }

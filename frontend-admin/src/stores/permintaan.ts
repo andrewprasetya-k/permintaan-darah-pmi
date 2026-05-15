@@ -34,8 +34,10 @@ export const usePermintaanStore = defineStore('permintaan', () => {
   const lastParams = ref<FetchPermintaanParams | undefined>()
   const realtimeHighlights = ref<Record<string, RealtimeHighlight>>({})
   const highlightTimers = new Map<string, ReturnType<typeof setTimeout>>()
+  let fetchSequence = 0
 
   const fetchAll = async (params?: FetchPermintaanParams) => {
+    const sequence = ++fetchSequence
     if (params) {
       lastParams.value = params
     }
@@ -43,12 +45,20 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     error.value = null
     try {
       const response = await permintaanAPI.getAll(params || lastParams.value)
+      if (sequence !== fetchSequence) {
+        return
+      }
       requests.value = response.data
       pagination.value = response.pagination ?? null
     } catch (err) {
+      if (sequence !== fetchSequence) {
+        return
+      }
       error.value = err instanceof Error ? err.message : 'Gagal memuat permintaan'
     } finally {
-      isLoading.value = false
+      if (sequence === fetchSequence) {
+        isLoading.value = false
+      }
     }
   }
 
