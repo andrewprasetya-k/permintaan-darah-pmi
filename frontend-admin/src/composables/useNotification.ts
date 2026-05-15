@@ -5,8 +5,40 @@ const hasPermission = ref(
 )
 const isSupported = ref(typeof window !== 'undefined' && 'Notification' in window)
 let audioContext: AudioContext | null = null
+let isAudioUnlockBound = false
+
+const getAudioContext = () => {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+  }
+
+  return audioContext
+}
+
+const unlockAudio = () => {
+  const ctx = getAudioContext()
+  if (ctx?.state === 'suspended') {
+    void ctx.resume()
+  }
+}
+
+const bindAudioUnlock = () => {
+  if (isAudioUnlockBound || typeof window === 'undefined') {
+    return
+  }
+
+  isAudioUnlockBound = true
+  window.addEventListener('pointerdown', unlockAudio, { once: true })
+  window.addEventListener('keydown', unlockAudio, { once: true })
+}
 
 export const useNotification = () => {
+  bindAudioUnlock()
+
   const requestPermission = async () => {
     if (!isSupported.value) {
       console.warn('Browser notifications not supported')
@@ -30,28 +62,35 @@ export const useNotification = () => {
 
   const playSound = () => {
     try {
-      // Create simple beep using Web Audio API
-      if (!audioContext) {
-        audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const ctx = getAudioContext()
+      if (!ctx) {
+        return
       }
 
-      const ctx = audioContext
-      const now = ctx.currentTime
+      const beep = () => {
+        const now = ctx.currentTime
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
 
-      // Create oscillator
-      const osc = ctx.createOscillator()
-      const gain = ctx.createGain()
+        osc.connect(gain)
+        gain.connect(ctx.destination)
 
-      osc.connect(gain)
-      gain.connect(ctx.destination)
+        osc.frequency.value = 800
+        gain.gain.setValueAtTime(0.3, now)
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3)
 
-      // Short beep: 800Hz for 300ms
-      osc.frequency.value = 800
-      gain.gain.setValueAtTime(0.3, now)
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3)
+        osc.start(now)
+        osc.stop(now + 0.3)
+      }
 
-      osc.start(now)
-      osc.stop(now + 0.3)
+      if (ctx.state === 'suspended') {
+        void ctx.resume().then(beep).catch((err) => {
+          console.warn('Could not resume notification sound:', err)
+        })
+        return
+      }
+
+      beep()
     } catch (err) {
       console.warn('Could not play notification sound:', err)
     }
