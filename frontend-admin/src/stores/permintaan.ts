@@ -16,6 +16,15 @@ interface FetchPermintaanParams {
   endDate?: string
 }
 
+type RealtimeHighlightType = 'new' | 'status' | 'updated'
+
+interface RealtimeHighlight {
+  type: RealtimeHighlightType
+  highlightedUntil: number
+}
+
+const HIGHLIGHT_DURATION_MS = 10000
+
 export const usePermintaanStore = defineStore('permintaan', () => {
   const requests = ref<PermintaanDarah[]>([])
   const selectedRequest = ref<PermintaanDarah | null>(null)
@@ -23,6 +32,8 @@ export const usePermintaanStore = defineStore('permintaan', () => {
   const isLoading = ref(false)
   const error = ref<string | null>(null)
   const lastParams = ref<FetchPermintaanParams | undefined>()
+  const realtimeHighlights = ref<Record<string, RealtimeHighlight>>({})
+  const highlightTimers = new Map<string, ReturnType<typeof setTimeout>>()
 
   const fetchAll = async (params?: FetchPermintaanParams) => {
     if (params) {
@@ -128,12 +139,49 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     }
   }
 
+  const markRealtimeHighlight = (id: string, type: RealtimeHighlightType) => {
+    if (highlightTimers.has(id)) {
+      clearTimeout(highlightTimers.get(id))
+    }
+
+    realtimeHighlights.value = {
+      ...realtimeHighlights.value,
+      [id]: {
+        type,
+        highlightedUntil: Date.now() + HIGHLIGHT_DURATION_MS,
+      },
+    }
+
+    highlightTimers.set(
+      id,
+      setTimeout(() => {
+        const next = { ...realtimeHighlights.value }
+        delete next[id]
+        realtimeHighlights.value = next
+        highlightTimers.delete(id)
+      }, HIGHLIGHT_DURATION_MS),
+    )
+  }
+
+  const clearRealtimeHighlight = (id: string) => {
+    if (highlightTimers.has(id)) {
+      clearTimeout(highlightTimers.get(id))
+      highlightTimers.delete(id)
+    }
+    const next = { ...realtimeHighlights.value }
+    delete next[id]
+    realtimeHighlights.value = next
+  }
+
+  const getRealtimeHighlight = (id: string) => realtimeHighlights.value[id]
+
   return {
     requests,
     selectedRequest,
     pagination,
     isLoading,
     error,
+    realtimeHighlights,
     fetchAll,
     fetchById,
     create,
@@ -141,5 +189,8 @@ export const usePermintaanStore = defineStore('permintaan', () => {
     updateStatus,
     deleteRequest,
     exportExcel,
+    markRealtimeHighlight,
+    clearRealtimeHighlight,
+    getRealtimeHighlight,
   }
 })

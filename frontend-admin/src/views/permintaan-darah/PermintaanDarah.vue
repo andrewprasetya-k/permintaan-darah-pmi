@@ -98,6 +98,33 @@ const totalPages = computed(() =>
 
 const paginatedRequests = computed(() => permintaanStore.requests)
 
+const realtimeHighlightMeta = (request: PermintaanDarah) => {
+  const highlight = permintaanStore.realtimeHighlights?.[request.permintaanDarahId]
+  if (!highlight) return null
+
+  if (highlight.type === 'new') {
+    return {
+      label: '',
+      rowClass: 'bg-emerald-50/70 ring-1 ring-inset ring-emerald-200',
+      badgeClass: 'bg-emerald-100 text-emerald-700',
+    }
+  }
+
+  if (highlight.type === 'status') {
+    return {
+      label: '',
+      rowClass: 'bg-blue-50/70 ring-1 ring-inset ring-blue-200',
+      badgeClass: 'bg-blue-100 text-blue-700',
+    }
+  }
+
+  return {
+    label: '',
+    rowClass: 'bg-amber-50/70 ring-1 ring-inset ring-amber-200',
+    badgeClass: 'bg-amber-100 text-amber-700',
+  }
+}
+
 const pageRange = computed(() => {
   const startIndex = (currentPage.value - 1) * itemsPerPage
   const total = permintaanStore.pagination?.total ?? permintaanStore.requests.length
@@ -144,6 +171,7 @@ const openEditDrawer = (request: PermintaanDarah) => {
 }
 
 const openDetailDrawer = async (request: PermintaanDarah) => {
+  permintaanStore.clearRealtimeHighlight(request.permintaanDarahId)
   await permintaanStore.fetchById(request.permintaanDarahId)
   showDetailDrawer.value = true
 }
@@ -499,10 +527,20 @@ const handleDetailUpdated = async () => {
               <tr
                 v-for="item in paginatedRequests"
                 :key="item.permintaanDarahId"
-                class="transition-colors hover:bg-gray-50"
+                class="transition-all duration-300 hover:bg-gray-50"
+                :class="realtimeHighlightMeta(item)?.rowClass"
               >
                 <td class="px-5 py-4 font-medium text-gray-800">
-                  {{ item.permintaanDarahId }}
+                  <div class="flex items-center gap-2">
+                    <span>{{ item.permintaanDarahId }}</span>
+                    <span
+                      v-if="realtimeHighlightMeta(item)"
+                      class="rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide"
+                      :class="realtimeHighlightMeta(item)?.badgeClass"
+                    >
+                      {{ realtimeHighlightMeta(item)?.label }}
+                    </span>
+                  </div>
                 </td>
                 <td class="px-5 py-4 text-gray-800">{{ item.namaPasien }}</td>
                 <td class="px-5 py-4 text-gray-500">{{ formatGender(item.jenisKelamin) }}</td>

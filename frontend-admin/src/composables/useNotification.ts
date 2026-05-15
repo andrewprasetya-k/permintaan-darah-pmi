@@ -1,10 +1,12 @@
 import { ref } from 'vue'
 
-export const useNotification = () => {
-  const hasPermission = ref(false)
-  const isSupported = ref(typeof window !== 'undefined' && 'Notification' in window)
-  let audioContext: AudioContext | null = null
+const hasPermission = ref(
+  typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted',
+)
+const isSupported = ref(typeof window !== 'undefined' && 'Notification' in window)
+let audioContext: AudioContext | null = null
 
+export const useNotification = () => {
   const requestPermission = async () => {
     if (!isSupported.value) {
       console.warn('Browser notifications not supported')
@@ -22,6 +24,7 @@ export const useNotification = () => {
       return permission === 'granted'
     }
 
+    hasPermission.value = false
     return false
   }
 
@@ -71,8 +74,6 @@ export const useNotification = () => {
         window.focus()
         notification.close()
       }
-
-      playSound()
     } catch (err) {
       console.warn('Could not show notification:', err)
     }
@@ -85,27 +86,39 @@ export const useNotification = () => {
     rumahSakit?: string
   }) => {
     const title = 'Permintaan Darah Baru'
+    const body = `${data.namaPasien} (${data.golonganDarah}${data.rhesus})${data.rumahSakit ? ` - ${data.rumahSakit}` : ''}`
+
     const options: NotificationOptions = {
-      body: `${data.namaPasien} (${data.golonganDarah}${data.rhesus})${data.rumahSakit ? ` - ${data.rumahSakit}` : ''}`,
+      body,
       tag: 'permintaan-baru',
       requireInteraction: false,
     }
 
+    playSound()
     showNotification(title, options)
   }
 
   const notifyPermintaanUpdate = (data: {
     namaPasien: string
-    statusLama: string
-    statusBaru: string
+    statusLama?: string
+    statusBaru?: string
   }) => {
-    const title = '🔄 Update Permintaan Darah'
+    const title = 'Update Permintaan Darah'
+    const statusText =
+      data.statusLama && data.statusBaru
+        ? `${data.statusLama} -> ${data.statusBaru}`
+        : data.statusBaru
+          ? `Status: ${data.statusBaru}`
+          : 'Data permintaan diperbarui'
+    const body = `${data.namaPasien}: ${statusText}`
+
     const options: NotificationOptions = {
-      body: `${data.namaPasien}: ${data.statusLama} → ${data.statusBaru}`,
+      body,
       tag: 'permintaan-update',
       requireInteraction: false,
     }
 
+    playSound()
     showNotification(title, options)
   }
 

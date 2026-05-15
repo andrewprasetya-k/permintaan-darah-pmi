@@ -17,15 +17,36 @@ export const useWebsocketStore = defineStore('websocket', () => {
   const isConnected = ref(false)
   const error = ref<string | null>(null)
   let socket: WebSocket | null = null
+  let reconnectTimer: ReturnType<typeof setTimeout> | null = null
+  let shouldReconnect = false
 
-  const { notifyNewPermintaan } = useNotification()
+  const { notifyNewPermintaan, notifyPermintaanUpdate } = useNotification()
   const permintaanStore = usePermintaanStore()
   const logsStore = useLogsStore()
   const dashboardStore = useDashboardStore()
 
+  const clearReconnectTimer = () => {
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer)
+      reconnectTimer = null
+    }
+  }
+
+  const scheduleReconnect = () => {
+    if (!shouldReconnect || reconnectTimer) return
+
+    reconnectTimer = setTimeout(() => {
+      reconnectTimer = null
+      connect()
+    }, 4000)
+  }
+
   const connect = () => {
     const token = localStorage.getItem('authToken')
     if (!token || socket) return
+
+    shouldReconnect = true
+    clearReconnectTimer()
 
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
     const wsUrl = toWebSocketUrl(apiBaseUrl)
@@ -49,6 +70,7 @@ export const useWebsocketStore = defineStore('websocket', () => {
           const pd = message.data as PermintaanDarah
 
           if (message.type === 'new_permintaan' && message.action === 'CREATE') {
+            permintaanStore.markRealtimeHighlight(pd.permintaanDarahId, 'new')
             notifyNewPermintaan({
               namaPasien: pd.namaPasien,
               golonganDarah: pd.golonganDarah || 'N/A',
@@ -58,8 +80,17 @@ export const useWebsocketStore = defineStore('websocket', () => {
             // Refresh counts on dashboard if we are there
             void dashboardStore.fetchStatusSummary('all')
           } else if (message.type === 'status_change' && message.action === 'UPDATE') {
-            // Optional: notify status update
-            // notifyPermintaanUpdate(...)
+            permintaanStore.markRealtimeHighlight(pd.permintaanDarahId, 'status')
+            notifyPermintaanUpdate({
+              namaPasien: pd.namaPasien,
+              statusBaru: pd.status,
+            })
+            void dashboardStore.fetchStatusSummary('all')
+          } else if (message.type === 'update_permintaan' && message.action === 'UPDATE') {
+            permintaanStore.markRealtimeHighlight(pd.permintaanDarahId, 'updated')
+            notifyPermintaanUpdate({
+              namaPasien: pd.namaPasien,
+            })
             void dashboardStore.fetchStatusSummary('all')
           }
 
@@ -87,10 +118,13 @@ export const useWebsocketStore = defineStore('websocket', () => {
       logsStore.setRealtimeConnected(false)
       socket = null
       console.log('WebSocket disconnected')
+      scheduleReconnect()
     }
   }
 
   const disconnect = () => {
+    shouldReconnect = false
+    clearReconnectTimer()
     if (socket) {
       socket.close()
       socket = null

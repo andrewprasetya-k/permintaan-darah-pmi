@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { Shield, Menu, User } from '@lucide/vue'
+import { Menu, User } from '@lucide/vue'
 
 defineProps<{
   title?: string
@@ -15,14 +15,6 @@ const userName = computed(() => authStore.user?.username || 'Admin')
 const userRole = computed(() =>
   authStore.user?.role === 'superadmin' ? 'Superadmin' : 'Administrator',
 )
-const isSuperAdmin = computed(() => authStore.user?.role === 'superadmin')
-
-const getInitials = (name: string) => {
-  if (!name) return 'AD'
-  const parts = name.trim().split(' ')
-  if (parts.length === 1) return parts?.[0]?.substring(0, 2).toUpperCase()
-  return ((parts?.[0]?.[0] ?? '') + (parts?.[parts.length - 1]?.[0] ?? '')).toUpperCase()
-}
 </script>
 
 <template>
