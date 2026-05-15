@@ -32,7 +32,7 @@ var upgrader = websocket.Upgrader{
 func (ctrl *WebSocketController) Connect(c *gin.Context) {
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to upgrade connection"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Gagal meningkatkan koneksi"})
 		return
 	}
 

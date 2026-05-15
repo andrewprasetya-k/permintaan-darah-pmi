@@ -33,7 +33,7 @@ func (ctl *PermintaanDarahController) Create(c *gin.Context) {
 	// If rumah sakit, auto-set rs_id from token
 	if userRole == "rumah_sakit" {
 		if userID == nil || *userID == "" {
-			utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+			utils.SendError(c, http.StatusUnauthorized, "User ID tidak valid dalam token")
 			return
 		}
 		req.PDRsID = *userID
@@ -44,7 +44,7 @@ func (ctl *PermintaanDarahController) Create(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusCreated, "Created successfully", resp)
+	utils.SendSuccess(c, http.StatusCreated, "Berhasil dibuat", resp)
 }
 
 func (ctl *PermintaanDarahController) GetByID(c *gin.Context) {
@@ -57,16 +57,16 @@ func (ctl *PermintaanDarahController) GetByID(c *gin.Context) {
 	userID, _, userRole := utils.ExtractUserFromJWT(c)
 	if userRole == "rumah_sakit" {
 		if userID == nil || *userID == "" {
-			utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+			utils.SendError(c, http.StatusUnauthorized, "User ID tidak valid dalam token")
 			return
 		}
 		if resp.PDRsID != *userID {
-			utils.SendError(c, http.StatusForbidden, "Only owner rumah sakit can access this request")
+			utils.SendError(c, http.StatusForbidden, "Hanya pemilik rumah sakit yang dapat mengakses permintaan ini")
 			return
 		}
 	}
 
-	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data berhasil diambil", resp)
 }
 
 func (ctl *PermintaanDarahController) DownloadBlanko(c *gin.Context) {
@@ -79,11 +79,11 @@ func (ctl *PermintaanDarahController) DownloadBlanko(c *gin.Context) {
 	userID, _, userRole := utils.ExtractUserFromJWT(c)
 	if userRole == "rumah_sakit" {
 		if userID == nil || *userID == "" {
-			utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+			utils.SendError(c, http.StatusUnauthorized, "User ID tidak valid dalam token")
 			return
 		}
 		if resp.PDRsID != *userID {
-			utils.SendError(c, http.StatusForbidden, "Only owner rumah sakit can download this request blanko")
+			utils.SendError(c, http.StatusForbidden, "Hanya pemilik rumah sakit yang dapat mengunduh blanko permintaan ini")
 			return
 		}
 	}
@@ -108,7 +108,7 @@ func (ctl *PermintaanDarahController) GetAll(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Data berhasil diambil", resp, total, limit, offset)
 }
 
 func (ctl *PermintaanDarahController) ExportExcel(c *gin.Context) {
@@ -171,12 +171,12 @@ func (ctl *PermintaanDarahController) GetMyRequests(c *gin.Context) {
 	userID, _, userRole := utils.ExtractUserFromJWT(c)
 
 	if userRole != "rumah_sakit" {
-		utils.SendError(c, http.StatusForbidden, "Only rumah sakit can access this endpoint")
+		utils.SendError(c, http.StatusForbidden, "Hanya rumah sakit yang dapat mengakses endpoint ini")
 		return
 	}
 
 	if userID == nil || *userID == "" {
-		utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+		utils.SendError(c, http.StatusUnauthorized, "User ID tidak valid dalam token")
 		return
 	}
 
@@ -186,7 +186,7 @@ func (ctl *PermintaanDarahController) GetMyRequests(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Data berhasil diambil", resp, total, limit, offset)
 }
 
 func (ctl *PermintaanDarahController) Update(c *gin.Context) {
@@ -204,7 +204,7 @@ func (ctl *PermintaanDarahController) Update(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data berhasil diperbarui", resp)
 }
 
 func (ctl *PermintaanDarahController) Delete(c *gin.Context) {
@@ -212,7 +212,7 @@ func (ctl *PermintaanDarahController) Delete(c *gin.Context) {
 	userAgent := c.GetHeader("User-Agent")
 
 	if userRole != "admin" && userRole != "superadmin" {
-		utils.SendError(c, http.StatusForbidden, "Only admin can delete permintaan darah")
+		utils.SendError(c, http.StatusForbidden, "Hanya admin yang dapat menghapus permintaan darah")
 		return
 	}
 
@@ -220,7 +220,7 @@ func (ctl *PermintaanDarahController) Delete(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", nil)
+	utils.SendSuccess(c, http.StatusOK, "Operasi berhasil", nil)
 }
 
 func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
@@ -241,7 +241,7 @@ func (ctl *PermintaanDarahController) UpdateStatus(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Status updated successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Status berhasil diperbarui", resp)
 }
 
 func (ctl *PermintaanDarahController) UpdateMyRequest(c *gin.Context) {
@@ -255,12 +255,12 @@ func (ctl *PermintaanDarahController) UpdateMyRequest(c *gin.Context) {
 	userAgent := c.GetHeader("User-Agent")
 
 	if userRole != "rumah_sakit" {
-		utils.SendError(c, http.StatusForbidden, "Only rumah sakit can update their own requests")
+		utils.SendError(c, http.StatusForbidden, "Hanya rumah sakit yang dapat memperbarui permintaan mereka sendiri")
 		return
 	}
 
 	if userID == nil || *userID == "" {
-		utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+		utils.SendError(c, http.StatusUnauthorized, "User ID tidak valid dalam token")
 		return
 	}
 
@@ -269,5 +269,5 @@ func (ctl *PermintaanDarahController) UpdateMyRequest(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Request updated successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Permintaan berhasil diperbarui", resp)
 }

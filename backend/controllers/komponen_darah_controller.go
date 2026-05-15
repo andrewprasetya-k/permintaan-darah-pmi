@@ -32,13 +32,13 @@ func (ctl *KomponenDarahController) Create(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusCreated, "Created successfully", resp)
+	utils.SendSuccess(c, http.StatusCreated, "Berhasil dibuat", resp)
 }
 
 func (ctl *KomponenDarahController) GetByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "invalid id")
+		utils.SendError(c, http.StatusBadRequest, "ID tidak valid")
 		return
 	}
 	resp, err := ctl.service.GetByID(id)
@@ -46,7 +46,7 @@ func (ctl *KomponenDarahController) GetByID(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data berhasil diambil", resp)
 }
 
 func (ctl *KomponenDarahController) GetAll(c *gin.Context) {
@@ -56,13 +56,13 @@ func (ctl *KomponenDarahController) GetAll(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Data berhasil diambil", resp, total, limit, offset)
 }
 
 func (ctl *KomponenDarahController) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "invalid id")
+		utils.SendError(c, http.StatusBadRequest, "ID tidak valid")
 		return
 	}
 	var req dto.UpdateKomponenDarahRequest
@@ -78,13 +78,13 @@ func (ctl *KomponenDarahController) Update(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Updated successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Berhasil diperbarui", resp)
 }
 
 func (ctl *KomponenDarahController) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "invalid id")
+		utils.SendError(c, http.StatusBadRequest, "ID tidak valid")
 		return
 	}
 
@@ -94,13 +94,13 @@ func (ctl *KomponenDarahController) Delete(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "deleted"})
+	c.JSON(http.StatusOK, gin.H{"message": "Berhasil dihapus"})
 }
 
 func (ctl *KomponenDarahController) Activate(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "invalid id")
+		utils.SendError(c, http.StatusBadRequest, "ID tidak valid")
 		return
 	}
 
@@ -111,13 +111,13 @@ func (ctl *KomponenDarahController) Activate(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Komponen activated successfuly", resp)
+	utils.SendSuccess(c, http.StatusOK, "Komponen berhasil diaktifkan", resp)
 }
 
 func (ctl *KomponenDarahController) Deactivate(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "invalid id")
+		utils.SendError(c, http.StatusBadRequest, "ID tidak valid")
 		return
 	}
 
@@ -128,5 +128,5 @@ func (ctl *KomponenDarahController) Deactivate(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Komponen deactivated successfuly", resp)
+	utils.SendSuccess(c, http.StatusOK, "Komponen berhasil dinonaktifkan", resp)
 }

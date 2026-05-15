@@ -23,7 +23,7 @@ func (ctl *DashboardController) StatusSummary(c *gin.Context) {
 
 	if userRole == "rumah_sakit" {
 		if userID == nil || *userID == "" {
-			utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+			utils.SendError(c, http.StatusUnauthorized, "User ID tidak valid dalam token")
 			return
 		}
 		rumahSakitID = *userID
@@ -38,5 +38,5 @@ func (ctl *DashboardController) StatusSummary(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Operation successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Operasi berhasil", resp)
 }

@@ -28,7 +28,7 @@ func (ctl *AuthController) AdminLogin(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Login successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Login berhasil", resp)
 }
 
 func (ctl *AuthController) RumahSakitLogin(c *gin.Context) {
@@ -42,5 +42,5 @@ func (ctl *AuthController) RumahSakitLogin(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Login successful", resp)
+	utils.SendSuccess(c, http.StatusOK, "Login berhasil", resp)
 }

@@ -32,7 +32,7 @@ func (ctl *AdminController) Create(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusCreated, "Admin created successfully", resp)
+	utils.SendSuccess(c, http.StatusCreated, "Admin berhasil dibuat", resp)
 }
 
 func (ctl *AdminController) GetByID(c *gin.Context) {
@@ -41,13 +41,13 @@ func (ctl *AdminController) GetByID(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Admin retrieved successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Admin berhasil diambil", resp)
 }
 
 func (ctl *AdminController) GetAll(c *gin.Context) {
 	status := c.DefaultQuery("status", "active")
 	if status != "active" && status != "deleted" && status != "all" {
-		utils.SendError(c, http.StatusBadRequest, "Invalid status filter")
+		utils.SendError(c, http.StatusBadRequest, "Filter status tidak valid")
 		return
 	}
 
@@ -57,7 +57,7 @@ func (ctl *AdminController) GetAll(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccessWithPagination(c, http.StatusOK, "Admins retrieved successfully", resp, total, limit, offset)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Admin berhasil diambil", resp, total, limit, offset)
 }
 
 func (ctl *AdminController) Update(c *gin.Context) {
@@ -75,7 +75,7 @@ func (ctl *AdminController) Update(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Admin updated successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Admin berhasil diperbarui", resp)
 }
 
 func (ctl *AdminController) Delete(c *gin.Context) {
@@ -86,7 +86,7 @@ func (ctl *AdminController) Delete(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Admin deleted successfully", nil)
+	utils.SendSuccess(c, http.StatusOK, "Admin berhasil dihapus", nil)
 }
 
 func (ctl *AdminController) Restore(c *gin.Context) {
@@ -98,19 +98,19 @@ func (ctl *AdminController) Restore(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Admin restored successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Admin berhasil dipulihkan", resp)
 }
 
 func (ctl *AdminController) GetMe(c *gin.Context) {
 	userID, _, userRole := utils.ExtractUserFromJWT(c)
 
 	if userRole != "admin" && userRole != "superadmin" {
-		utils.SendError(c, http.StatusForbidden, "Only admin can access this endpoint")
+		utils.SendError(c, http.StatusForbidden, "Hanya admin yang dapat mengakses endpoint ini")
 		return
 	}
 
 	if userID == nil || *userID == "" {
-		utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+		utils.SendError(c, http.StatusUnauthorized, "User ID tidak valid dalam token")
 		return
 	}
 
@@ -119,7 +119,7 @@ func (ctl *AdminController) GetMe(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Admin retrieved successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Admin berhasil diambil", resp)
 }
 
 func (ctl *AdminController) UpdateMe(c *gin.Context) {
@@ -133,12 +133,12 @@ func (ctl *AdminController) UpdateMe(c *gin.Context) {
 	userAgent := c.GetHeader("User-Agent")
 
 	if userRole != "admin" && userRole != "superadmin" {
-		utils.SendError(c, http.StatusForbidden, "Only admin can access this endpoint")
+		utils.SendError(c, http.StatusForbidden, "Hanya admin yang dapat mengakses endpoint ini")
 		return
 	}
 
 	if userID == nil || *userID == "" {
-		utils.SendError(c, http.StatusUnauthorized, "Invalid user ID in token")
+		utils.SendError(c, http.StatusUnauthorized, "User ID tidak valid dalam token")
 		return
 	}
 
@@ -147,5 +147,5 @@ func (ctl *AdminController) UpdateMe(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Admin profile updated successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Profil admin berhasil diperbarui", resp)
 }

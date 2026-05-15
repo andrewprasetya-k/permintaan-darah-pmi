@@ -28,7 +28,7 @@ func (ctl *StatusLogController) Create(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusCreated, "Created successfully", resp)
+	utils.SendSuccess(c, http.StatusCreated, "Berhasil dibuat", resp)
 }
 
 func (ctl *StatusLogController) GetByID(c *gin.Context) {
@@ -37,7 +37,7 @@ func (ctl *StatusLogController) GetByID(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccess(c, http.StatusOK, "Data retrieved successfully", resp)
+	utils.SendSuccess(c, http.StatusOK, "Data berhasil diambil", resp)
 }
 
 func (ctl *StatusLogController) GetAll(c *gin.Context) {
@@ -47,5 +47,5 @@ func (ctl *StatusLogController) GetAll(c *gin.Context) {
 		utils.HandleError(c, err)
 		return
 	}
-	utils.SendSuccessWithPagination(c, http.StatusOK, "Data retrieved successfully", resp, total, limit, offset)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Data berhasil diambil", resp, total, limit, offset)
 }

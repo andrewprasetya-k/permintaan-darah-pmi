@@ -26,13 +26,13 @@ func (ctl *SystemAccessLogController) GetAll(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	utils.SendSuccessWithPagination(c, http.StatusOK, "Operation successful", result, count, limit, offset)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Operasi berhasil", result, count, limit, offset)
 }
 
 func (ctl *SystemAccessLogController) GetByID(c *gin.Context) {
 	logID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		utils.SendError(c, http.StatusBadRequest, "invalid log id")
+		utils.SendError(c, http.StatusBadRequest, "ID log tidak valid")
 		return
 	}
 
@@ -47,7 +47,7 @@ func (ctl *SystemAccessLogController) GetByID(c *gin.Context) {
 func (ctl *SystemAccessLogController) GetByUserID(c *gin.Context) {
 	userID := c.Param("userId")
 	if userID == "" {
-		utils.SendError(c, http.StatusBadRequest, "userId is required")
+		utils.SendError(c, http.StatusBadRequest, "userId wajib diisi")
 		return
 	}
 
@@ -59,13 +59,13 @@ func (ctl *SystemAccessLogController) GetByUserID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	utils.SendSuccessWithPagination(c, http.StatusOK, "Operation successful", result, count, limit, offset)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Operasi berhasil", result, count, limit, offset)
 }
 
 func (ctl *SystemAccessLogController) GetByAction(c *gin.Context) {
 	action := c.Param("action")
 	if action == "" {
-		utils.SendError(c, http.StatusBadRequest, "action is required")
+		utils.SendError(c, http.StatusBadRequest, "action wajib diisi")
 		return
 	}
 
@@ -77,13 +77,13 @@ func (ctl *SystemAccessLogController) GetByAction(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	utils.SendSuccessWithPagination(c, http.StatusOK, "Operation successful", result, count, limit, offset)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Operasi berhasil", result, count, limit, offset)
 }
 
 func (ctl *SystemAccessLogController) GetByTargetTable(c *gin.Context) {
 	targetTable := c.Param("table")
 	if targetTable == "" {
-		utils.SendError(c, http.StatusBadRequest, "table is required")
+		utils.SendError(c, http.StatusBadRequest, "table wajib diisi")
 		return
 	}
 
@@ -95,13 +95,13 @@ func (ctl *SystemAccessLogController) GetByTargetTable(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	utils.SendSuccessWithPagination(c, http.StatusOK, "Operation successful", result, count, limit, offset)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Operasi berhasil", result, count, limit, offset)
 }
 
 func (ctl *SystemAccessLogController) GetByTargetID(c *gin.Context) {
 	targetID := c.Param("targetId")
 	if targetID == "" {
-		utils.SendError(c, http.StatusBadRequest, "targetId is required")
+		utils.SendError(c, http.StatusBadRequest, "targetId wajib diisi")
 		return
 	}
 
@@ -113,5 +113,5 @@ func (ctl *SystemAccessLogController) GetByTargetID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	utils.SendSuccessWithPagination(c, http.StatusOK, "Operation successful", result, count, limit, offset)
+	utils.SendSuccessWithPagination(c, http.StatusOK, "Operasi berhasil", result, count, limit, offset)
 }
