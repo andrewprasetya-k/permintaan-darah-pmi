@@ -11,26 +11,26 @@ func ValidatePermintaanDarahInput(hemoglobin *float64, tglLahir time.Time, tglPe
 
 	// Validate hemoglobin
 	if hemoglobin != nil && *hemoglobin <= 0 {
-		return fmt.Errorf("hemoglobin must be greater than 0")
+		return fmt.Errorf("hemoglobin tidak valid")
 	}
 	if hemoglobin != nil && *hemoglobin > 20 {
-		return fmt.Errorf("hemoglobin value is unrealistic (max 20)")
+		return fmt.Errorf("hemoglobin tidak valid")
 	}
 
 	// Validate tanggal lahir - cannot be in future
 	if tglLahir.After(now) {
-		return fmt.Errorf("tanggal lahir cannot be in the future")
+		return fmt.Errorf("tanggal lahir tidak bisa di masa depan")
 	}
 
 	//validate tanggal permintaan - cannot be in the past
 	if tglPermintaan.Before(now) {
-		return fmt.Errorf("tanggal permintaan cannot be in the past")
+		return fmt.Errorf("tanggal permintaan tidak bisa di masa lalu")
 	}
 
 	// Validate age - cannot be more than 150 years old
 	age := now.Year() - tglLahir.Year()
 		if age < 0 || age > 150 {
-			return fmt.Errorf("invalid birth date - patient age must be between 0 and 150")
+			return fmt.Errorf("invalid tanggal lahir")
 		}
 	return nil
 }
@@ -38,7 +38,7 @@ func ValidatePermintaanDarahInput(hemoglobin *float64, tglLahir time.Time, tglPe
 // ValidateDetailPermintaanDarahInput validates detail permintaan input
 func ValidateDetailPermintaanDarahInput(jmlKantong int) error {
 	if jmlKantong <= 0 {
-		return fmt.Errorf("jumlah kantong must be greater than 0")
+		return fmt.Errorf("jumlah kantong harus lebih dari 0")
 	}
 
 	return nil
@@ -47,11 +47,11 @@ func ValidateDetailPermintaanDarahInput(jmlKantong int) error {
 // ValidatePhoneNumber validates phone number format (Indonesia)
 func ValidatePhoneNumber(phone string) error {
 	if len(phone) < 10 {
-		return fmt.Errorf("phone number must be at least 10 digits")
+		return fmt.Errorf("nomor telepon harus terdiri dari minimal 10 digit")
 	}
 
 	if len(phone) > 15 {
-		return fmt.Errorf("phone number must not exceed 15 digits")
+		return fmt.Errorf("nomor telepon harus terdiri dari maksimal 15 digit")
 	}
 
 	return nil
