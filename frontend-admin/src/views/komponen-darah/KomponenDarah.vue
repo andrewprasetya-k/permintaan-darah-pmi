@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useKomponenStore } from '@/stores/komponen'
-import { Plus, AlertCircle, Droplets, Power, ChevronLeft, ChevronRight } from '@lucide/vue'
+import { Plus, AlertCircle, Droplets, ChevronLeft, ChevronRight } from '@lucide/vue'
 import KomponenCreateDrawer from './KomponenCreateDrawer.vue'
 import KomponenEditDrawer from './KomponenEditDrawer.vue'
 import KomponenDetailDrawer from './KomponenDetailDrawer.vue'
@@ -306,7 +306,6 @@ watch(currentPage, async (page, previousPage) => {
                         : 'text-emerald-600 hover:bg-emerald-100'
                     "
                   >
-                    <Power :size="14" />
                     {{ kom.isActive ? 'Nonaktifkan' : 'Aktifkan' }}
                   </button>
                   <button
