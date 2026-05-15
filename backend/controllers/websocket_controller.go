@@ -3,6 +3,8 @@ package controllers
 import (
 	"backend/services"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +23,7 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
-		return true
+		return isWebSocketOriginAllowed(r.Header.Get("Origin"))
 	},
 }
 
@@ -78,17 +80,12 @@ func (ctrl *WebSocketController) handleRead(client *services.Client, hub *servic
 	})
 
 	for {
-		var msg services.WebSocketMessage
-		err := client.Conn.ReadJSON(&msg)
-		if err != nil {
+		if _, _, err := client.Conn.ReadMessage(); err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				// Log error if needed
 			}
 			break
 		}
-
-		msg.Timestamp = time.Now().Format("2006-01-02T15:04:05Z07:00")
-		hub.Broadcast(&msg)
 	}
 }
 
@@ -121,4 +118,27 @@ func (ctrl *WebSocketController) GetConnectionStatus(c *gin.Context) {
 		"success":           true,
 		"activeConnections": ctrl.hub.GetClientCount(),
 	})
+}
+
+func isWebSocketOriginAllowed(origin string) bool {
+	if origin == "" {
+		return true
+	}
+
+	allowedOrigins := strings.TrimSpace(os.Getenv("CORS_ALLOWED_ORIGIN"))
+	if allowedOrigins == "" {
+		return gin.Mode() != gin.ReleaseMode
+	}
+
+	for _, allowed := range strings.Split(allowedOrigins, ",") {
+		allowed = strings.TrimSpace(allowed)
+		if allowed == "*" && gin.Mode() != gin.ReleaseMode {
+			return true
+		}
+		if allowed == origin {
+			return true
+		}
+	}
+
+	return false
 }

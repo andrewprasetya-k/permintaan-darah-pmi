@@ -34,11 +34,16 @@ func GenerateJWT(userID, username, role string) (string, error) {
 }
 
 func ValidateJWT(tokenString string) (*dto.TokenPayload, error) {
+	secretKey := os.Getenv("JWT_SECRET")
+	if secretKey == "" {
+		return nil, errors.New("error konfigurasi server")
+	}
+
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.ErrSignatureInvalid
 		}
-		return []byte(os.Getenv("JWT_SECRET")), nil
+		return []byte(secretKey), nil
 	})
 
 	if err != nil || !token.Valid {
@@ -50,23 +55,28 @@ func ValidateJWT(tokenString string) (*dto.TokenPayload, error) {
 		return nil, errors.New("klaim token tidak valid")
 	}
 
+	userID, ok := claimString(claims, "user_id")
+	if !ok {
+		return nil, errors.New("klaim user_id tidak valid")
+	}
+	username, ok := claimString(claims, "username")
+	if !ok {
+		return nil, errors.New("klaim username tidak valid")
+	}
+	role, ok := claimString(claims, "role")
+	if !ok {
+		return nil, errors.New("klaim role tidak valid")
+	}
+
 	payload := &dto.TokenPayload{
-		UserID:   claims["user_id"].(string),
-		Username: claims["username"].(string),
-		Role:     claims["role"].(string),
+		UserID:   userID,
+		Username: username,
+		Role:     role,
 	}
 
 	return payload, nil
 }
 
-// JWTMiddleware validates JWT tokens from Authorization header or query parameter
-// 
-// Supported token sources (in order):
-// 1. Authorization header: "Authorization: Bearer <token>"
-// 2. Query parameter: "?token=<token>" (fallback for WebSocket, which doesn't support custom headers)
-//
-// After validation, extracts userID, username, and role from token claims
-// and stores them in context for use by handlers
 func JWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var tokenString string
@@ -93,11 +103,18 @@ func JWTMiddleware() gin.HandlerFunc {
 			}
 		}
 
+		secretKey := os.Getenv("JWT_SECRET")
+		if secretKey == "" {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Kesalahan konfigurasi server"})
+			c.Abort()
+			return
+		}
+
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, jwt.ErrSignatureInvalid
 			}
-			return []byte(os.Getenv("JWT_SECRET")), nil
+			return []byte(secretKey), nil
 		})
 
 		if err != nil || !token.Valid {
@@ -113,10 +130,29 @@ func JWTMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		userID, ok := claimString(claims, "user_id")
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Klaim user_id tidak valid"})
+			c.Abort()
+			return
+		}
+		username, ok := claimString(claims, "username")
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Klaim username tidak valid"})
+			c.Abort()
+			return
+		}
+		role, ok := claimString(claims, "role")
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Klaim role tidak valid"})
+			c.Abort()
+			return
+		}
+
 		payload := &dto.TokenPayload{
-			UserID:   claims["user_id"].(string),
-			Username: claims["username"].(string),
-			Role:     claims["role"].(string),
+			UserID:   userID,
+			Username: username,
+			Role:     role,
 		}
 
 		c.Set("userID", payload.UserID)
@@ -124,4 +160,9 @@ func JWTMiddleware() gin.HandlerFunc {
 		c.Set("userRole", payload.Role)
 		c.Next()
 	}
+}
+
+func claimString(claims jwt.MapClaims, key string) (string, bool) {
+	value, ok := claims[key].(string)
+	return value, ok && value != ""
 }

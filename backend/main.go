@@ -8,6 +8,7 @@ import (
 	"backend/services"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -21,17 +22,18 @@ func main() {
 	// CORS middleware
 	r.Use(func(c *gin.Context) {
 		origin := c.GetHeader("Origin")
-		allowedOrigin := os.Getenv("CORS_ALLOWED_ORIGIN")
-		if allowedOrigin == "" {
-			allowedOrigin = "*" // Allow all origins in development
+		if isOriginAllowed(origin) {
+			if origin != "" {
+				c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+				c.Writer.Header().Set("Vary", "Origin")
+			}
+		} else {
+			if c.Request.Method == "OPTIONS" {
+				c.AbortWithStatus(http.StatusForbidden)
+				return
+			}
 		}
 
-		// Set CORS headers
-		if allowedOrigin == "*" {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
-		} else if origin == allowedOrigin {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
-		}
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, PATCH")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
 		if c.Request.Method == "OPTIONS" {
@@ -103,4 +105,27 @@ func main() {
 	})
 
 	r.Run(":8080")
+}
+
+func isOriginAllowed(origin string) bool {
+	if origin == "" {
+		return true
+	}
+
+	allowedOrigins := strings.TrimSpace(os.Getenv("CORS_ALLOWED_ORIGIN"))
+	if allowedOrigins == "" {
+		return gin.Mode() != gin.ReleaseMode
+	}
+
+	for _, allowed := range strings.Split(allowedOrigins, ",") {
+		allowed = strings.TrimSpace(allowed)
+		if allowed == "*" && gin.Mode() != gin.ReleaseMode {
+			return true
+		}
+		if allowed == origin {
+			return true
+		}
+	}
+
+	return false
 }
