@@ -1,10 +1,17 @@
 import { ref, shallowRef } from 'vue'
 import { defineStore } from 'pinia'
-import { WS_BASE_URL } from '@/api/client'
+import { API_BASE_URL } from '@/api/client'
 import { useMyRequestsStore } from '@/stores/my-requests'
 import type { WebSocketMessage } from '@/types/models'
 
 type ConnectionState = 'idle' | 'connecting' | 'connected' | 'disconnected' | 'error'
+
+const toWebSocketUrl = (apiBaseUrl: string) => {
+  const url = new URL(apiBaseUrl)
+  url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
+  url.pathname = `${url.pathname.replace(/\/api\/?$/, '')}/api/ws/connect`
+  return url
+}
 
 export const useRealtimeStore = defineStore('realtime', () => {
   const socket = shallowRef<WebSocket | null>(null)
@@ -52,7 +59,9 @@ export const useRealtimeStore = defineStore('realtime', () => {
     status.value = 'connecting'
     error.value = null
 
-    const ws = new WebSocket(`${WS_BASE_URL}/ws/connect?token=${encodeURIComponent(token)}`)
+    const wsUrl = toWebSocketUrl(API_BASE_URL)
+    wsUrl.searchParams.set('token', token)
+    const ws = new WebSocket(wsUrl.toString())
     socket.value = ws
 
     ws.onopen = () => {

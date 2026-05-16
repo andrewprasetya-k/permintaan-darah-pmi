@@ -9,10 +9,6 @@ export const API_BASE_URL = trimTrailingSlash(
   import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
 )
 
-export const WS_BASE_URL = trimTrailingSlash(
-  import.meta.env.VITE_WS_URL || API_BASE_URL.replace(/^http/, 'ws'),
-)
-
 type Params = Record<string, string | number | boolean | null | undefined>
 
 interface RequestOptions {
